@@ -161,4 +161,159 @@ plot.qq(residuals(ls.old))
 text(1.5, 7.8, "Brazil (1962)", cex = 0.8)
 dev.off()
 
+## marginal effect plots
+### function to plot marginal effects and confidence intervals
+plot.me <- function(m, red = 0) {
+  ## store the coefficient estimates
+  beta.hat <- coef(m)
+  Sigma <- vcov(m)
+
+  log.avemag0 <- 0:5 # log(avemag) = 0 when avemag = 1
+  uppertier0 <- 0
+  dy.deneg <- beta.hat["eneg"] + 
+    beta.hat["eneg:log(avemag)"]*log.avemag0 + 
+    beta.hat["eneg:uppertier"]*uppertier0
+  se.dy.deneg <- sqrt(Sigma["eneg", "eneg"] + 
+                        log.avemag0^2*Sigma["eneg:log(avemag)", "eneg:log(avemag)"] +
+                        uppertier0^2*Sigma["eneg:uppertier", "eneg:uppertier"] + 
+                        2*log.avemag0*Sigma["eneg", "eneg:log(avemag)"] + 
+                        2*uppertier0*Sigma["eneg", "eneg:uppertier"] + 
+                        2*log.avemag0*uppertier0*Sigma["eneg:log(avemag)", "eneg:uppertier"])
+  ## calculate the lower and bounds of the 90% confidence interval
+  lwr90 <- dy.deneg - 1.64*se.dy.deneg
+  upr90 <- dy.deneg + 1.64*se.dy.deneg
+  abline(h = 0)  # add horizontal line at zero
+  polygon(c(log.avemag0, rev(log.avemag0)), c(lwr90, rev(upr90)), col = rgb(red, 0, 0, .2), border = NA)
+  #lines(log.avemag0, lwr90, lty = 3)
+  #lines(log.avemag0, upr90, lty = 3)
+  lines(log.avemag0, dy.deneg, lwd = 3, col = rgb(red, 0, 0, 1))
+}
+### replicate Clark and Golder's models with unstandardized variables
+f <- enep1 ~ eneg*log(avemag) + eneg*uppertier + enpres*proximity1
+#### col 3, table 2
+ls.90s <- lm(f, data = cg, subset = nineties == 1)
+mm.90s <- rlm(f, data = cg, subset = nineties == 1, method = "MM", maxit = 200)
+#### col 4, table 2
+ls.90s.old <- lm(f, data = cg, subset = nineties == 1 & old == 1)
+mm.90s.old <- rlm(f, data = cg, subset = nineties == 1 & old == 1, method = "MM", maxit = 200)
+#### col 3, table 2
+ls.whole <- lm(f, data = cg)
+mm.whole <- rlm(f, data = cg, method = "MM", maxit = 200)
+#### col 4, table 2
+ls.old <- lm(f, data = cg, subset = old == 1)
+mm.old <- rlm(f, data = cg, subset = old == 1, method = "MM", maxit = 200)
+## plot the marginal effects and confidence intervals
+par(mfrow = c(2, 4), mar = c(1, 1, 1, 1), oma = c(3, 3, 2, 1))
+eplot(xlim = c(0, 5), ylim = c(-2, 5),
+      xlab = "log(Average District Magnitude)",
+      ylab = "Marginal Effect of ENEG on ENEP",
+      ylabpos = 2.5,
+      main = "1990s\nWhole Sample")
+plot.me(ls.90s)
+aplot("1990s\nEstablished Democracies")
+plot.me(ls.90s.old)
+aplot("1946-2000\nWhole Sample")
+plot.me(ls.whole)
+aplot("1946-2000\nEstablished Democracies")
+plot.me(ls.old)
+aplot()
+plot.me(mm.90s, red = 1)
+aplot()
+plot.me(mm.90s.old, red = 1)
+aplot()
+plot.me(mm.whole, red = 1)
+aplot()
+plot.me(mm.old, red = 1)
+
+par(mfrow = c(1,2))
+eplot(xlim = c(0, 5), ylim = c(-1, 2),
+      xlab = "log(Average District Magnitude)",
+      ylab = "Marginal Effect of ENEG on ENEP",
+      ylabpos = 2.5,
+      main = "Least-Squares Estimator")
+plot.me(ls.old)
+aplot("MM Estimator")
+plot.me(mm.old, red = 1)
+
+## scatterplot
+par(mfrow = c(1, 1))
+eplot(xlim = mm(log(cg$avemag)),
+      ylim = mm(cg$eneg),
+      xlab = "Log of the Average District Magnitude",
+      ylab = "Effective Number of Ethnic Groups")
+col <- rgb(.3, .3, .3, .3)
+points(log(cg$avemag), cg$eneg, cex = sqrt(cg$enep1), 
+       pch = 21, col = col, bg = col)
+
+label.it <- function(name, pos = 4) {
+  year <- cg$year[cg$country == name]
+  enep <- round(cg$enep1[cg$country == name], 2)
+  label <- paste(name, " (",year , ")", " - ", enep, sep = "")
+  text(log(cg$avemag[cg$country == name]), 
+       cg$eneg[cg$country == name], 
+       labels = label, 
+       pos = pos, cex = 0.9)
+}
+#text(log(cg$avemag), cg$eneg, paste(cg$country, cg$year))
+label.it("Ghana")
+label.it("Uganda")
+label.it("Somalia")
+label.it("Indonesia", pos = 3)
+text(log(22.22), 8.304, "South Africa (1994, 1999) - 2.24, 2.16", cex = 0.9, pos = 4)
+
+
+legend(x = par("usr")[2], y = par("usr")[4], 
+       pch = 21, pt.cex = sqrt(c(1, 2, 5, 10)), col = col, 
+       pt.bg = col, legend = c(2, 5, 10), bty = "b", title = "ENEP", xjust = 1)
+
+## dfbetas
+dfbeta <- dfbetas(ls.old)[, "eneg:log(avemag)"]
+order <- order(dfbeta)
+est <- coef(ls.old)["eneg:log(avemag)"]; est
+numeric.cut <- 2/sqrt(length(residuals(ls.old)))
+dfd <- data.frame(country = cg[names(dfbeta), "country.year"], dfbeta = round(dfbeta, 2))
+dfd <- dfd[order(dfd$dfbeta), ]
+dfd2 <- dfd[abs(dfd$dfbeta) > numeric.cut, ]
+dfd2$sign <- sign(dfd2$dfbeta)
+
+par(mfrow = c(1, 1), mar = c(3, 1, 1, 1), oma = c(0, 0, 0, 0))
+eplot(xlim = mm(dfd2$dfbeta), ylim = c(1, length(dfd2$country)),
+      anny = FALSE,
+      xlab = "dfbeta")
+upr <- .999*par("usr")[4]
+lwr <- .999*par("usr")[3]
+polygon(x = c(-est, est, est, -est), 
+        y = c(lwr, lwr, upr, upr),
+        col = "grey95", border = NA)
+polygon(x = c(-numeric.cut, numeric.cut, numeric.cut, -numeric.cut), 
+        y = c(lwr, lwr, upr, upr),
+        col = "grey85", border = NA)
+points(dfd2$dfbeta, 1:length(dfd2$country) + dfd2$sign, pch = 19, cex = 0.5)
+text(0, 1:length(dfd2$country) + dfd2$sign, dfd2$country, cex = 0.5, pos = 3 - dfd2$sign)
+for (i in 1:length(dfd2$country)) {
+  lines(c(0, dfd2$dfbeta[i]), c(i + dfd2$sign[i], i + dfd2$sign[i]))
+}
+text(0, sum(dfd2$sign == -1) + c(0, 0.5, 1), ".")
+
+par(mfrow = c(1, 4), mar = c(1, 1, 1, 1), oma = c(3, 3, 2, 1))
+eplot(xlim = c(0, 5), ylim = c(-2, 5),
+      xlab = "log(Average District Magnitude)",
+      ylab = "Marginal Effect of ENEG on ENEP",
+      ylabpos = 2.5,
+      main = "1990s\nWhole Sample")
+m <- lm(f, data = cg)
+plot.me(m)
+aplot("Drop Uganda (1980)")
+m <- lm(f, data = cg, subset = !(country == "Uganda" & year == 1980))
+plot.me(m)
+aplot("Drop Uganda (1980),\nIsrael (1999), and Brazil (1962)")
+m <- lm(f, data = cg, subset = !((country == "Uganda" & year == 1980) | 
+                                 (country == "Israel" & year == 1999) | 
+                                 (country == "Brazil" & year == 1962)))
+plot.me(m)
+aplot("Drop All Influential Cases")
+m <- lm(f, data = cg, subset = !(rownames(cg) %in% rownames(dfd2)))
+plot.me(m)
+
+
 
