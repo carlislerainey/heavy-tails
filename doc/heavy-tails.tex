@@ -147,7 +147,23 @@ At first glance, one might take the linearity restriction under Gauss-Markov to 
 
 However, we argue that restricting ourselves to linear estimators is unnecessary and unproductive. There is no statistical reason to restrict ourselves to linear estimators, except for mathematical convenience, and there are substantive reasons to reject this restriction. For example, if the researcher is aware that one case has a unusually large outcome variable (conditional on the explanatory variables), then the researcher might wish to weight that case less than the other, more typical cases so that one atypical case does not exert several times more impact on the estimates than other, typical cases. Indeed, substantive researchers might wish to attach zero weight to extremely unusual cases because these cases might be due to a different substantive process.
 
-It is not often appreciated that if the errors do not follow independent and identical normal distributions, then the OLS is no longer the MVUE--other estimators might outperform OLS. 
+It is not often appreciated that if the errors do not follow independent and identical normal distributions, then the OLS is no longer the MVUE--other estimators might outperform OLS.
+
+Many researchers simply assume a statistical model for which a MVUE is easily available for little or no substantive reason. Knowing that the assumed model (e.g., normality) is \textit{in}orrect, these researchers are using this model as an approximation. But if the model is an approximation, then the desirable statistical properties are not longer guaranteed (e.g., MVUE). With this in mind, it makes more sense to use a robust estimator with the following qualitative properties:
+\begin{enumerate}
+\item Approximately unbiased in typical sample sizes for the assumed model and small, plausible deviations.
+\item Excellent efficiency under the assumed model, though perhaps not the best possible efficiency.
+\item Excellent efficiency under small deviations from the assumed model
+\item Reasonable efficiency and bias in typical sample sizes with large deviations from the assumed model. 
+\end{enumerate}
+
+Mathematically, this suggests that applied researchers should not necessarily restrict themselves to unbiased estimators or minimum variance estimators under an assumed model. Instead, a more desirable criterion might be the mean squared error of the estimate under a wide range of deviations from the assumed model. The ``best'' model for a social scientist might not be the optimal estimator for an assumed model, but an estimable that works reasonably well for the assumed model and many substantively plausible deviations. 
+
+To see the importance of this in practice, we simulated 10,000 data sets 50 observations of variables $x$ and $y$, where the relationship between $x$ and $y$ is given by $y = x + \epsilon$, where $\epsilon$ follows a $t$ distribution with three degrees of freedom. Note that the $t_3$ distribution is symmetric, bell-shaped, and resembles the normal distribution, except it has slightly heavier tails. For each of these 10,000 data sets we used least-squares to estimate the slope of the relationship between $x$ and $y$. Because we simulated these data, we know that the Gauss-Markov assumptions hold. This means that least-squares is the \textit{best} linear unbiased estimator.
+
+But consider a least trimmed squares (LTS) estimator in which we minimize the smallest 90\% of the residuals. This method literally throws away data. Though it lacks the elegant theory of the least-squares estimate, it is essentially unbiased, much more efficient, and has a much smaller mean squared error. By any reasonable standard, it is a better estimator than the least squares estimators. This improvement is dropped by expanding our focus to non-linear estimators. In this case, the LTS estimator is not linear because it places zero weight on the largest 10\% of the residuals and weights of one on the smallest 90\% of the residuals.
+
+While the statistical properties of the least squares under the assumed normal-linear model are extremely well developed (e.g., MVUE), these properties are not nearly as well developed from robust alternatives. Some asymptotic results are available, but the closed-form theory is generally much weaker.
 
 
 \singlespace
