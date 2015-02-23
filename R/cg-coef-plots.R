@@ -62,20 +62,78 @@ cg$st.proximity1 <- rescale(cg$proximity1)
 ### create a country-year variable
 cg$country.year <- paste(cg$country, " (", cg$year, ")", sep = "")
 
+## subsets of data
+cg.90s <- cg[cg$nineties == 1, ]
+cg.90s.old <- cg[cg$nineties == 1 & cg$old == 1, ]
+cg.old <- cg[cg$old == 1, ]
+
+## function to do the M-estimation and bootstrapping
+#### bootstrap
+boot.m <- function(f, d, n.bs = 500) {
+  m <- rlm(f, data = d, method = "M", psi = psi.bisquare, maxit = 1000)
+  coef <- coef(m)
+  bs.coef <- NULL
+  pb <- txtProgressBar(min = 0, max = n.bs, style = 3)
+  for (i in 1:n.bs) {
+    d.bs <- d[sample(1:nrow(d), nrow(d), replace = TRUE), ]
+    start <- lqs(f, data = d.bs)
+    m <- rlm(f, data = d.bs, method = "M", psi = psi.bisquare, init = start, maxit = 100)
+    bs.coef <- rbind(bs.coef, coef(m))
+    setTxtProgressBar(pb, i)
+  }
+  ci.lwr <- apply(bs.coef, 2, quantile, 0.05)
+  ci.upr <- apply(bs.coef, 2, quantile, 0.95)
+  ret <- list(coef = coef, bs.coef = bs.coef, ci.upr = ci.upr, ci.lwr = ci.lwr)
+  return(ret)
+}
+m <- boot.m(f, d = cg)
+#### cluster bootstrap
+cl.boot.m <- function(f, d, cl, n.bs = 500) {
+  #start <- rlm(f, data = d, method = "M", psi = psi.huber, maxit = 1000)
+  m <- rlm(f, data = d, method = "M", psi = psi.huber, maxit = 20)
+  coef <- coef(m)
+  cluster.names <- unique(d[, cl])
+  bs.coef <- NULL
+  pb <- txtProgressBar(min = 0, max = n.bs, style = 3)
+  for (i in 1:n.bs) {
+    d.bs <- NULL
+    for (j in 1:length(cluster.names)) {
+      bs.cl <- sample(cluster.names, 1)
+      d.bs <- rbind(d.bs, d[d[, cl] == bs.cl, ])
+    }
+    start <- lqs(f, data = d.bs)
+    m <- rlm(f, data = d.bs, method = "M", psi = psi.bisquare, init = start, maxit = 100)
+    if (m$converged == 0) {
+      plot(coef, coef(m))
+      abline(a = 0, b = 1)
+    }
+    bs.coef <- rbind(bs.coef, coef(m))
+    setTxtProgressBar(pb, i)
+  }
+  ci.lwr <- apply(bs.coef, 2, quantile, 0.05)
+  ci.upr <- apply(bs.coef, 2, quantile, 0.95)
+  ret <- list(coef = coef, bs.coef = bs.coef, ci.upr = ci.upr, ci.lwr = ci.lwr)
+  return(ret)
+}
+m <- cl.boot.m(f, d = cg.st, cl = "country")
+
+
+
+
 ## replicate Clark and Golder's models
 f <- enep1 ~ st.eneg*st.logavemag + st.eneg*st.uppertier + st.enpres*st.proximity1
 ### col 3, table 2
-ls.90s <- lm(f, data = cg, subset = nineties == 1)
-mm.90s <- rlm(f, data = cg, subset = nineties == 1, method = "MM", maxit = 200)
+ls.90s <- lm(f, data = cg.90s)
+mm.90s <- rlm(f, data = cg.90s, method = "M", psi = psi.bisquare, maxit = 200)
 ### col 4, table 2
-ls.90s.old <- lm(f, data = cg, subset = nineties == 1 & old == 1)
-mm.90s.old <- rlm(f, data = cg, subset = nineties == 1 & old == 1, method = "MM", maxit = 200)
+ls.90s.old <- lm(f, data = cg.90s.old)
+mm.90s.old <- rlm(f, data = cg.90s.old, method = "M", psi = psi.bisquare, maxit = 200)
 ### col 3, table 2
 ls.whole <- lm(f, data = cg)
-mm.whole <- rlm(f, data = cg, method = "MM", maxit = 200)
+mm.whole <- rlm(f, data = cg, method = "M", psi = psi.bisquare, maxit = 200)
 ### col 4, table 2
-ls.old <- lm(f, data = cg, subset = old == 1)
-mm.old <- rlm(f, data = cg, subset = old == 1, method = "MM", maxit = 200)
+ls.old <- lm(f, data = cg.old, subset = old == 1)
+mm.old <- rlm(f, data = cg.old, method = "M", psi = psi.bisquare, maxit = 200)
 
 ## plot coefficients
 ### a function to plot the points and lines
@@ -192,16 +250,16 @@ plot.me <- function(m, red = 0) {
 f <- enep1 ~ eneg*log(avemag) + eneg*uppertier + enpres*proximity1
 #### col 3, table 2
 ls.90s <- lm(f, data = cg, subset = nineties == 1)
-mm.90s <- rlm(f, data = cg, subset = nineties == 1, method = "MM", maxit = 200)
+mm.90s <- rlm(f, data = cg, subset = nineties == 1, method = "M", psi = psi.bisquare, maxit = 200)
 #### col 4, table 2
 ls.90s.old <- lm(f, data = cg, subset = nineties == 1 & old == 1)
-mm.90s.old <- rlm(f, data = cg, subset = nineties == 1 & old == 1, method = "MM", maxit = 200)
+mm.90s.old <- rlm(f, data = cg, subset = nineties == 1 & old == 1, method = "M", psi = psi.bisquare, maxit = 200)
 #### col 3, table 2
 ls.whole <- lm(f, data = cg)
-mm.whole <- rlm(f, data = cg, method = "MM", maxit = 200)
+mm.whole <- rlm(f, data = cg, method = "M", psi = psi.bisquare, maxit = 200)
 #### col 4, table 2
 ls.old <- lm(f, data = cg, subset = old == 1)
-mm.old <- rlm(f, data = cg, subset = old == 1, method = "MM", maxit = 200)
+mm.old <- rlm(f, data = cg, subset = old == 1, method = "M", psi = psi.bisquare, maxit = 200)
 ## plot the marginal effects and confidence intervals
 par(mfrow = c(2, 4), mar = c(1, 1, 1, 1), oma = c(3, 3, 2, 1))
 eplot(xlim = c(0, 5), ylim = c(-2, 5),

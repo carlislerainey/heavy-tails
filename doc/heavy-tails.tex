@@ -186,6 +186,30 @@ In passing, note that the effects of departure from normality and related topics
 \end{quote}
 Another popular textbook, Wooldridge (????) does briefly discuss robust estimators, though in a much more limited manner than his discussion of robust standard errors. Angrist and Pischke (2008), though, devote an entire chapter to robust standard errors and completely ignore robust estimation of model coefficients.
 
+\section*{A Robust Alternative to Least Squares}
+
+In spite of the scant attention paid to robust estimators in political science, statisticians have developed and refined many robust methods since the seminal work of Box (1953) and Huber (1964). Huber and Ronchetti (2009) provide a detailed review of these developments and Anderson (2008) provides an accessible introduction. 
+
+Adjudicating among these many robust alternatives to least squares is beyond the scope of our paper, but, to fix ideas, we do introduce one robust estimator in detail which has several desirable properties--the MM-estimator. 
+
+The MM-estimator, proposed by Yohai (1987). This estimator works extremely well if the assumed normal-linear model holds, though it is not quite as efficient as least squares. On the other hand, when the assumed normal-linear model does not hold, then the MM-estimator might be more efficient than the least squares estimator, perhaps substantially if the deviation is severe. MM-estimation actually combines three of robust estimation into an iterative procedure.
+
+\begin{enumerate}
+\item Calculate initial coefficient estimates and initial residuals using S-estimation.
+\item Calculate the scale of the residuals using M-estimation.
+\item Iterate the following until converge:
+	\begin{enumerate}
+	\item Update the coefficients using M-estimation with weights determined by the latest residuals.
+	\item Calculate new residuals using the latest coefficients.
+	\end{enumerate}
+\end{enumerate}
+
+We now discuss the details of S-estimation and M-estimation. Though the first step of the MM algorithm uses S-estimation, it is convenience to introduce the basic idea of M-estimation first.
+
+\subsection*{M-Estimation}
+
+While least squares yields the coefficients that minimize the sum of the squared residuals $\min \sum_{i = 1}^n \hat{e}_i^2$, M-estimation minimizes some other, less rapidly increasing function of the residuals $\min \sum_{i = 1}^n \rho(\hat{e}_i)$. Because the solution is not scale invariant, the residuals $\hat{e_i}$ are standardized by a robust estimate of scale $\hat{\sigma}_{(mad)}$, calculated using the median absolute deviation so that $\min \sum_{i = 1}^n \rho \left(\dfrac{\hat{e}_i}{\hat{\sigma}_{(mad)}}\right)$.
+
 
 
 \singlespace
