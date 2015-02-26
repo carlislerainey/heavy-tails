@@ -186,7 +186,17 @@ In passing, note that the effects of departure from normality and related topics
 \end{quote}
 Another popular textbook, Wooldridge (????) does briefly discuss robust estimators, though in a much more limited manner than his discussion of robust standard errors. Angrist and Pischke (2008), though, devote an entire chapter to robust standard errors and completely ignore robust estimation of model coefficients.
 
-\section*{A Robust Alternative to Least Squares}
+\section*{Dealing with Skewness: Transforming the Outcome}
+
+Skewed error distribution create two problems for the linear model. First, because least squares models the quantity $E(Y | X)$ and the mean is not a good summary of location for skewed variables. Symmetric error distribution are easier to understand. Second, and perhaps most importantly, we take skewed error distributions as a lack of model fit. For example, it is theoretically intuitive to believe that the explanatory variables should have increasing effects non-negative outcome variables, such as an individual's annual income. For example, rather than a college degree increasing one expected income by \$10,000, perhaps it increases one's expected income by 10\%. We consider non-linearities as evidence that the basic structure of the model could be improved.
+
+[comment on taking logs--common in econometrics.]
+
+[comment on Box-Cox transformation--more general.]
+
+
+
+\section*{Dealing with Heavy-Tails: $M$-Estimation}
 
 In spite of the scant attention paid to robust estimators in political science, statisticians have developed and refined many robust methods since the seminal work of Box (1953) and Huber (1964). Huber and Ronchetti (2009) provide a detailed review of these developments and Anderson (2008) provides an accessible introduction. 
 
@@ -227,10 +237,24 @@ While least squares yields the coefficients that minimize the sum of the squared
 \end{center}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}
+%\centering
+\begin{minipage}[t]{0.48\textwidth}
+%\centering
+\includegraphics[width = \textwidth]{figs/cg-residuals-hist.pdf}
+\caption{A histogram showing the distribution of the residuals from Clark and Golder's (2006) main model. Notice that these residuals do not seem approximately normal. They have a strong skew and heavy tail to the right. For example, one would rarely expect to observe residuals more that three standard deviations from zero if the assumption of normality holds. In these data, we have several residuals more that three standard deviations away and one nearly six standard deviations away. This suggests that some transformation of the outcome variable might be useful.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}
+%\centering
+\includegraphics[width = \textwidth]{figs/cg-qq-plot.pdf}
+\caption{A QQ plot showing the deviation of the residuals from normality. If the residuals were approximately normal, then the points in the QQ plot would approximately follow the line. However, notice that the positive residuals deviate sharply from the theoretical expectations. This also suggests that some transformation of the outcome variable might be useful.}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[h!]
 \begin{center}
-\includegraphics[width = \textwidth]{figs/cg-qq-plots.pdf}
-\caption{caption here.}\label{fig:cg-coef-plots}
+\includegraphics[width = \textwidth]{figs/cg-trans-residuals-hist.pdf}
+\caption{}\label{fig:cg-trans-residuals-hist}
 \end{center}
 \end{figure}
 
