@@ -44,6 +44,8 @@
 \newenvironment{remark}[1][Remark]{\begin{trivlist}
 \item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
 \DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator{\med}{med}
+
 
 % Set up fonts the way I like
 \usepackage{tgpagella}
@@ -188,35 +190,54 @@ Another popular textbook, Wooldridge (????) does briefly discuss robust estimato
 
 \section*{Dealing with Skewness: Transforming the Outcome}
 
-Skewed error distribution create two problems for the linear model. First, because least squares models the quantity $E(Y | X)$ and the mean is not a good summary of location for skewed variables. Symmetric error distribution are easier to understand. Second, and perhaps most importantly, we take skewed error distributions as a lack of model fit. For example, it is theoretically intuitive to believe that the explanatory variables should have increasing effects non-negative outcome variables, such as an individual's annual income. For example, rather than a college degree increasing one expected income by \$10,000, perhaps it increases one's expected income by 10\%. We consider non-linearities as evidence that the basic structure of the model could be improved.
+Skewed error distribution create two problems for the linear model. First, because least squares models the quantity $E(Y | X)$ and the mean is not a good summary of location for skewed variables. Symmetric error distributions are easier to understand. Second, and perhaps most importantly, we take skewed error distributions as a lack of model fit. For example, it is theoretically intuitive to believe that the explanatory variables should have increasing effects non-negative outcome variables, such as an individual's annual income. For example, rather than a college degree increasing one expected income by \$10,000, perhaps it increases one's expected income by 10\%. We consider skewed error distributions as evidence that the basic structure of the model could be improved.
 
-[comment on taking logs--common in econometrics.]
+Points that are unusual prior to transformation might be quite typical after transformation.
 
-[comment on Box-Cox transformation--more general.]
+Even if we remain indifferent toward the theoretical implications of skewed error distributions, we must remain cautious about the statistical implications. The performance of least squares estimators improves as the error distribution approaches a normal distribution. Further, the theoretical properties of alternative, more robust estimators, such as the $M$-estimator we discuss below, depend on a symmetric error distribution distribution.
 
+It is quite common in disciplines such as economics, for example, to log-transform non-negative outcome variables by default. The motivation is that since non-negative (or strictly positive) outcomes are bounded below by zero, then these variables are likely skewed to the right. In this case, the model $\log(y) = X\beta + \epsilon$ will likely provide a better approximation to the data.
 
+While we agree with the spirit of this suggestion, we have much more precise empirical methods for choosing \textit{whether} and \textit{how} to transform the outcome variable $y$. Box and Cox (1964) proposed the Box-Cox transformation 
+
+\begin{displaymath}
+   y^{(\lambda)} = BC(y, \lambda) = \left\{
+     \begin{array}{lr}
+       \dfrac{y^\lambda - 1}{\lambda} & \text{for } \lambda \neq 0\\
+       \log y & \text{for } \lambda \neq 0
+     \end{array}
+   \right.
+\end{displaymath}.
+
+\noindent In this case, the model becomes $y^{(\lambda)} = X\beta + \epsilon$. The researcher can easily use maximum likelihood to obtain estimates $\hat{\lambda}$ and standard errors for the transformation parameter $\lambda$. This is particularly convenient because if $\hat{\lambda}$ is near one, this suggests no transformation is needed and if $\hat{\lambda}$ is near zero, then only an intuitive log-transformation is needed.
+
+It is quite easy to assess the skewness in the residuals using a simple histogram of the residuals or a QQ plot of the residuals compared to their normal quantiles. For a formal test of skewness, one might use a direct test for symmetry on residuals $\hat{e}$, such as the Mira test (Mira 1999) or simply test whether $\lambda \neq 1$ under the Box-Cox framework. However, the important point is not to argue for any particular test, but to point out (1) that asymmetries worsen the performance of least squares and alternative methods and (2) this potential problem can and should be addressed using simple transformations that are easy to implement.
+
+However, applying transformation to the outcome variable $y$ does raise an interpretational difficulty. The usual, untransformed linear model is given by $y = X\beta + \epsilon$ and the quantity of interest is $E(y | X)$ or $\frac{\partial E(y | X)}{\partial x_j}$. For concreteness, consider the log-transformation. Using the same logic, then the model is $log(y) = X\beta + \epsilon$ and we might take the quantity of interest to be $E[\log(y) | X]$ or $\frac{\partial E[\log(y) | X]}{\partial x_j}$. However, these quantities are not as easy to understand substantively--$\frac{\partial E[\log(y) | X]}{\partial x_j}$ is more difficult to understand than $\frac{\partial E(y | X)}{\partial x_j}$. To make the results more understandable, we simply need to ``undo'' the transformation. However, it is important to note that $E[\log(y) | X] \neq \log [E(y | X)]$, which means that the log cannot simply be undone (without additional computation) because $e^{E[\log(y) | X]} \neq E(y | X)$. 
+
+However, in the context of skewed distributions, the mean $E(\dot)$ might be a misleading summary of the ``center'' of the data. While the mean is often more mathematically convenient, the median offers a better summary of location than the mean. Further, the median has an intuitive interpretation because there is a one-half of the distribution lies above the median and one-half lies below. This mean that there is approximately a one-half chance that $y |X$ falls above $\med(y | X)$ and a one-half changes that $y |X$ falls below.
+
+In addition to the intuitive substantive interpretation of $\med(y | X)$, the median has another desirable property. Because the log-transformation is order-preserving $\med[\log(y) | X] = \log [\med(y | X)]$, which means that the log \textit{can} easily be undone because $e^{med[\log(y) | X]} = e^{\log[\med(y | X)]} = \med(y | X)$. Therefore, by adopting $\med(y | X)$ and $\frac{\partial \med(y | X)}{\partial x_j}$, one gains a more intuitive quantity of interest and can easily move between transformed and untransformed outcomes (e.g., $\med[\log(y)] \rightarrow \med(y)$). This holds for the more general case of $y^{(\lambda)}$ in addition to $\log(y)$.
+
+To obtain quantities of interest for $\med(y)$ when the estimated model has the generic form $y^{(\lambda)} = X\beta + \epsilon$, one can simply use the algorithm described in King, Tomz, and Wittenberg (2000).
+\begin{enumerate}
+\item Estimate the model $y = X\beta + \epsilon$ using least squares to obtain the estimated model coefficients $\hat{\beta}^{ls}$ and residuals $\hat{e}^{ls}$. Evaluate whether the assumption of the normal errors matches the estimated residuals using histograms and QQ plots.
+\item If needed, estimate the Box-Cox transformation parameter $\hat{\lambda}$ using maximum likelihood. (If the values one or zero fall within the confidence interval, then one may wish to use those values to maintain the direct interpretability of the model coefficients.)
+\item Estimate the transformed model $y^{(\lambda)} = X\beta + \epsilon$ using least squares to obtain the estimated model coefficients $\hat{\beta}^{ls}_{trans}$, residuals $\hat{e}^{ls}_{trans}$, and covariance matrix $\Sigma^{ls}_{trans}$.
+\item Choose a hypothetical case or set of cases $X_{pred}$ for which to calculate the quantity of interest. If one is interested in calculating a first difference, it is convenient to use $X_{hi}$ and $X_{lo}$, where the first-difference $\Delta(y, X_{hi}, X_{lo}) = \med(y | X_{hi}) - \med(y | X_{lo})$.
+\item Following King, Tomz, and Wittenberg (2000), for $i$ from one to a large (e.g., 1,000) number of iterations $n_{sims}$:
+	\begin{enumerate}
+	\item Simulate $\tilde{\beta}^{ls}_{trans} \sim N\left(\hat{\beta}^{ls}_{trans}, \Sigma^{ls}_{trans}\right)$.
+	\item Calculate and store $\tilde{Q}_i = \med(y | X_{red}, \tilde{\beta}^{ls}_{trans}) = X_{red}\tilde{\beta}^{ls}_{trans}$ or, if interested in the first-difference, $\tilde{Q}_i = \tilde{\Delta}(y, X_{hi}, X_{lo}, \tilde{\beta}^{ls}_{trans}) = X_{hi}\tilde{\beta}^{ls}_{trans} - X_{lo}\tilde{\beta}^{ls}_{trans}$.
+	\end{enumerate}
+\item Summarize the $n_{sims}$ simulations. The mean or median of $\tilde{Q}_i$ serves as an estimate of $\med(y | X_{pred})$, the standard deviation of $\tilde{Q}_i$ serves as an estimate of the standard error of $\med(y | X_{pred})$, and the 5th and 95th percentiles of $\tilde{Q}_i$ serve as an estimate of the (likely asymmetric) 90\% confidence interval for $\med(y | X_{pred})$.
+\end{enumerate}
 
 \section*{Dealing with Heavy-Tails: $M$-Estimation}
 
 In spite of the scant attention paid to robust estimators in political science, statisticians have developed and refined many robust methods since the seminal work of Box (1953) and Huber (1964). Huber and Ronchetti (2009) provide a detailed review of these developments and Anderson (2008) provides an accessible introduction. 
 
-Adjudicating among these many robust alternatives to least squares is beyond the scope of our paper, but, to fix ideas, we do introduce one robust estimator in detail which has several desirable properties--the MM-estimator. 
-
-The MM-estimator, proposed by Yohai (1987). This estimator works extremely well if the assumed normal-linear model holds, though it is not quite as efficient as least squares. On the other hand, when the assumed normal-linear model does not hold, then the MM-estimator might be more efficient than the least squares estimator, perhaps substantially if the deviation is severe. MM-estimation actually combines three of robust estimation into an iterative procedure.
-
-\begin{enumerate}
-\item Calculate initial coefficient estimates and initial residuals using S-estimation.
-\item Calculate the scale of the residuals using M-estimation.
-\item Iterate the following until converge:
-	\begin{enumerate}
-	\item Update the coefficients using M-estimation with weights determined by the latest residuals.
-	\item Calculate new residuals using the latest coefficients.
-	\end{enumerate}
-\end{enumerate}
-
-We now discuss the details of S-estimation and M-estimation. Though the first step of the MM algorithm uses S-estimation, it is convenience to introduce the basic idea of M-estimation first.
-
-\subsection*{M-Estimation}
+Adjudicating among these many robust alternatives to least squares is beyond the scope of our paper, but, to fix ideas, we do introduce one robust estimator in detail which has several desirable properties--the M-estimator. 
 
 While least squares yields the coefficients that minimize the sum of the squared residuals $\min \sum_{i = 1}^n \hat{e}_i^2$, M-estimation minimizes some other, less rapidly increasing function of the residuals $\min \sum_{i = 1}^n \rho(\hat{e}_i)$. Because the solution is not scale invariant, the residuals $\hat{e_i}$ are standardized by a robust estimate of scale $\hat{\sigma}_{(mad)}$, calculated using the median absolute deviation so that $\min \sum_{i = 1}^n \rho \left(\dfrac{\hat{e}_i}{\hat{\sigma}_{(mad)}}\right)$.
 
