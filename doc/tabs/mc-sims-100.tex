@@ -1,0 +1,16 @@
+% quantreg::latex.table(x = ta, file = "doc/tabs/mc-sims-100",      rowlabel = "", cgroup = c("Mean", "Standard Deviation", "Mean Squared Error"),      rgroup = c("Absolute Performance", "Relative Performance"),      n.rgroup = c(3, 2), dec = 3, table.env = FALSE, label = "tab:mc-sims-100") 
+%
+\begin{center}
+\begin{tabular}{|l||c|c|c|c||c|c|c|c||c|c|c|c|} \hline
+\multicolumn{1}{|l||}{\bf }&\multicolumn{4}{c||}{\bf Mean}&\multicolumn{4}{c||}{\bf Standard Deviation}&\multicolumn{4}{c|}{\bf Mean Squared Error}\\ \cline{2-13}
+\multicolumn{1}{|l||}{}&\multicolumn{1}{c|}{Lapl.}&\multicolumn{1}{c|}{$t_2$}&\multicolumn{1}{c|}{$t_{10}$}&\multicolumn{1}{c||}{Norm.}&\multicolumn{1}{c|}{Lapl.}&\multicolumn{1}{c|}{$t_2$}&\multicolumn{1}{c|}{$t_{10}$}&\multicolumn{1}{c||}{Norm.}&\multicolumn{1}{c|}{Lapl.}&\multicolumn{1}{c|}{$t_2$}&\multicolumn{1}{c|}{$t_{10}$}&\multicolumn{1}{c|}{Norm.}\\ \hline
+{\bf Absolute Performance}&&&&&&&&&&&&\\
+~~Least Squares&~~~1.001&~~~1.010&~~~0.999&~~~1.000&~~~0.145&~~~0.567&~~~0.113&~~~0.112&~210.907&3218.668&~128.015&~126.091\\ 
+~~Least Absolute Deviation&~~~1.001&~~~0.999&~~~0.999&~~~0.999&~~~0.121&~~~0.157&~~~0.131&~~~0.141&~146.219&~247.484&~170.921&~197.565\\ 
+~~Tukey's Biweight&~~~1.001&~~~0.999&~~~0.998&~~~0.999&~~~0.126&~~~0.149&~~~0.112&~~~0.116&~159.560&~221.130&~124.870&~133.664\\ \hline
+{\bf Relative Performance}&&&&&&&&&&&&\\
+~~LAD/LS&~~~1.000&~~~0.990&~~~1.000&~~~1.000&~~~0.833&~~~0.277&~~~1.155&~~~1.252&~~~0.693&~~~0.077&~~~1.335&~~~1.567\\ 
+~~BW/LS&~~~1.000&~~~0.989&~~~0.999&~~~1.000&~~~0.870&~~~0.262&~~~0.988&~~~1.030&~~~0.757&~~~0.069&~~~0.975&~~~1.060\\ 
+\hline
+\end{tabular}
+\end{center}

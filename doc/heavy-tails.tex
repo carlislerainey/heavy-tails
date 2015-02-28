@@ -11,7 +11,6 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{rotating}
-\usepackage{dcolumn}
 \usepackage{longtable}
 \usepackage{microtype}
 \usepackage{graphicx}
@@ -51,6 +50,7 @@
 \usepackage{tgpagella}
 \usepackage[T1]{fontenc}
 \usepackage[bitstream-charter]{mathdesign}
+
 
 %% Set up lists the way I like
 % Redefine the first level
@@ -237,9 +237,65 @@ To obtain quantities of interest for $\med(y)$ when the estimated model has the 
 
 In spite of the scant attention paid to robust estimators in political science, statisticians have developed and refined many robust methods since the seminal work of Box (1953) and Huber (1964). Huber and Ronchetti (2009) provide a detailed review of these developments and Anderson (2008) provides an accessible introduction. 
 
-Adjudicating among these many robust alternatives to least squares is beyond the scope of our paper, but, to fix ideas, we do introduce one robust estimator in detail which has several desirable properties--the M-estimator. 
+Adjudicating among these many robust alternatives to least squares is beyond the scope of our paper, but, to fix ideas, we do introduce one robust estimator in detail which has several desirable properties--the $M$-estimator with Tukey's biweight function. 
 
-While least squares yields the coefficients that minimize the sum of the squared residuals $\min \sum_{i = 1}^n \hat{e}_i^2$, M-estimation minimizes some other, less rapidly increasing function of the residuals $\min \sum_{i = 1}^n \rho(\hat{e}_i)$. Because the solution is not scale invariant, the residuals $\hat{e_i}$ are standardized by a robust estimate of scale $\hat{\sigma}_{(mad)}$, calculated using the median absolute deviation so that $\min \sum_{i = 1}^n \rho \left(\dfrac{\hat{e}_i}{\hat{\sigma}_{(mad)}}\right)$.
+While least squares yields the coefficients that minimize the sum of the squared residuals, so that $\hat{\beta}^{ls} =\argmin_{b} \sum_{i = 1}^n (y_i - X_ib)^2$, M-estimation minimizes an arbitrary, less-rapidly increasing function of the residuals $\hat{\beta}^{\rho} =\argmin_{b} \sum_{i = 1}^n \rho(y_i - X_ib)$. For example, Harden and Desmarais (2011) recommend the least absolute deviation (LAD) estimator that chooses $\rho(\dot) = abs(\dot)$. However, other estimators offer similarly robust alternatives. In particular, we recommend Tukey's biweight function, so that
+
+\begin{displaymath}
+   \rho_{bw}(r_i) = \left\{
+     \begin{array}{lr}
+       \dfrac{k^2}{6}\left\{ 1 - \left[ 1 - \left( \dfrac{r_i}{k} \right)^2 \right]^3\right\} & \text{for } |r_i| \leq k\\
+	\dfrac{k^2}{6} & \text{for } |r_i| > k 
+\end{array}
+   \right.,
+\end{displaymath}.
+
+where $r_i = y_i - X_ib$.
+
+[Discuss the desirable substantive properties of bw, such as fitting the majority of the data well and ignoring, rather than simply down weighting unusual data.]
+
+Two cautions are in order. Second, the optimization problem is not convex, so standard optimization routines can produce a local rather than a global minimum. Second, because the solution is not scale invariant, the residuals $\hat{e_i}$ are standardized by a robust estimate of scale $\hat{\sigma}_{(mad)}$, which must of course be estimated jointly, so that $\hat{\beta}^{bw} =\argmin_{b} \sum_{i = 1}^n \rho_{bw}\left(\dfrac{y_i - X_ib}{\hat{\sigma}_{mad}}\right)$, where $\hat{\sigma}_{mad} = \dfrac{\med\left( |y - X\b|\right)}{0.6745}$. Dividing by 0.6745 makes $\hat{\sigma}_{mad}$ a consistent estimator of the standard deviation of normal errors.
+
+The model parameters $\hat{\beta}^{bw}$ and $\hat{\sigma}_{bw}$ can be quickly estimated jointly using the following iterative algorithm.
+\begin{enumerate}
+\item Start with initial estimate of the coefficients $\hat{\beta}^{(0)}$. The choice of initial estimator is not trivial. In the case of extreme outliers and/or many parameters, starting with least squares might lead the algorithm to a local minimum. We recommend the least trimmed squares method discussed earlier to obtain starting values.
+\item Extract the residuals $r^{(0)} = X\hat{\beta}^{(0)}$. Use these residuals to estimate the rescaled MAD so that $\hat{\sigma}^{(0)}_{mad} = \dfrac{\med\left( |y - X\hat{\beta}^{(0)}|\right)}{0.6745}$.
+\item ssign weights $w$ according to the function $\rho$ and denote $\text{diag}(w) = W$.
+\item For $i$ from one until convergence:
+	\begin{enumerate}
+	\item Using $\hat{\beta}^{(i-1)}$ and $\hat{\sigma}^{(i-1)}_{mad}$ assign weights $w$ according to the function $\rho$ and denote $\text{diag}(w) = W$.
+	\item Calculate $\hat{\beta}^{(i)} = (X'WX)^{-1}X'Wy$.
+	\item Calculate $\hat{\sigma}^{(i)}_{mad} = \dfrac{\med\left( |y - X\hat{\beta}^{(0)}|\right)}{0.6745}$
+	\item The algorithm has converged when $r^{(i-1)} \approx r^{(i)}$.
+	\end{enumerate}
+\end{enumerate}
+
+[Discuss some asymptotic properties of M-estimators]
+
+[Discuss standard errors for m-estimators.]
+
+[Simulations comparing LS, LAD, and BW]
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width = \textwidth]{figs/mc-sims.pdf}
+\caption{caption here}\label{fig:mc-sims}
+\end{center}
+\end{figure}
+
+\begin{table}
+{\tiny
+\input{tabs/mc-sims-100.tex}
+}
+\caption{Summarizes of the Monte Carlo simulations for four different error distributions. The true statistical model is $y_i = \beta_0 + \beta_1x_1 + \beta_2 x_2 + \beta_3 x_3 + \epsilon_i$, where $\beta_0 = 0$ and $\beta_1 = \beta_2 = \beta_3 = 1$ with sample size 100 and $x_i$ following and approximately normal distribution. All the estimators are essentially unbiased for these symmetric error distributions. However, the efficiency varies across distributions. The Laplace and $t_2$ distributions have very heavy tails. The $t_10$ distribution has \textit{slightly} heavier tails than the normal distribution (barely detectable, even when plotted on top of each other). The normal distribution is typically assumed by the least squares model. Notice that the LAD and the BW estimators perform much better than LS for the heavy-tailed Laplace and $t_2$ distributions. However, the performance of the LAD estimator is much worse for the lighter-tailed $t_10$ and Normal distributions. The biweight estimator, on the other hand, performs almost as well as the normal for these distributions.}\label{tab:mc-sims-100}
+\end{table}
+
+\begin{table}
+{\tiny
+\input{tabs/mc-sims-100.tex}
+}
+\caption{Summary of Monte Carlo simulations identical to those in Table Table \ref{tab:mc-sims-100}, except with the sample size as 1,000 rather than 100. The basic conclusion remains unchanged. The biweight estimator works well for heavy-tailed distributions and nearly as well as least squares for the normal distribution.}\label{tab:mc-sims-1000}
+\end{table}
 
 
 
