@@ -44,23 +44,23 @@ for (n in nv) {
                          coef(m2)[2], 
                          coef(m3)[2])
     }
-    res$mse[i, ] <- apply(temp.res, 2, mean)
+    res$mse[i, ] <- apply(temp.res, 2, mse)
     res$mad[i, ] <- apply(temp.res, 2, sd)
-    res$mean[i, ] <- apply(temp.res, 2, mse)
+    res$mean[i, ] <- apply(temp.res, 2, mean)
     setTxtProgressBar(pb, i)
   }
   
   # plot all
-  eplot(xlim = mm(df), ylim = c(0.2, 1.6),
+  eplot(xlim = mm(df), ylim = c(0.0, 1.75),
         xlab = expression(paste("df for ", italic(t), " Distributed Errors")),
-        ylab = "Relative Std. Deviation",
+        ylab = "Relative MSE",
         main = paste("N = ", n, sep = ""))
 #   for (i in 1:n.models) {
 #     lines(df, res$mad[, i], col = i, lwd = 2)
 #   }
 abline(h = 1)
-lines(df, res$mad[, 3]/res$mad[, 1], col = 1, lwd = 3)
-lines(df, res$mad[, 2]/res$mad[, 1], col = 2, lwd = 3, lty = 3)
+lines(df, res$mse[, 3]/res$mse[, 1], col = 1, lwd = 3)
+lines(df, res$mse[, 2]/res$mse[, 1], col = 2, lwd = 3, lty = 3)
 
 
 }
