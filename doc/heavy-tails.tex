@@ -276,7 +276,43 @@ The model parameters $\hat{\beta}^{bw}$ and $\hat{\sigma}_{bw}$ can be quickly e
 
 [Simulations comparing LS, LAD, and BW]
 
-Too get a sense of how close a $t_{10}$ distribution is to a normal distribution, note that a Shapiro-Wilk test only successful rejects the null in about 65\% of repeated samples if 500 observation are simulated from a $t_{10}$ distribution.\footnote{One needs about 750 samples to reach 80\% power.} It is essentially impossible to spot the differences between the normal and $t_{10}$ density functions without plotting the two directly on top of each other, in which case the $t_{10}$ has \textit{slightly} heavier tails.
+To understand and illustrate how the performance of the biweight $M$-estimator, we simulated from the linear model $y_i = \beta_0 + \beta_1x_1 + \beta_2 x_2 + \beta_3 x_3 + \epsilon_i$, where $\beta_0 = 0$ and $\beta_1 = \beta_2 = \beta_3 = 1$ and the $x_i$'s follow an approximately normal distribution. We used four different distribution for the errors.
+\begin{itemize}
+\item \textit{Laplace distribution.} The Laplace distribution has tails that decrease exponentially, but behaves much differently from the normal distribution near zero. Rather than ``shoulders,'' the Laplace distribution has a sharp peak at zero and can be thought of as combining two exponential distributions, one in the positive direction and the other in the negative direction. The least absolute deviation estimator is the maximum likelihood estimator when the errors follow a Laplace distribution.
+\item \textit{$t_2$ distribution.} The $t$ distribution with two degrees of freedom has very heavy tails. Because the least squares estimator weights all points equally (conditional on $X$), the extreme outliers produces by the $t_2$ distribution makes least squares a very inefficient estimator.
+\item \textit{$t_{10}$ distribution.} The $t$ distribution with ten degrees of freedom has slightly heavier tails than the normal distribution. The $t_10$ distribution has \textit{slightly} heavier tails than the normal distribution. To get a sense for just how similar a $t_{10}$ distribution is to a normal distribution, note that a Shapiro-Wilk test of normality only successful rejects the null in about 65\% of repeated samples if 500 observation are simulated from a $t_{10}$ distribution.\footnote{One needs about 750 samples to reach 80\% power.} It is essentially impossible to spot the differences between the normal and $t_{10}$ density functions without plotting the two directly on top of each other, in which case the $t_{10}$ has \textit{slightly} heavier tails.
+\item \textit{Normal Distribution.} The normal distribution yields the optimal conditions for the least squares estimator. Indeed, when the errors follow a normal distribution, the least squares estimator is has the smallest variance of all unbiased estimators. 
+\end{itemize}
+
+For two different sample sizes, 100 and 1,000, and the four different error distributions, we simulated 10,000 data sets, estimated $\beta_1$ using the least squares estimator, the median absolute deviation estimator, and the biweight estimator. For each condition, we calculated the expected value of the estimate, the standard deviation, and the mean squared error. Table \ref{tab:tab:mc-sims-100} provides the results for the sample size of 100 and \ref{tab:tab:mc-sims-1000} provides the results for the sample size of 1,000. 
+
+\begin{table}
+{\tiny
+\input{tabs/mc-sims-100.tex}
+}
+\caption{Summarizes of the Monte Carlo simulations for four different error distributions with a sample size of 100.}\label{tab:mc-sims-100}
+\end{table}
+
+\begin{table}
+{\tiny
+\input{tabs/mc-sims-1000.tex}
+}
+\caption{Summary of Monte Carlo simulations identical to those in Table Table \ref{tab:mc-sims-100}, except with a sample size of 1,000 rather than 100. }\label{tab:mc-sims-1000}
+\end{table}
+
+These result show that all three estimators are essentially unbiased regardless of the error distribution and sample size. Efficiency, however, varies considerably across the estimators.
+
+The MAD estimator is the MLE when the errors follow a Laplace distribution, so as we might expect, the MAD performs well for Laplace errors, with a mean squared error about 30\% lower than the least squares error distribution. However, the biweight estimator also performs quite well for the Laplace distribution, with a mean squared error about 25\% less than the least squares estimator for $N = 100$. For $N = 1,000$ the MSE of the MAD estimator outperforms the LS estimator by about 43\% and the biweight estimator outperforms the LS estimator by about 27\%.
+
+The $t_2$ distribution is nearly a worst case for the least squares estimator, so both robust alternatives perform considerably better. The MAD estimator is has a mean squared error of about 92\% less than the least squares estimator and the biweight estimator has a MSE about 93\% less than the LS estimator for $N = 100$ and 15\% and 14\% for $N = 1,000$, respectively. 
+
+However, the $t_{10}$ distribution is a much more interesting case, because it is very similar to a normal distribution. Indeed, even statistical tests have trouble distinguishing the $t_{10}$ from the normal, even with large samples (e.g., $N = 500$). In this case, the MAD estimator has a MSE of about 34\% more than the LS estimator for $N = 100$ and about 32\% for $N = 1,000$. The biweight estimator on the other hand, shows a small \textit{improvement} over the LS estimator, with an MSE of about 2\% less than the LS estimator for $N = 100$ and about $4\%$ less for $N = 1,000$.
+
+The normal distribution is the optimal scenario for the least squares estimator and it outperforms the the MAD estimator considerably with the errors are normal. For both $N = 100$ and $N = 1000$, the MSE for the MAD estimator is about 57\% larger than the MSE for the LS estimator. However, the biweight estimator performs nearly as well as the LS estimator. Indeed, the MSE for the biweight estimator is only about 6\% larger than the MSE for the LS estimator for both $N = 100$ and $N = 1000$.
+
+Notice that while the biweight estimator was not the most efficient estimator for the Laplace and normal distributions, it was a close second. It was the most efficient estimator for the $t_2$ and $t_10$ distributions and considerably outperforms the LS estimator for Laplace errors and considerably outperforms the MAD estimator for normal errors. Thus, the biweight estimator works quite well across a range of error distributions, whereas the LS and MAD estimators work well only in particular situations.
+
+To better understand how the heaviness of the tails of the error distribution affects the efficiency of these estimators, we repeated these simulates for $t$ distributions for degrees of freedom ranging from two to thirty and sample sizes 25, 100, 500, and 2,000. Figure \ref{fg:mc-sims} shows the performance of the MAD and biweight estimators relative to the LS estimtator.
 
 \begin{figure}[h!]
 \begin{center}
@@ -285,20 +321,9 @@ Too get a sense of how close a $t_{10}$ distribution is to a normal distribution
 \end{center}
 \end{figure}
 
-\begin{table}
-{\tiny
-\input{tabs/mc-sims-100.tex}
-}
-\caption{Summarizes of the Monte Carlo simulations for four different error distributions. The true statistical model is $y_i = \beta_0 + \beta_1x_1 + \beta_2 x_2 + \beta_3 x_3 + \epsilon_i$, where $\beta_0 = 0$ and $\beta_1 = \beta_2 = \beta_3 = 1$ with sample size 100 and $x_i$ following and approximately normal distribution. All the estimators are essentially unbiased for these symmetric error distributions. However, the efficiency varies across distributions. The Laplace and $t_2$ distributions have very heavy tails. The $t_10$ distribution has \textit{slightly} heavier tails than the normal distribution (barely detectable, even when plotted on top of each other). The normal distribution is typically assumed by the least squares model. Notice that the LAD and the BW estimators perform much better than LS for the heavy-tailed Laplace and $t_2$ distributions. However, the performance of the LAD estimator is much worse for the lighter-tailed $t_10$ and Normal distributions. The biweight estimator, on the other hand, performs almost as well as the normal for these distributions.}\label{tab:mc-sims-100}
-\end{table}
+Notice that the MAD and biweight estimators perform quite well for very heavy tailed distribution (i.e., df of 2 to 4), but as the tails grow lighter, the least squares estimator quickly begins to outperform the MAD estimator. Indeed, expect of all but very heavy tailed distributions, the LS estimator is considerably more efficient than the MAD estimator. 
 
-\begin{table}
-{\tiny
-\input{tabs/mc-sims-100.tex}
-}
-\caption{Summary of Monte Carlo simulations identical to those in Table Table \ref{tab:mc-sims-100}, except with the sample size as 1,000 rather than 100. The basic conclusion remains unchanged. The biweight estimator works well for heavy-tailed distributions and nearly as well as least squares for the normal distribution.}\label{tab:mc-sims-1000}
-\end{table}
-
+The biweight estimator, though, is a much stronger competitor for the least squares estimator. While the LS estimator is more efficient for lighter-tailed distributions (i.e., $df > 10$), the difference is very small except in very small samples. Indeed, for sample sizes of 100 or larger, the LS estimator is about 5\% more efficient \textit{at best}. This simulation again suggests that the biweight estimator works almost as well as the LS estimator under ideal conditions for LS estimator and considerably better across a wide range of other, substantively plausible scenarios.
 
 
 \singlespace
