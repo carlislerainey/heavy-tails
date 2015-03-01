@@ -153,6 +153,23 @@ At first glance, one might take the linearity restriction under Gauss-Markov to 
 
 However, we argue that restricting ourselves to linear estimators is unnecessary and unproductive. There is no statistical reason to restrict ourselves to linear estimators, except for mathematical convenience, and there are substantive reasons to reject this restriction. For example, if the researcher is aware that one case has a unusually large outcome variable (conditional on the explanatory variables), then the researcher might wish to weight that case less than the other, more typical cases so that one atypical case does not exert several times more impact on the estimates than other, typical cases. Indeed, substantive researchers might wish to attach zero weight to extremely unusual cases because these cases might be due to a different substantive process.
 
+\section*{A Substantive Argument Against Linear Estimators}
+
+Indeed, there is a substantive argument \textit{against linear estimators} (i.e., weighting all observations equally). We suggest two potentially desirable properties of estimators. First, we might like estimates that provide an excellent fit to \textit{most} of the data rather and a poor fit to some of the data, rather than a mediocre fit to \textit{all} the data. Secondly, we might prefer an estimate that treats unusual data equally--as inconsistent the the model. Either of these principles exclude linear estimators.
+
+For example, consider the estimates shown in the left panel of Figure \ref{fig:best-fit-illustration}. Which of the two estimates, A or B, best summarizes the relationship between the explanatory and outcome variable? Estimate A fits all the data decently, but estimate B provides an excellent summary for most of the data. Which is preferred? At least in some cases, we might prefer estimate B because we wish to discount the three unusual cases as inconsistent with the model (perhaps these cases are elections marred with scandals, etc.).
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale = .7]{figs/best-fit-illustration.pdf}
+\caption{caption here}\label{fig:best-fit-illustration}
+\end{center}
+\end{figure}
+
+Secondly, once cases fall outside the explanatory power of the model (i.e., outliers), then we might like our estimators to give them zero weight. After all, these cases seem somehow different and we would not like these unusual data to affect our excellent fit for the majority of the data. That is, if one unusual cases was \textit{even more} unusual, the estimates should not change. Rather than respond to this unusual deviation as does estimate A, we might prefer an estimate that simply ignores this change. After all, the case seems to fall outside the explanatory power of the model in both cases.
+
+
+
 It is not often appreciated that if the errors do not follow independent and identical normal distributions, then the OLS is no longer the MVUE--other estimators might outperform OLS.
 
 Many researchers simply assume a statistical model for which a MVUE is easily available for little or no substantive reason. Knowing that the assumed model (e.g., normality) is \textit{in}orrect, these researchers are using this model as an approximation. But if the model is an approximation, then the desirable statistical properties are not longer guaranteed (e.g., MVUE). With this in mind, it makes more sense to use a robust estimator with the following qualitative properties:
