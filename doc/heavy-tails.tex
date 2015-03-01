@@ -276,6 +276,8 @@ The model parameters $\hat{\beta}^{bw}$ and $\hat{\sigma}_{bw}$ can be quickly e
 
 [Simulations comparing LS, LAD, and BW]
 
+Too get a sense of how close a $t_{10}$ distribution is to a normal distribution, note that a Shapiro-Wilk test only successful rejects the null in about 65\% of repeated samples if 500 observation are simulated from a $t_{10}$ distribution.\footnote{One needs about 750 samples to reach 80\% power.} It is essentially impossible to spot the differences between the normal and $t_{10}$ density functions without plotting the two directly on top of each other, in which case the $t_{10}$ has \textit{slightly} heavier tails.
+
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width = \textwidth]{figs/mc-sims.pdf}
@@ -334,6 +336,15 @@ The model parameters $\hat{\beta}^{bw}$ and $\hat{\sigma}_{bw}$ can be quickly e
 \caption{}\label{fig:cg-trans-residuals-hist}
 \end{center}
 \end{figure}
+
+But what to we learn from carefully considering whether the residuals match the assumptions of the normal linear model?
+\begin{itemize}
+\item \textit{Perhaps Duverger's logic is not as well-supported empirically as the literature would suggest.} Indeed, the evidence offered by the normal linear model seems to hinge on a few cases that seem inconsistent with the majority of the data. However, rejection of Duverger's theory or Clark and Golder's (2006) analysis is premature for three reasons. First, the theoretical logic for Duverger's hypotheses is clear and compelling (CITES). Second, many studies beyond Clark and Golder (2006), including experimental work, find substantial empirical support for the hypotheses. Finally, the biweight $M$-estimator suggests several potential shortcomings in terms of theory and measures that might currently undermine the evidence for these theories.
+\item \textit{Room for improvement exists in the measurement of ``established democracies.''}
+\item \textit{Room for improvement exists in the measurement of ``social heterogeneity.''}
+\item \textit{We need a stronger theory about the dynamics with which systems reach an equilibrium number of parties.}
+\item \textit{We need additional research into how systems respond to the introduction of additional parties into formerly authoritarian, single-party systems.}
+\end{itemize}
 
 \newpage
 \doublespace
