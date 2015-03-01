@@ -94,4 +94,4 @@ quantreg::latex.table(ta, dec = 3,
                       rgroup = c("Absolute Performance",
                                  "Relative Performance"),
                       n.rgroup = c(3, 2),
-                      label = "tab:mc-sims-100")
+                      label = "tab:mc-sims-1000")
