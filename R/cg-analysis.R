@@ -187,7 +187,7 @@ dev.off()
 
 ### qqplots for the new residuals
 pdf("doc/figs/cg-trans-qq-plot.pdf", height = 4, width = 11)
-par(mfrow = c(1, 3), mar = c(1/2, 1/2, 1/2, 1/2), oma = c(3, 3, 1, 1))
+par(mfrow = c(1, 2), mar = c(1/2, 1/2, 1/2, 1/2), oma = c(3, 3, 1, 1))
 eplot(xlim = c(-4, 4), ylim = c(-1, 1.2),
       xlab = "Normal (Theoretical) Quantiles",
       ylab = "Data Quantiles",
@@ -197,8 +197,8 @@ plot.qq(residuals(m2))
 #label.it(p = 1:3, residuals(m1), pos = c(2, 4, 2))
 aplot(expression(paste("Box-Cox Tranformation with ", lambda == -1/3, sep = "")))
 plot.qq(residuals(m3))
-aplot(expression(paste("Simulation from a ", t[7], sep = "")))
-plot.qq(rt(length(residuals(m3)), df = 7)/5)
+#aplot(expression(paste("Simulation from a ", t[7], sep = "")))
+#plot.qq(rt(length(residuals(m3)), df = 7)/5)
 dev.off()
 
 fitdistr(residuals(m3), "t", 
@@ -215,33 +215,4 @@ fitdistr(residuals(m4), "t",
 
 
 plot(residuals(m3), residuals(m4))
-qqnorm(residuals(m4)); qqline(residuals(m4))
-
-
-# for a half-t distribution
-n.sims <- 2000
-X <- model.matrix(f.cg, data = cg.old)
-n.models <- 5
-f <- y ~ eneg*log(avemag) + eneg*uppertier + enpres*proximity1
-# function to compute mse
-mse <- function(x, true) {
-  sum((x - true)^2)
-}
-temp.res <- matrix(NA, nrow = n.sims, ncol = n.models)
-for (j in 1:n.sims) {
-  y <- X%*%coef(m3) + rt(nrow(X), df = 6)
-  m1s <- lm(f, data = cg.old)
-  m2s <- rlm(f, data = cg.old, method = "MM", maxit = 100)
-  m3s <- rlm(f, data = cg.old, method = "M", psi = psi.huber, maxit = 100)
-  m4s <- rlm(f, data = cg.old, method = "M", psi = psi.bisquare, maxit = 100)
-  m5s <- rq(f, data = cg.old)
-  temp.res[j, ] <- c(coef(m1s)[7], 
-                     coef(m2s)[7], 
-                     coef(m3s)[7],
-                     coef(m4s)[7], 
-                     coef(m5s)[7])
-}
-apply(temp.res, 2, mean)
-x <- apply(temp.res, 2, mad); x[1]/x[4]
-x <- apply(temp.res, 2, mse, true = coef(m3)[7]); x[1]/x[4]
 
