@@ -390,4 +390,76 @@ quantreg::latex.table(qitab,
                       n.rgroup = c(2, 2))
 
 
+bc.inv <- function(y, lambda) {
+  if (lambda != 0) {
+    y.trans <- (lambda*y + 1)^(1/lambda)
+  }
+  if (lambda == 0) {
+    y.trans <- exp(y)
+  }
+  return(y.trans)
+}
 
+r3 <- residuals(m3)
+r4 <- residuals(m4)
+
+pdf("doc/figs/cg-residuals-compare.pdf", height = 5, width = 6.5)
+par(mfrow = c(1, 1), mar = c(1/2, 1/2, 1, 1/2), oma = c(4, 4, 1, 1))
+eplot(xlim = mm(r3), ylim = mm(r4),
+      xlab = "Residuals from Least Squares Estimates\nwith Box-Cox Transformation",
+      ylab = "Residuals from Biweight Estimates\nwith Box-Cox Transformation",
+      xlabpos = 2.3,
+      ylabpos = 2.3)
+points(r3, r4)
+text(r3["785"], r4["785"], cg.old["785", "country.year"], pos = 4, cex = 0.8)
+dev.off()
+
+pdf("doc/figs/cg-weights.pdf", height = 7.5, width = 5)
+par(mfrow = c(1, 1), mar = c(3, 10, 1, 1), oma = c(0, 0, 0, 0))
+wt <- m4$w
+names(wt) <- names(r4)
+n.keep <- 35
+low.wts <- sort(wt)[1:n.keep]
+eplot(xlim = mm(low.wts), ylim = c(1, n.keep),
+      xlab = "Weights",
+      yat = 1:n.keep,
+      yticklab = cg.old[names(low.wts), "country.year"])
+for (i in 1:n.keep) {
+  points(low.wts[i], i, pch = 19)
+  lines(c(0, low.wts[i]), c(i, i))
+}
+dev.off()
+
+## scatterplot
+pdf("doc/figs/cg-scatter.pdf", height = 5, width = 8)
+par(mfrow = c(1, 1), mar = c(1, 1, 1, 1), oma = c(3, 3, 2, 1))
+eplot(xlim = mm(log(cg$avemag)),
+      ylim = mm(cg$eneg),
+      xat = log(c(1, 2, 5, 20, 50, 150)),
+      xticklab = c(1, 2, 5, 20, 50, 150),
+      xlab = "District Magnitude",
+      ylab = "Effective Number of Ethnic Groups")
+col <- rgb(.3, .3, .3, .3)
+points(log(cg$avemag), cg$eneg, cex = sqrt(cg$enep1), 
+       pch = 21, col = col, bg = col)
+
+label.it <- function(name, pos = 4) {
+  year <- cg$year[cg$country == name]
+  enep <- round(cg$enep1[cg$country == name], 2)
+  label <- paste(name, " (",year , ")", " - ", enep, sep = "")
+  text(log(cg$avemag[cg$country == name]), 
+       cg$eneg[cg$country == name], 
+       labels = label, 
+       pos = pos, cex = 0.8)
+}
+#text(log(cg$avemag), cg$eneg, paste(cg$country, cg$year))
+label.it("Ghana")
+label.it("Uganda")
+label.it("Somalia")
+label.it("Indonesia", pos = 3)
+text(log(22.22), 8.304, "South Africa (1994, 1999) - 2.24, 2.16", cex = 0.8, pos = 4)
+legend(x = par("usr")[2], y = par("usr")[4], 
+       pch = 21, pt.cex = sqrt(c(2, 5, 10)), col = col, 
+       pt.bg = col, legend = c(2, 5, 10), bty = "b", title = "ENEP", xjust = 1,
+       y.intersp = c(1, 1, 1.1))
+dev.off()
