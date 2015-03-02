@@ -1,5 +1,5 @@
 %
-\documentclass[10pt]{article}
+\documentclass[12pt]{article}
 
 % The usual packages
 \usepackage{fullpage}
@@ -50,6 +50,9 @@
 \usepackage{tgpagella}
 \usepackage[T1]{fontenc}
 \usepackage[bitstream-charter]{mathdesign}
+
+\newcommand{\specialcell}[2][c]{%
+  \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
 
 
 %% Set up lists the way I like
@@ -411,7 +414,7 @@ The maximum likelihood estimate of the Box-Cox transformation parameter $\lambda
 \end{center}
 \end{figure}
 
-Figure \ref{ig:cg-trans-qq-plot} shows the QQ plot for these residuals. The left panel confirms that a right-skew remains after the log-transformation, as suggested by the histogram in the left panel of Figure \ref{ig:cg-trans-residuals-hist}. The right panel of Figure \ref{ig:cg-trans-qq-plot} confirms that the Box-Cox transformation removes much or all of this skew, as suggested by the right panel of Figure \ref{ig:cg-trans-residuals-hist}. 
+Figure \ref{fig:cg-trans-qq-plot} shows the QQ plot for these residuals. The left panel confirms that a right-skew remains after the log-transformation, as suggested by the histogram in the left panel of Figure \ref{ig:cg-trans-residuals-hist}. The right panel of Figure \ref{ig:cg-trans-qq-plot} confirms that the Box-Cox transformation removes much or all of this skew, as suggested by the right panel of Figure \ref{ig:cg-trans-residuals-hist}. 
 
 Although the Box-Cox transformation removes much or all of the skew, the residuals retain tails that are slightly heavier than the tails of the normal distribution. Notice that the data tend to have larger positive and larger negative quantiles than one would expect under a normal distribution. This suggests the residuals have a heavy tail, perhaps resembling a $t$ distribution with degrees of freedom in the rand 6 to 12. This also suggests that least squares might not be the most efficient estimator, even after transformation. Indeed, even after the Box-Cox transformation, the Shapiro-Wilk test rejects the null hypothesis of normality with $p = 0.002$. Assuming that these residuals follow a $t$-distribution, we can estimate the degrees of freedom using maximum likelihood estimate. This points toward a $t$ distribution with about 10 degrees of freedom. Recall that the biweight estimator is a (slightly) more efficient estimator for $t_{10}$ distributed errors. However, the least squares estimates \textit{assumes} normally distributed errors and thus the residuals might actually have heavier tails than this analysis suggests.
 
@@ -422,9 +425,55 @@ Although the Box-Cox transformation removes much or all of the skew, the residua
 \end{center}
 \end{figure}
 
+After the Box-Cox transformation, the residuals are well-behaved. They are highly symmetric and only slightly heavy-tailed. In spite of nearly ideal situation, the simulations in Tables \ref{tab:mc-sims-100} and \ref{tab:mc-sims-1000} and Figure \ref{fig:mc-sims} suggest that the biweight estimate is a slightly better estimator. However, these differences are slight so it can be valuable to carefully examine examine both models--one that tries to fit all the data well and another that tries to fit most of the data well. 
+
+%Table \ref{tab:cg-coef-tab} presents the coefficient estimate and confidence intervals, creating using the cluster-robust bootstrap recommend by Harden and Desmarais (????). The coefficients for the transformed and untransformed outcomes are not comparable, since the outcome is rescaled. The first column of Table \ref{tab:cg-coef-tab} uses Clark and Golder's approach (except for the bootstrapped confidence intervals). Notice that the interaction term $ENEG $\times$ log(Magnitude)$ is large and almost significant in Clark and Golder's model. 
 
 
-But what to we learn from carefully considering whether the residuals match the assumptions of the normal linear model?
+%\begin{table}
+%\begin{center}
+%{\scriptsize
+%\input{tabs/cg-coef-tab.tex}
+%}
+%\caption{Coefficients estimated using least squares and biweight estimators, with and without the Box-Cox transformation. The first column replications Clark and Golder's (2006) Table 2, column 6, except using cluster-bootstrap confidence intervals. The remaining models make an attempt to address the skewednd/or heavy-tailed residuals. Notice that simply transforming the outcome to be more consistent with the assumed model and/or using the more robust biweight estimator substantial reduces the evidence for their hypothesis.}\label{tab:cg-coef-tab}
+%\end{center}
+%\end{table}
+
+Figure \ref{fig:cg-fd-plots} plots the effect of increasing social heterogenty from ENEP = 1.06 (10th percentile) to ENEP = 2.48 (90th percentile) as the district magnitude varies. Note the the effect of district magnitude is nonlinear because it is logged in the regression model but unlogged along the horizontal axis. The upper-left figure replicates Clark and Golder's approach (except of the cluster-bootstrap confidence intervals) and replicates their finding, which they summarize:
+
+\begin{quote}
+[These results] clearly illustrate that in established democracies, ethnic heterogeneity significantly increases the number of parties once the electoral system is sufficiently permissive. This is exactly what Duverger?s theory predicts. To be more specific, Figure 1a [our upper-left panel of Figure \ref{fig:cg-fd-plots}], based on the pooled model with established democracies, indicates that ethnic heterogeneity will increase the number of electoral parties once we move beyond nonpermissive electoral systems with single-member districts?when [Magnitude = 1].
+\end{quote}
+
+But this evidence breaks down once we account for the non-normality of the errors. The lower-left panel of Figure \ref{fig:cg-fd-plots} shows that simply using the biweight estimator as a robust alternative to least squares produces estimated interaction in the \text{opposite} direction as the hypothesis predicts, though small and not statistically significant. The upper-right panel of Figure \ref{fig:cg-fd-plots} shows that simply transforming the outcome variable to make the data more consistent with the assumed normal-linear model substantially reduces the estimated effect across the range of district magnitude to a statistically insignificant, negligible effect.
+
+However, we argue that the best approach for these data is to transform the outcome variable to obtain a roughly symmetric error distribution and use the biweight estimator to handle the remaining heavy tails shown in the left panel of Figure \ref{fig:cg-trans-qq-plot}. Notice that this approach reduces effect of social heterogeneity to nearly zero and suggests that these data offer very little evidence for interaction consistent with the hypothesis.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[scale = 0.8]{figs/cg-fd-plots.pdf}
+\caption{}\label{fig:cg-fd-plots}
+\end{center}
+\end{figure}
+
+Because the scale of the estimates differ drastically across the choice to transform the outcome variable or not, we present the relevant quantities of interest in Table \ref{tab:cg-qi}. In this case, we are interested in the effect of substantially increasing social heterogeneity from ENEP = 1.06 (10th percentile) to ENEP = 2.48 (90th percentile) on the median number of political parties when district magnitude is one and also when district magnitude is 14. Since the hypothesis suggests that this effect should be larger when the district magnitude is larger, we are also interested in the difference between these two effects. For simplicity, we simply focus our discussion on the differences between the typical approach, least squares with no transformation, and the approach we recommend, robust estimation after transformation.
+
+The first row of Table \ref{tab:cg-qi} suggest that in countries with single-member districts, a substantial increase in ENEG (10th to 90th percentile) increases the median ENEP by about 0.16 [-0.24; 0.53] parties. On the other hand, in large, multimember districts (magnitude of 14), the same increase in social heterogeneity increases the ENEP by about 1.14 [0.26; 2.67] parties. This is just as the hypothesis predicts. Further, this increase of 0.98 [0.06; 2.65] is large and statistically significant.
+
+However, once we make an effort to account for the non-normality of the residuals by transforming the outcome variable and using the robust biweight estimator, this evidence for substantial interaction simply disappears. These estimates suggest that, in single-member districts, a substantial increase in social heterogeneity increases the median ENEP by about 0.08 [-0.04; 0.15] parties--about half the initial estimate of Clark and Golder. In large, multimember districts (magnitude of 14), the effect again shrinks to 0.08 [-0.06; 0.28]--about 7\% of Clark and Golder's intial estimate. This leads to an estimated increase of 0.00 [-0.17; 0.25] in the effect of social heterogeneity as we move from single-member districts to large, multimember districts. 
+
+Clark and Golder adopt the convention of many researchers in political science--taking least squares estimates at face value without thinking carefully about the distribution of the errors. Indeed, the Gauss-Markov theorem encourages this convention by noting that least squares is the \textit{best} linear unbiased estimator. However, we argue that the restriction to linear estimators is unnecessary and counter-productive. By taking advantage of transformations to make the errors more consistent with the normal-linear model (approximately normal or at least symmetric) and using robust estimators if necessary to deal with remaining heavy tails, we show that we can reach different conclusions. 
+
+[Discuss the residuals from the transformed models.]
+
+\begin{table}
+{\scriptsize
+\input{tabs/cg-qi.tex}
+}
+\caption{Quantities of interest from least squares and biweight estmates, with and without the Box-Cox transformation of the outcome variable. Notice that the least squares estimates without transforming the outcome variable are consistent with Clark and Golder's hypothesis. However, using the robust biweight estimator,  transforming the outcome variable, or both substantially reduce the amount of evidence that these data offer in favor of the hypothesis. In particular, the biweight estimator suggests that social heterogeneity has small, substantively insignificant effects regardless of the electoral rules. Indeed, the effect is, \textit{at most}, about 1/5 of of a political party per ethnic group, with a estimate of about 1/20 of a political party per ethnic group. }\label{tab:cg-qi}
+\end{table}
+
+We offer a different approach than most applied research in political science adopts in practice. Rather than relying on the artificial Gauss-Markov theorem and BLUE estimators, we suggest that careful consideration of residual is very important. We have shown that can be tremendous gains in efficiency by using robust estimators in the face of heavy-tailed error distributions, and we have shown that our approach leads to different conclusions than Clark and Golder (2006). But the approach we advocate is not powerful because it gives different results. It is powerful because it is substantively informative. Below we discuss several \textit{substantive} points that one can take from our brief analysis of Clark and Golder's data.
 \begin{itemize}
 \item \textit{Perhaps Duverger's logic is not as well-supported empirically as the literature would suggest.} Indeed, the evidence offered by the normal linear model seems to hinge on a few cases that seem inconsistent with the majority of the data. However, rejection of Duverger's theory or Clark and Golder's (2006) analysis is premature for three reasons. First, the theoretical logic for Duverger's hypotheses is clear and compelling (CITES). Second, many studies beyond Clark and Golder (2006), including experimental work, find substantial empirical support for the hypotheses. Finally, the biweight $M$-estimator suggests several potential shortcomings in terms of theory and measures that might currently undermine the evidence for these theories.
 \item \textit{Room for improvement exists in the measurement of ``established democracies.''}

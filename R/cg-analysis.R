@@ -14,6 +14,7 @@ library(sandwich)
 library(car)
 library(quantreg)
 library(texreg)
+library(multiwayvcov)
 
 ## load and listwise delete data
 cg <- read.csv("data/cg.tab", sep = "\t")
@@ -215,4 +216,178 @@ fitdistr(residuals(m4), "t",
 
 
 plot(residuals(m3), residuals(m4))
+
+## cluster bootstrap simulations
+boot <- function(method = "ls", lambda = 1, n.bs = 1000) {
+  f <- bc(enep1, lambda) ~ eneg*log(avemag) + eneg*uppertier + enpres*proximity1
+  if (method == "ls") {
+    m <- lm(f, d = cg.old)    
+  }
+  if (method == "bw") {
+    m <- rlm(f, d = cg.old, method = "M", psi = psi.bisquare)    
+  }
+  clusters <- cg.old[, "country"]
+  cluster.names <- unique(clusters)
+  bs.coef <- NULL
+  pb <- txtProgressBar(min = 0, max = n.bs, style = 3)
+  for (i in 1:n.bs) {
+    d.bs <- NULL
+    for (j in 1:length(cluster.names)) {
+      bs.cl <- sample(cluster.names, 1)
+      d.bs <-  rbind(d.bs, cg.old[clusters == bs.cl, ])
+    }
+    #start <- lqs(f, data = d.bs)
+    if (method == "ls") {
+      m.bs <- lm(f, data = d.bs)
+    }
+    if (method == "bw") {
+      m.bs <- rlm(f, data = d.bs, method = "M", psi = psi.bisquare, init = m, maxit = 1000)
+    }
+    #m <- lm(f, d.bs)
+    bs.coef <- rbind(bs.coef, coef(m.bs))
+    setTxtProgressBar(pb, i)
+  }
+  ci.lwr <- apply(bs.coef, 2, quantile, 0.05)
+  ci.upr <- apply(bs.coef, 2, quantile, 0.95)
+  avemag0 <- 1:150 # log(avemag) = 0 when avemag = 1
+  eneg.lo <- quantile(cg.old$eneg, 0.10)
+  eneg.hi <- quantile(cg.old$eneg, 0.90)
+  uppertier0 <- 0
+  proximity0 <- 0
+  enpres0 <- 0
+  X.lo <- cbind(1, eneg.lo, log(avemag0), uppertier0, enpres0, proximity0,
+                eneg.lo*log(avemag0), eneg.lo*uppertier0, enpres0*proximity0)
+  X.hi <- cbind(1, eneg.hi, log(avemag0), uppertier0, enpres0, proximity0,
+                eneg.hi*log(avemag0), eneg.hi*uppertier0, enpres0*proximity0)
+  
+  med.y.hi.bs <- bc(X.hi%*%t(bs.coef), lambda)
+  med.y.lo.bs <- bc(X.lo%*%t(bs.coef), lambda)
+  fd.bs <- med.y.hi.bs - med.y.lo.bs
+  sd.bs <- fd.bs[14,] - fd.bs[1, ]
+  fd.ci <- apply(fd.bs, 1, quantile, probs = c(0.05, 0.95))
+  sd.ci <- quantile(sd.bs, c(0.05, 0.95))
+  med.y.hi <- bc(X.hi%*%coef(m), lambda)
+  med.y.lo <- bc(X.lo%*%coef(m), lambda)
+  fd <- med.y.hi - med.y.lo
+  sd <- fd[14] - fd[1]
+  ret <- list(m = m, coef = coef, bs.coef = bs.coef, ci.upr = ci.upr, ci.lwr = ci.lwr,
+              fd = fd, fd.ci = fd.ci, sd = sd, sd.ci = sd.ci)
+}
+
+set.seed(1347013)
+bs.lm.none <- boot()
+bs.lm.bc <- boot(lambda = -1/3)
+bs.bw.none <- boot(method = "bw")
+bs.bw.bc <- boot(method = "bw", lambda = -1/3)
+
+## Coefficient Tables
+texreg(file = "doc/tabs/cg-coef-tab.tex", 
+       scriptsize = TRUE,
+       table = FALSE,
+       # single.row = TRUE,
+       list(bs.lm.none$m, bs.bw.none$m, bs.lm.bc$m, bs.bw.bc$m),
+          override.ci.low = list(bs.lm.none$ci.lwr, bs.bw.none$ci.lwr, 
+                                 bs.lm.bc$ci.lwr, bs.bw.bc$ci.lwr),
+          override.ci.up = list(bs.lm.none$ci.upr, bs.bw.none$ci.upr, 
+                                 bs.lm.bc$ci.upr, bs.bw.bc$ci.upr),
+          include.rsquared = FALSE, include.adjrs = FALSE,
+       custom.coef.names = c("Constant",
+                             "ENEG",
+                             "log(Magnitude)",
+                             "Upper-Tier Seats",
+                             "Presidential Candidates",
+                             "Proximity",
+                             "ENEG $\\times$ log(Magnitude)",
+                             "ENEG $\\times$ Upper-Tier Seats",
+                             "Presidential Candidates $\\times$ Proximity"),
+       custom.model.names = c("\\specialcell{Least Squares\\\\w/ No Transformation}", 
+                              "\\specialcell{Biweight\\\\w/ No Transformation}",
+                              "\\specialcell{Least Squares\\\\w/ Box-Cox Transformation}",
+                              "\\specialcell{Biweight\\\\w/Box-Cox Transformation}"))
+
+pg.ci <- function(bs) {
+  polygon(c(1:150, rev(1:150)), c(bs$fd.ci[1, ], rev(bs$fd.ci[2, ])), 
+          col = "grey70", border = NA)
+}
+
+## FD plots
+pdf("doc/figs/cg-fd-plots.pdf", height = 4, width = 6)
+par(mfrow = c(2, 2), mar = c(1/2, 1/2, 1, 1/2), oma = c(3, 3, 1, 1))
+eplot(xlim = c(1, 150), ylim = c(-1, 4),
+      xlab = "District Magnitude",
+      ylab = "Effect of ENEG",
+      main = "Least Squares, No Transformation")
+pg.ci(bs.lm.none)
+lines(1:150, bs.lm.none$fd, lwd = 3)
+abline(h = 0, lty = 2)
+
+aplot("Least Squares, Box-Cox Transformation")
+pg.ci(bs.lm.bc)
+lines(1:150, bs.lm.bc$fd, lwd = 3)
+abline(h = 0, lty = 2)
+
+aplot("Biweight, No Transformation")
+pg.ci(bs.bw.none)
+lines(1:150, bs.bw.none$fd, lwd = 3)
+abline(h = 0, lty = 2)
+
+aplot("Biweight, Box-Cox Transformation")
+pg.ci(bs.bw.bc)
+lines(1:150, bs.bw.bc$fd, lwd = 3)
+abline(h = 0, lty = 2)
+dev.off()
+
+format.est <- function(est, digits = 2) {
+  paste("     ", format(round(est, digits), nsmall = digits), " ", sep = "")
+}
+format.ci <- function(ci, digits = 2) {
+  ul <- format(round(ci, digits), nsmall = digits)
+  ci <- paste("[", ul[1], "; ", ul[2], "]", sep = "")
+}
+
+qitab <- matrix(NA, nrow = 4, ncol = 6)
+## M = 1
+qitab[1, 1] <- format.est(bs.lm.none$fd[1])
+qitab[1, 2] <- format.ci(bs.lm.none$fd.ci[, 1])
+qitab[2, 1] <- format.est(bs.bw.none$fd[1])
+qitab[2, 2] <- format.ci(bs.bw.none$fd.ci[, 1])
+qitab[3, 1] <- format.est(bs.lm.bc$fd[1])
+qitab[3, 2] <- format.ci(bs.lm.bc$fd.ci[, 1])
+qitab[4, 1] <- format.est(bs.bw.bc$fd[1])
+qitab[4, 2] <- format.ci(bs.bw.bc$fd.ci[, 1])
+## M = 4
+qitab[1, 3] <- format.est(bs.lm.none$fd[14])
+qitab[1, 4] <- format.ci(bs.lm.none$fd.ci[, 14])
+qitab[2, 3] <- format.est(bs.bw.none$fd[14])
+qitab[2, 4] <- format.ci(bs.bw.none$fd.ci[, 14])
+qitab[3, 3] <- format.est(bs.lm.bc$fd[14])
+qitab[3, 4] <- format.ci(bs.lm.bc$fd.ci[, 14])
+qitab[4, 3] <- format.est(bs.bw.bc$fd[14])
+qitab[4, 4] <- format.ci(bs.bw.bc$fd.ci[, 14])
+## SD
+qitab[1, 5] <- format.est(bs.lm.none$sd)
+qitab[1, 6] <- format.ci(bs.lm.none$sd.ci)
+qitab[2, 5] <- format.est(bs.bw.none$sd)
+qitab[2, 6] <- format.ci(bs.bw.none$sd.ci)
+qitab[3, 5] <- format.est(bs.lm.bc$sd)
+qitab[3, 6] <- format.ci(bs.lm.bc$sd.ci)
+qitab[4, 5] <- format.est(bs.bw.bc$sd)
+qitab[4, 6] <- format.ci(bs.bw.bc$sd.ci)
+
+rownames(qitab) <- rep(c("Least Squares", "Biweight"), 2)
+colnames(qitab) <- rep(c("Est.", "90\\% CI"), 3)
+
+quantreg::latex.table(qitab,
+                      rowlabel = "",
+                      rowlabel.just = "l",
+                      file = "doc/tabs/cg-qi",
+                      table.env = FALSE,
+                      cgroup = c("First-Difference When \\textit{M} = 1", 
+                                 "First-Difference When \\textit{M} = 14",
+                                 "Second-Difference"),
+                      rgroup = c("No Transformation",
+                                 "Box-Cox Transformation"),
+                      n.rgroup = c(2, 2))
+
+
 

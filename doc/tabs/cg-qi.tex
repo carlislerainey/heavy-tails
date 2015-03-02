@@ -1,0 +1,15 @@
+% quantreg::latex.table(x = qitab, file = "doc/tabs/cg-qi", rowlabel = "",      rowlabel.just = "l", cgroup = c("First-Difference When \\textit{M} = 1",          "First-Difference When \\textit{M} = 14", "Second-Difference"),      rgroup = c("No Transformation", "Box-Cox Transformation"),      n.rgroup = c(2, 2), table.env = FALSE) 
+%
+\begin{center}
+\begin{tabular}{|l||c|c||c|c||c|c|} \hline
+\multicolumn{1}{|l||}{\bf }&\multicolumn{2}{c||}{\bf First-Difference When \textit{M} = 1}&\multicolumn{2}{c||}{\bf First-Difference When \textit{M} = 14}&\multicolumn{2}{c|}{\bf Second-Difference}\\ \cline{2-7}
+\multicolumn{1}{|l||}{}&\multicolumn{1}{c|}{Est.}&\multicolumn{1}{c||}{90\% CI}&\multicolumn{1}{c|}{Est.}&\multicolumn{1}{c||}{90\% CI}&\multicolumn{1}{c|}{Est.}&\multicolumn{1}{c|}{90\% CI}\\ \hline
+{\bf No Transformation}&&&&&&\\
+~~Least Squares&~~~~~0.16~~~~~&[-0.24;~~0.53]&~~~~~1.14~~~~~&[0.26;~2.67]~~&~~~~~0.98~~~~~&[0.06;~2.65]~~\\ 
+~~Biweight&~~~~~0.37~~~~~&[-0.12;~~0.62]&~~~~~0.26~~~~~&[-0.51;~~2.33]&~~~~~-0.11~~~~&[-0.96;~~2.05]\\ \hline
+{\bf Box-Cox Transformation}&&&&&&\\
+~~Least Squares&~~~~~0.03~~~~~&[-0.05;~~0.12]&~~~~~0.10~~~~~&[0.00;~0.26]~~&~~~~~0.07~~~~~&[-0.07;~~0.26]\\ 
+~~Biweight&~~~~~0.08~~~~~&[-0.04;~~0.15]&~~~~~0.08~~~~~&[-0.06;~~0.28]&~~~~~0.00~~~~~&[-0.17;~~0.25]\\ 
+\hline
+\end{tabular}
+\end{center}
