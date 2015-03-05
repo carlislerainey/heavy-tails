@@ -432,7 +432,7 @@ dev.off()
 
 ## scatterplot
 pdf("doc/figs/cg-scatter.pdf", height = 5, width = 8)
-par(mfrow = c(1, 1), mar = c(1, 1, 1, 1), oma = c(3, 3, 2, 1))
+par(mfrow = c(1, 1), mar = c(1, 1, 1, 3), oma = c(3, 3, 2, 1))
 eplot(xlim = mm(log(cg$avemag)),
       ylim = mm(cg$eneg),
       xat = log(c(1, 2, 5, 20, 50, 150)),
@@ -458,8 +458,9 @@ label.it("Uganda")
 label.it("Somalia")
 label.it("Indonesia", pos = 3)
 text(log(22.22), 8.304, "South Africa (1994, 1999) - 2.24, 2.16", cex = 0.8, pos = 4)
-legend(x = par("usr")[2], y = par("usr")[4], 
+legend(x = 1.03*par("usr")[2], y = 10, #mean(c(par("usr")[4], par("usr")[3])), 
        pch = 21, pt.cex = sqrt(c(2, 5, 10)), col = col, 
-       pt.bg = col, legend = c(2, 5, 10), bty = "b", title = "ENEP", xjust = 1,
-       y.intersp = c(1, 1, 1.1))
+       pt.bg = col, legend = c(2, 5, 10), bty = "n", title = "ENEP", 
+       xjust = 0, yjust = 1,
+       y.intersp = c(1, 1, 1.1), xpd = NA)
 dev.off()
