@@ -14,7 +14,7 @@ library(sandwich)
 library(car)
 library(quantreg)
 library(texreg)
-library(multiwayvcov)
+#library(multiwayvcov)
 
 ## load and listwise delete data
 cg <- read.csv("data/cg.tab", sep = "\t")
@@ -157,6 +157,16 @@ bc <- function(y, lambda) {
   return(y.trans)
 }
 
+bc.inv <- function(y, lambda) {
+  if (lambda != 0) {
+    y.trans <- (lambda*y + 1)^(1/lambda)
+  }
+  if (lambda == 0) {
+    y.trans <- exp(y)
+  }
+  return(y.trans)
+}
+
 boxcox(m1)
 ## models with log and Box-Cox transformation
 ##
@@ -260,18 +270,18 @@ boot <- function(method = "ls", lambda = 1, n.bs = 1000) {
   X.hi <- cbind(1, eneg.hi, log(avemag0), uppertier0, enpres0, proximity0,
                 eneg.hi*log(avemag0), eneg.hi*uppertier0, enpres0*proximity0)
   
-  med.y.hi.bs <- bc(X.hi%*%t(bs.coef), lambda)
-  med.y.lo.bs <- bc(X.lo%*%t(bs.coef), lambda)
+  med.y.hi.bs <- bc.inv(X.hi%*%t(bs.coef), lambda)
+  med.y.lo.bs <- bc.inv(X.lo%*%t(bs.coef), lambda)
   fd.bs <- med.y.hi.bs - med.y.lo.bs
   sd.bs <- fd.bs[14,] - fd.bs[1, ]
   fd.ci <- apply(fd.bs, 1, quantile, probs = c(0.05, 0.95))
   sd.ci <- quantile(sd.bs, c(0.05, 0.95))
-  med.y.hi <- bc(X.hi%*%coef(m), lambda)
-  med.y.lo <- bc(X.lo%*%coef(m), lambda)
+  med.y.hi <- bc.inv(X.hi%*%coef(m), lambda)
+  med.y.lo <- bc.inv(X.lo%*%coef(m), lambda)
   fd <- med.y.hi - med.y.lo
   sd <- fd[14] - fd[1]
-  ret <- list(m = m, coef = coef, bs.coef = bs.coef, ci.upr = ci.upr, ci.lwr = ci.lwr,
-              fd = fd, fd.ci = fd.ci, sd = sd, sd.ci = sd.ci)
+  ret <- list(m = m, coef = coef(m), bs.coef = bs.coef, ci.upr = ci.upr, ci.lwr = ci.lwr, med.y.hi.bs = med.y.hi.bs,
+              med.y.lo.bs = med.y.lo.bs, med.y.hi = med.y.hi, med.y.lo = med.y.lo, fd = fd, fd.ci = fd.ci, sd = sd, sd.ci = sd.ci)
 }
 
 set.seed(1347013)
@@ -313,7 +323,7 @@ pg.ci <- function(bs) {
 ## FD plots
 pdf("doc/figs/cg-fd-plots.pdf", height = 4, width = 6)
 par(mfrow = c(2, 2), mar = c(1/2, 1/2, 1, 1/2), oma = c(3, 3, 1, 1))
-eplot(xlim = c(1, 150), ylim = c(-1, 4),
+eplot(xlim = c(1, 150), ylim = c(-2, 15),
       xlab = "District Magnitude",
       ylab = "Effect of ENEG",
       main = "Least Squares, No Transformation")
