@@ -163,9 +163,7 @@ Researchers studying the consequences of comparative electoral institutions, as 
 
 In this manuscript, our goals are to (1) highlight powerful, robust alternatives to least-squares estimators, (2) provide concrete, practical advice to substantive researchers using linear models, and (3) provide a compelling example that shows the importance of robust estimators.
 
-[Add more introduction later.]
-
-
+\ctk{[Add more introduction later.]}
 
 \section*{Is a BLUE Estimator the ``Best'' Estimator?}
 
@@ -193,17 +191,17 @@ For example, consider the estimates shown in the left panel of Figure \ref{fig:b
 \begin{figure}[H]
 \begin{center}
 \includegraphics[scale = .7]{figs/best-fit-illustration.pdf}
-\caption{Two scatterplots of hypothetical data. The left panel suggests that we might prefer an estimate that provides an excellent fit to most of the data rather than a mediocre fit to all the data. The right panel highlights that we might prefer an estimate that does not respond to movement in points that seem to fall outside the explanatory power of the model. Both the these characteristics violate the assumption of normality.}llabll{fig:best-fit-illustration}
+\caption{Two scatterplots of hypothetical data. The left panel suggests that we might prefer an estimate that provides an excellent fit to most of the data rather than a mediocre fit to all the data. The right panel highlights that we might prefer an estimate that does not respond to movement in points that seem to fall outside the explanatory power of the model. Both the these characteristics violate the assumption of normality.}\label{fig:best-fit-illustration}
 \end{center}
 \end{figure}
 
 Secondly, once cases fall outside the explanatory power of the model (i.e., outliers), then we might like our estimators to give them zero weight. After all, these cases seem somehow different and we would not like these unusual data to affect our excellent fit for the majority of the data. That is, if one unusual cases was \textit{even more} unusual, the estimates should not change. Rather than respond to this unusual deviation as does estimate A, we might prefer an estimate that simply ignores this change. After all, the case seems to fall outside the explanatory power of the model in both cases.
 
-Even if one would not like to use an estimator with either of these properties, then consider this example. If the researcher has a substantive reason to assume a non-normal distribution for the errors, such as a slightly heavier-tailed $t_{10}$ distribution, then the ``linear'' restriction in the Gauss-Markov theorem prohibits comparisons to the more effecient (but nonlinear) MLE estimator implied by the assumed $t_{10}$ error distribution.
+Even if one would not like to use an estimator with either of these properties, then consider this example. If the researcher has a substantive reason to assume a non-normal distribution for the errors, such as a slightly heavier-tailed $t_{10}$ distribution, then the ``linear'' restriction in the Gauss-Markov theorem prohibits comparisons to the more efficient (but nonlinear) MLE estimator implied by the assumed $t_{10}$ error distribution.
 
 It is not often appreciated, at least in practice, that if the errors do not follow independent and identical normal distributions, then the least squares is no longer the MVUE--other well-understood and easily computed estimators might outperform least squares. Indeed, for some error distributions, least squares might be substantially inferior.
 
-Many researchers simply assume a statistical model for which a MVUE is easily available for little or no substantive or empirical reason. Knowing that the assumed model (i.e., normality) is \textit{in}orrect, these researchers are using this model as an approximation. But if the model is an approximation, then the desirable statistical properties are not longer guaranteed (e.g., MVUE). With this in mind, it makes more sense to use a robust estimator with the following qualitative properties:
+Many researchers simply assume a statistical model for which a MVUE is easily available for little or no substantive or empirical reason. Knowing that the assumed model (i.e., normality) is \textit{in}correct, these researchers are using this model as an approximation. But if the model is an approximation, then the desirable statistical properties are not longer guaranteed (e.g., MVUE). With this in mind, it makes more sense to use a robust estimator with the following qualitative properties:
 \begin{enumerate}
 \item Approximately unbiased in typical sample sizes when the errors follow the normal distribution or the deviation from normality is only slight (e.g., $t_10$ errors).
 \item Good efficiency when the errors follow a normal distribution, though perhaps not as efficient as least squares.
@@ -222,7 +220,7 @@ But we also consider a least trimmed squares (LTS) estimator in which we minimiz
 \begin{figure}[H]
 \begin{center}
 \includegraphics[scale = .7]{figs/lts-illustration.pdf}
-\caption{caption here}\label{fig:lts-illustration}
+\caption{These two histograms show the sampling distribution for the least squares estimator and the least trimmed squares estimator under the true model $y = x + \epsilon$, where $\epsilon \sim t_3$. Notice that despite least squares being the best \textit{linear} unbiased estimator for the problem, the least trimmed squares estimator is a better estimator.}\label{fig:lts-illustration}
 \end{center}
 \end{figure}
 
@@ -349,16 +347,16 @@ To understand and illustrate how the performance of the BW estimator compares wi
 \item \textit{Normal Distribution.} The normal distribution yields the optimal conditions for the least squares estimator. Indeed, when the errors follow a normal distribution, the least squares estimator is has the smallest variance of all unbiased estimators. 
 \end{itemize}
 
-For each of two different sample sizes, 100 and 1,000, and the four different error distributions, we simulated 10,000 data sets, estimated $\beta_1$ using the LS estimator, the LAD estimator, and the BW estimator. For each condition, we calculated the expected value of the estimate, the standard deviation, and the mean squared error. Table \ref{tab:tab:mc-sims-100} provides the results for the sample size of 100 and \ref{tab:tab:mc-sims-1000} provides the results for the sample size of 1,000. 
+For each of two different sample sizes, 100 and 1,000, and the four different error distributions, we simulated 10,000 data sets, estimated $\beta_1$ using the LS estimator, the LAD estimator, and the BW estimator. For each condition, we calculated the expected value of the estimate, the standard deviation, and the mean squared error. Table \ref{tab:mc-sims-100} provides the results for the sample size of 100 and \ref{tab:mc-sims-1000} provides the results for the sample size of 1,000. 
 
-\begin{table}
+\begin{table}[H]
 {\tiny
 \input{tabs/mc-sims-100.tex}
 }
 \caption{Summarizes of the Monte Carlo simulations for four different error distributions with a sample size of 100. Notice that the BW has the best or nearly best performance in each condition, while the LAD estimator performs quite poorly for the $t_{10}$ and normal distributions and the LS estimator performs quite poorly for the Laplace and $t_2$ distributions.}\label{tab:mc-sims-100}
 \end{table}
 
-\begin{table}
+\begin{table}[H]
 {\tiny
 \input{tabs/mc-sims-1000.tex}
 }
@@ -379,10 +377,10 @@ Notice that, among the estimators we consider, the BW estimator is not the most 
 
 To better understand how the heaviness of the tails of the error distribution affects the efficiency of these estimators, we repeated these simulates for $t$ distributions for degrees of freedom ranging from two to thirty and sample sizes 25, 100, 500, and 2,000. Figure \ref{fg:mc-sims} shows the performance of the LAD and BW estimators relative to the LS estimator.
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \begin{center}
 \includegraphics[width = \textwidth]{figs/mc-sims.pdf}
-\caption{caption here}\label{fig:mc-sims}
+\caption{This figure shows the relative mean squared error for the LAD estimator and the BW estimator compared to the LS estimator for $t$ distributed errors as the degrees of freedom varies. Notice that for very heavy-tailed distributions (e.g., two to five degrees of freedom), both the LAD and the BW estimators significantly outperform the LS estimator. And while the performance of the LAD estimator significantly worse as the distribution becomes more normal, the BW estimator is comparable to the LS estimator.}\label{fig:mc-sims}
 \end{center}
 \end{figure}
 
@@ -396,8 +394,8 @@ When using the linear model, we suggest that researchers take several steps to e
 \begin{enumerate}
 	\item Initially fit the model using least squares. 
 	\item As a ``robustness check,'' re-fit the model using a robust alternative, such as the biweight estimator. 
-	\item If the inferences change (and perhaps if not), carefully examine the residuals. Be careful to check for skewness.
-	\item If the residuals are not symmetrically distributed, then consider a transformation. The log-transformation has a nice substantive interpretation, so it makes sense as a first cut. If the log-transformation over- or under-corrects the skew, then the Box-Cox transformation parameter should ensure that the residuals are roughly symmetric. This transformation allows the model to represent non-linear relationships implied by the skewness and allows the statistical model to more closely approximate the data.
+	\item If the inferences change (and even if not), carefully examine the residuals using histograms and QQ plots. Be careful to check for skewness.
+	\item If the residuals are not symmetrically distributed, then consider a transformation. This transformation might be critical because it allows the model to represent non-linear relationships implied by the skewness and allows the statistical model to more closely approximate the data. The log-transformation has a nice substantive interpretation, so it makes sense as a first cut, especially for variables naturally bounded below by zero or one. If the log-transformation over- or under-corrects the skewness, then the Box-Cox transformation should ensure that the residuals are roughly symmetric.
 	\item Once the residuals are roughly symmetric, it makes sense to re-fit the model using least squares and a robust alternative. Especially if the residuals appear to have heavy tails, then the robust estimator might serve as a more efficient estimator.
 	\item Always pay close attention to the residuals from each model, especially differences, as these can be especially substantively informative.
 	\item To the extent that some cases seem unusual, especially in the context of the robust regression, give these cases careful review. Is it possible that these unusual outcomes are simply data entry errors? In light of these cases, can the measurement be improved? Might a subset of the cases be operating under a substantially different causal process that could be built into the statistical model? 
