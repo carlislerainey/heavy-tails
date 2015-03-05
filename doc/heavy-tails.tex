@@ -51,6 +51,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[bitstream-charter]{mathdesign}
 
+% A special command to create line break in table cells
 \newcommand{\specialcell}[2][c]{%
   \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
 
@@ -82,7 +83,7 @@
 \definecolor{darkred}{RGB}{100,0,0}
 
 \hypersetup{
-pdftitle={The Heavy Tails of Electoral Data}, % title
+pdftitle={When BLUE Is Not Best}, % title
 pdfauthor={Dan Baissa and Carlisle Rainey}, % author
 pdfkeywords={robust linear regression} {outliers} {leverage}
 pdfnewwindow=true, % links in new window
@@ -93,24 +94,39 @@ filecolor=darkred, % color of file links
 urlcolor=darkred % color of external links
 }
 
+% section headers
+%\usepackage[scaled]{helvet}
+%\renewcommand\familydefault{\sfdefault} 
+%\usepackage[T1]{fontenc}
+%\usepackage{titlesec}
+%\titleformat{\section}
+%  {\normalfont\sffamily\Large\bfseries}
+%  {\thesection}{1em}{}
+%\titleformat{\subsection}
+%  {\normalfont\sffamily\large\bfseries}
+%  {\thesection}{1em}{}
+%  \titleformat{\subsubsection}
+%  {\normalfont\sffamily\bfseries}
+%  {\thesection}{1em}{}
+
 % enable comments in pdf
-\newcommand{\kelly}[1]{\textcolor{blue}{#1}}
-\newcommand{\carlisle}[1]{\textcolor{magenta}{#1}}
+\newcommand{\dtk}[1]{\textcolor{blue}{#1}}
+\newcommand{\ctk}[1]{\textcolor{red}{#1}}
 
 
 \begin{document}
 
 \begin{center}
-{\LARGE \textbf{The Heavy Tails of Electoral Data}}\\\vspace{2mm}
-{ \textbf{The Importance of Robust Estimators}\symbolfootnote[1]{We thank Bill Clark and Matt Golder for making their data available to us. The analyses presented here were conducted with \texttt{R} 3.1.0. All data and computer code necessary for replication are available at \href{https://github.com/carlislerainey/heavy-tails}{
-github.com/carlislerainey/meaningful-inferences}
+{\LARGE \textbf{When BLUE Is Not Best}}\\\vspace{2mm}
+{ \textbf{Non-Normal Errors and the Linear Model}\symbolfootnote[1]{We thank Bill Clark and Matt Golder for making their data available to us. The analyses presented here were conducted with \texttt{R} 3.1.0. All data and computer code necessary for replication are available at \href{https://github.com/carlislerainey/heavy-tails}{
+github.com/carlislerainey/heavy-tails}
 .}}\\\vspace{2mm}
 
 
 \vspace{10mm}
 
 Dan Baissa\symbolfootnote[2]{Dan Baissa is an M.A. student in the Department of Political Science, University at Buffalo, SUNY, 520 Park Hall, Buffalo, NY 14260 (\href{mailto:dkbaissa@buffalo.edu}{
-kellymcc@buffalo.edu}
+dkbaissa@buffalo.edu}
 ).}
 
 \vspace{3mm}
@@ -125,7 +141,7 @@ rcrainey@buffalo.edu}
 % Abstract
 {\centerline{\textbf{Abstract}}}
 \begin{quote}\noindent
-Researchers studying the consequences of comparative electoral institutions, as well as other areas of political and social science, often estimate linear regression models on continuous outcomes of interest using least squares. These outcomes include measures of the number of political parties, proportionality, and vote share, among others. While it is well known that least-squares estimates are often sensitive to single, influential data point, this knowledge has not led to appropriate practices when using least-squares estimators. We highlight the important using more robust estimators (at least as a robustness check) and discuss several approaches to detect, summarize, and communicate the influence of particular data points. We conclude with a reanalysis of Clark and Golder (2006) an show that their conclusions depend on several influential data points. Removing these data or using a robust estimator substantially weaken their key conclusions about the conditional relationship between social heterogeneity and electoral rules in influencing the number of political parties.
+Researchers studying the consequences of comparative electoral institutions, as well as other areas of political and social science, often estimate linear regression models on continuous outcomes of interest using least squares. These outcomes include measures of the number of political parties, proportionality of the electoral system, vote share, and others. While it is well known that least-squares estimates are often sensitive to single, influential data point, this knowledge has not led to appropriate practices when using least-squares estimators. We highlight the importance of using more robust estimators (at least as a robustness check) and discuss several approaches to detect, summarize, and communicate the influence of particular data points. We conclude with a reanalysis of Clark and Golder (2006) an show that the residuals are highly non-normal under their model specification. Applying an empirically-chosen transformation and/or using a robust estimator substantially weakens their key conclusions about the conditional relationship between social heterogeneity and electoral rules in influencing the number of political parties.
  \end{quote}
 
 % Add quote to first page
@@ -144,21 +160,30 @@ Researchers studying the consequences of comparative electoral institutions, as 
 
 \section*{Introduction}
 
-Our goal in this manuscript, our goals are to (1) highlight powerful, robust alternatives to least-squares estimators, (2) provide concrete, practical advice to substantive researchers using linear models, and (3) provide a compelling example that shows the importance of robust estimators.
+In this manuscript, our goals are to (1) highlight powerful, robust alternatives to least-squares estimators, (2) provide concrete, practical advice to substantive researchers using linear models, and (3) provide a compelling example that shows the importance of robust estimators.
+
+[Add more introduction later.]
+
+
 
 \section*{Is a BLUE Estimator the ``Best'' Estimator?}
 
-The linear regression model can be written as $E(y | X) = X\beta + \epsilon$, where $y$ is an outcome variable of interest (usually roughly continuous), $X$ is a $n \times (k + 1)$ matrix containing a single column of ones and $k$ columns holding $k$ explanatory variables, $\beta$ is a $(k + 1) \times 1$ matrix of model coefficients, and $\epsilon$ is an $n \times 1$ matrix of errors. Researchers in political science commonly estimate this model with ordinary least squares (OLS) by minimizing the squared residuals, $\hat{\beta}^{OLS} = \argmin S(b)$, where $S(b) = \sum_{i = 1}^n(y_i - X_ib)^2$. That is, OLS estimators choose the estimate $\hat{\beta}$ that minimizes the sum of the squared residuals. Under the assumption that the errors $\epsilon_i$ follow independent and identical normal distributions with mean zero and unknown variance, the OLS estimator is the minimum variance unbiased estimator (MVUE).
+The linear regression model can be written as $E(y | X) = X\beta + \epsilon$, where $y$ is an outcome variable of interest (usually roughly continuous), $X$ is a $n \times (k + 1)$ matrix containing a single column of ones and $k$ columns holding $k$ explanatory variables, $\beta$ is a $(k + 1) \times 1$ matrix of model coefficients, and $\epsilon$ is an $n \times 1$ matrix of errors. Researchers in political science commonly estimate this model with ordinary least squares (OLS) by minimizing the squared residuals, $\hat{\beta}^{OLS} = \argmin S(b)$, where $S(b) = \sum_{i = 1}^n(y_i - X_ib)^2$. That is, OLS estimators choose the estimate $\hat{\beta}$ that minimizes the sum of the squared residuals. Under the assumption that the errors $\epsilon_i$ follow independent and identical normal distributions with mean zero and unknown variance, the OLS estimator is the uniform minimum variance unbiased estimator (MVUE) (CITE).
+This is a powerful result. It shows that of all unbiased estimators, least squares is the most efficient when the errors follow a normal distribution.
 
-Even if the errors do not follow independent and identical normal distributions, the Gauss-Markov Theorem guarantees the least-squares estimator is the best (i.e., minimum variance) \textit{linear} unbiased estimator if the errors have mean zero and constant (and finite) variance. However, this should provide little comfort to researchers because their is little statistical or substantive reason to restrict themselves to \textit{linear} estimators.
+Even if the errors do not follow independent and identical normal distributions, the Gauss-Markov Theorem guarantees the least-squares estimator is the best (i.e., minimum variance) \textit{linear} unbiased estimator if the errors have mean zero and constant (and finite) variance. While this result is often emphasized, it should provide little comfort to researchers because there is little statistical or substantive reason to restrict themselves to \textit{linear} estimators.
 
-At first glance, one might take the linearity restriction under Gauss-Markov to refer to the structure of the model, such that $E(y | X) = X\beta$ falls into the class of ``linear'' regression models, but  $E(y | X) = e^{X\beta}$ does not. Indeed, this is the sense in which we use ``linear'' in the term ``linear regression.'' However, the ``linear'' restriction in the Gauss-Markov Theorem refers to a highly technical and obscure statistical criterion that requires that the estimates be a linear function of the outcome variables, so that $\hat{\beta}_j = \lambda_1 y_1 + \lambda_2 y_2 + ... \lambda_n y_n$, so that the weights $\lambda_i$ are allowed to depend on $X$, but not on $y$.\footnote{Formally, linearity requires that $\hat{\beta} = My$, where $M$ depends on the matrix $X$. For the case of least-squares, $M = (X'X)^{-1}X'$.} In other words, Gauss-Markov does not require a linear \textit{model} of the form $E(y | X) = X\beta$, but it does require a linear estimator of the form $\hat{\beta}_j = \lambda_1 y_1 + \lambda_2 y_2 + ... \lambda_n y_n$. 
+At first glance, one might take the linearity restriction under Gauss-Markov to refer to the structure of the model (i.e., ``linear in the parameters''), such that $E(y | X) = X\beta$ falls into the class of ``linear'' regression models, but  $E(y | X) = e^{X\beta}$ does not. Indeed, this is the sense in which we use ``linear'' in the terms ``linear model'' and ``linear regression.'' However, the ``linear'' restriction in the Gauss-Markov Theorem refers to a highly technical statistical criterion that requires that the estimates be a linear function of the outcome variables, so that $\hat{\beta}_j = \lambda_1 y_1 + \lambda_2 y_2 + ... \lambda_n y_n$, where the weights $\lambda_i$ are allowed to depend on $X$, but not on $y$.\footnote{Formally, linearity requires that $\hat{\beta} = My$, where $M$ depends on the matrix $X$. For the case of least-squares, $M = (X'X)^{-1}X'$.} In other words, Gauss-Markov does not require a linear \textit{model} of the form $E(y | X) = X\beta$, but it does require a linear estimator of the form $\hat{\beta}_j = \lambda_1 y_1 + \lambda_2 y_2 + ... \lambda_n y_n$. 
 
-We can see that the least-squares criterion produces a linear \textit{estimator} with some simple algebra. First, recall that we wish to minimize $S(b) = \sum_{i = 1}^n(y_i - X_ib)^2$ w.r.t. $b$. To do this, we can simply set $\dfrac{\partial S(b)}{\partial b} \equiv 0$ and solve for the vector $b$. Noting that $\dfrac{\partial S(b)}{\partial b} = \sum_{i = 1}^n 2(y_i - X_ib)(-X_i) \equiv 0$ implies that $\sum_{i = 1}^n X_i(y_i - X_ib) \equiv 0$. This is simply a system of $k+1$ \textit{linear} equations $\sum_{i = 1}^n X_{ij}(y_i - X_ib)$ for $k = \{0, 1, 2,..., k\}$. Of course, the matrix form $X'(y - Xb) = 0 \Rightarrow (X'X)b = X'y \Rightarrow b = (X'X)^{-1}X'y$ is much more common. We can clearly see that the least squares estimator $\hat{\beta}^ls = (X'X)^{-1}X'y$ has the form $My$.
+We can see that the least-squares criterion produces a linear \textit{estimator} with some simple algebra. First, recall that we wish to minimize $S(b) = \sum_{i = 1}^n(y_i - X_ib)^2$ w.r.t. $b$. To do this, we can simply set $\dfrac{\partial S(b)}{\partial b} \equiv 0$ and solve for the vector $b$. Noting that $\dfrac{\partial S(b)}{\partial b} = \sum_{i = 1}^n 2(y_i - X_ib)(-X_i) \equiv 0$ implies that $\sum_{i = 1}^n X_i(y_i - X_ib) \equiv 0$. This is simply a system of $k+1$ \textit{linear} equations $\sum_{i = 1}^n X_{ij}(y_i - X_ib)$ for $k = \{0, 1, 2,..., k\}$. Of course, the matrix form $X'(y - Xb) = 0 \Rightarrow (X'X)b = X'y \Rightarrow b = (X'X)^{-1}X'y$ is much more common. We can clearly see that the least squares estimator $\hat{\beta}^{ls} = (X'X)^{-1}X'y$ has the form $My$.
 
-However, we argue that restricting ourselves to linear estimators is unnecessary and unproductive. Note that we are not arguing against linear models (i.e., models that are linear in the parameters), such $y_i = \beta_0 + \beta_1\sqrt(x_i) + \epsilon_i$, $y_i = \beta_0 + \beta_1x_i + \beta_2x_i^2 + \epsilon_i$,  or $y_i = \beta_0 + \beta_1x_i + \beta_2z_i + \beta_3x_iz_i + \epsilon_i$. Indeed, the linear model can represent a wide range of theoretically-relevant relationships, especially when it includes explanatory variables non-linearly. However, there is no statistical reason to restrict ourselves to linear \textit{estimators}, except for mathematical convenience, and there are substantive reasons to reject this restriction. For example, if the researcher is aware that one case has a unusually large outcome variable (conditional on the explanatory variables), then the researcher might wish to weight that case less than the other, more typical cases so that one atypical case does not exert several times more impact on the estimates than other, typical cases. Indeed, substantive researchers might wish to attach zero weight to extremely unusual cases because these cases might be due to a different substantive process.
-
-\section*{A Substantive Argument Against Linear Estimators}
+However, restricting ourselves to linear estimators is unnecessary and unproductive. Note that we are not arguing against linear models (i.e., models that are linear in the parameters), such as 
+\begin{align*}
+y_i &= \beta_0 + \beta_1\sqrt(x_i) + \epsilon_i\text{,}\\
+y_i &= \beta_0 + \beta_1x_i + \beta_2x_i^2 + \epsilon_i\text{, or}\\ 
+y_i &= \beta_0 + \beta_1x_i + \beta_2z_i + \beta_3x_iz_i + \epsilon_i\textit{.}
+\end{align*}
+Indeed, each of these is a linear model and illustrate that the linear model can represent a wide range of theoretically-relevant relationships, especially when it includes explanatory variables non-linearly. However, there is no statistical reason to restrict ourselves to linear \textit{estimators} for these models, except for mathematical convenience and computational ease, and there are substantive reasons to reject this restriction.
 
 Indeed, there is a substantive argument \textit{against linear estimators} (i.e., weighting all observations equally). We suggest two potentially desirable properties of estimators. First, we might like estimates that provide an excellent fit to \textit{most} of the data rather and a poor fit to some of the data, rather than a mediocre fit to \textit{all} the data. Secondly, we might prefer an estimate that treats unusual data equally--as inconsistent the the model. Either of these principles exclude linear estimators.
 
@@ -167,29 +192,31 @@ For example, consider the estimates shown in the left panel of Figure \ref{fig:b
 \begin{figure}[H]
 \begin{center}
 \includegraphics[scale = .7]{figs/best-fit-illustration.pdf}
-\caption{caption here}\label{fig:best-fit-illustration}
+\caption{Two scatterplots of hypothetical data. The left panel suggests that we might prefer an estimate that provides an excellent fit to most of the data rather than a mediocre fit to all the data. The right panel highlights that we might prefer an estimate that does not respond to movement in points that seem to fall outside the explanatory power of the model. Both the these characteristics violate the assumption of normality.}llabll{fig:best-fit-illustration}
 \end{center}
 \end{figure}
 
 Secondly, once cases fall outside the explanatory power of the model (i.e., outliers), then we might like our estimators to give them zero weight. After all, these cases seem somehow different and we would not like these unusual data to affect our excellent fit for the majority of the data. That is, if one unusual cases was \textit{even more} unusual, the estimates should not change. Rather than respond to this unusual deviation as does estimate A, we might prefer an estimate that simply ignores this change. After all, the case seems to fall outside the explanatory power of the model in both cases.
 
+Even if one would not like to use an estimator with either of these properties, then consider this example. If the researcher has a substantive reason to assume a non-normal distribution for the errors, such as a slightly heavier-tailed $t_{10}$ distribution, then the ``linear'' restriction in the Gauss-Markov theorem prohibits comparisons to the more effecient (but nonlinear) MLE estimator implied by the assumed $t_{10}$ error distribution.
 
+It is not often appreciated, at least in practice, that if the errors do not follow independent and identical normal distributions, then the least squares is no longer the MVUE--other well-understood and easily computed estimators might outperform least squares. Indeed, for some error distributions, least squares might be substantially inferior.
 
-It is not often appreciated that if the errors do not follow independent and identical normal distributions, then the OLS is no longer the MVUE--other estimators might outperform OLS.
-
-Many researchers simply assume a statistical model for which a MVUE is easily available for little or no substantive reason. Knowing that the assumed model (e.g., normality) is \textit{in}orrect, these researchers are using this model as an approximation. But if the model is an approximation, then the desirable statistical properties are not longer guaranteed (e.g., MVUE). With this in mind, it makes more sense to use a robust estimator with the following qualitative properties:
+Many researchers simply assume a statistical model for which a MVUE is easily available for little or no substantive or empirical reason. Knowing that the assumed model (i.e., normality) is \textit{in}orrect, these researchers are using this model as an approximation. But if the model is an approximation, then the desirable statistical properties are not longer guaranteed (e.g., MVUE). With this in mind, it makes more sense to use a robust estimator with the following qualitative properties:
 \begin{enumerate}
-\item Approximately unbiased in typical sample sizes for the assumed model and small, plausible deviations.
-\item Excellent efficiency under the assumed model, though perhaps not the best possible efficiency.
-\item Excellent efficiency under small deviations from the assumed model
-\item Reasonable efficiency and bias in typical sample sizes with large deviations from the assumed model. 
+\item Approximately unbiased in typical sample sizes when the errors follow the normal distribution or the deviation from normality is only slight (e.g., $t_10$ errors).
+\item Good efficiency when the errors follow a normal distribution, though perhaps not as efficient as least squares.
+\item Good efficiency when the deviation from normality is slight (e.g., $t_10$ errors), perhaps better than least squares.
+\item Reasonable efficiency and bias in typical sample sizes with large deviations from normality (e.g., $t_2$ errors)--much more efficient than least squares.
 \end{enumerate}
 
-Mathematically, this suggests that applied researchers should not necessarily restrict themselves to unbiased estimators or minimum variance estimators under an assumed model. Instead, a more desirable criterion might be the mean squared error of the estimate under a wide range of deviations from the assumed model. The ``best'' model for a social scientist might not be the optimal estimator for an assumed model, but an estimable that works reasonably well for the assumed model and many substantively plausible deviations. 
+%Mathematically, this suggests that applied researchers should not necessarily restrict themselves to unbiased estimators or minimum variance estimators under an assumed model. Instead, a more desirable criterion might be the mean squared error of the estimate (MSE) under a wide range of deviations from the assumed model. 
 
-To see the importance of this in practice, we simulated 10,000 data sets 50 observations of variables $x$ and $y$, where the relationship between $x$ and $y$ is given by $y = x + \epsilon$, where $\epsilon$ follows a $t$ distribution with three degrees of freedom. Note that the $t_3$ distribution is symmetric, bell-shaped, and resembles the normal distribution, except it has slightly heavier tails. For each of these 10,000 data sets we used least-squares to estimate the slope of the relationship between $x$ and $y$. Because we simulated these data, we know that the Gauss-Markov assumptions hold. This means that least-squares is the \textit{best} linear unbiased estimator. The left panel of Figure \ref{fig:lts-illustration} shows the distribution of the estimated slopes using least squares.
+\noindent The ``best'' model for a social scientist might not be the optimal estimator for an assumed model, but an estimable that works reasonably well for the assumed model and many substantively plausible deviations. 
 
-But consider a least trimmed squares (LTS) estimator in which we minimize the smallest 90\% of the residuals. This method literally throws away data. Though it lacks the elegant theory of the least-squares estimate, the right panel of Figure \ref{fig:lts-illustration} shows that it is essentially unbiased and, compared to the least-squares more efficient (standard deviation about 18\% smaller), and has a much smaller mean squared error (about 32\% smaller) . By any reasonable standard, it is a better estimator than the least squares estimator. This improvement is dropped by expanding our focus to non-linear estimators. In this case, the LTS estimator is not linear because it places zero weight on the largest 10\% of the residuals and weights of one on the smallest 90\% of the residuals.
+To see the importance of this in practice, we simulated 10,000 data sets 50 observations of variables $x$ and $y$, where the relationship between $x$ and $y$ is given by $y = x + \epsilon$, where $\epsilon$ follows a $t$ distribution with three degrees of freedom. Note that the $t_3$ distribution is symmetric, bell-shaped, and resembles the normal distribution, except it has heavier tails. For each of these 10,000 data sets, we used least-squares to estimate the slope of the relationship between $x$ and $y$, where the true value equals one. Because we simulated these data, we know that the Gauss-Markov assumptions hold. This means that least-squares is the \textit{best} linear unbiased estimator. The left panel of Figure \ref{fig:lts-illustration} shows the distribution of the estimated slopes using least squares.
+
+But we also consider a least trimmed squares (LTS) estimator in which we minimize the smallest 90\% of the residuals. This method literally throws away data. Though it lacks the elegant theory of the least-squares estimator, the right panel of Figure \ref{fig:lts-illustration} shows that it is essentially unbiased and, compared to the least-squares more efficient (standard deviation about 18\% smaller), and has a much smaller mean squared error (about 32\% smaller) . By any reasonable standard, it is a better estimator than the least squares estimator. We make this gain by expanding our focus to non-linear estimators. In this case, the LTS estimator is not linear because it places zero weight on the largest 10\% of the residuals and weights of one on the smallest 90\% of the residuals.
 
 \begin{figure}[H]
 \begin{center}
@@ -198,29 +225,37 @@ But consider a least trimmed squares (LTS) estimator in which we minimize the sm
 \end{center}
 \end{figure}
 
-While the statistical properties of the least squares under the assumed normal-linear model are extremely well developed (e.g., MVUE), these properties are not nearly as well developed from robust alternatives. Some asymptotic results are available, but the closed-form theory is generally much weaker.
+%While the statistical properties of the least squares under the assumed normal-linear model are extremely well developed (e.g., MVUE), these properties are not nearly as well developed from robust alternatives. Some asymptotic results are available, but the closed-form theory is generally much weaker.
 
-There has been a great deal of attention in the methodological literature to the sensitivity of standard errors to violations from the assumed model--and substantive scholars have paid attention. For example, White's (1980) seminal paper developing heteroskedasticity-consistent standard errors has received over 20,000 citations, making it one of the most cited papers in economics. Beck and Katz's (1995) introduction to panel corrected standard errors has received over 4,300 citations, making it one of the most cited political science papers ever.
+\section*{The Relative Emphasis on Standard Errors}
 
-On the other hand, there has been scant attention paid to the sensitivity of the estimates to similar violations. This is particularly problematic, since it makes little sense to find a good standard error for a poor estimate. Two papers in political science have addressed the issue of robust estimation. Western's (1995) introduces political scientists to robust estimators, but this work has been essentially ignored. The work is more broadly applicable than Beck and Katz (1995) and was published in the same year, but has received only 99 citations, or  about 2\% of the citations that Beck and Katz have received. Similarly, Demaris and Harden (2011) has received only one citation, and it comes from the authors themselves. Anderson's (2008) broad and accessible introduction to robust estimation methods has received only about 150 citations, most from outside political science.
+There has been a great deal of attention in the methodological literature to the sensitivity of standard errors to violations from the assumed model--and substantive scholars have paid attention. For example, White's (1980) seminal paper developing heteroskedasticity-consistent standard errors has received over 20,000 citations, making it one of the most cited papers in economics. Beck and Katz's (1995) development panel corrected standard errors has received over 4,300 citations, making it one of the most cited political science papers.
+
+On the other hand, there has been scant attention paid by substantive scholars to the sensitivity of the \textit{estimates} to similar violations. This is particularly problematic, since it makes little sense to find a good standard error for a poor estimate (Freedman 2012 and King and Roberts 2014). Two papers in political science have addressed the issue of robust estimation. Western's (1995) introduces political scientists to robust estimators, but this work has been essentially ignored. The work is more broadly applicable than Beck and Katz (1995) and was published in the same year, but has received only 99 citations, or  about 2\% of the citations that Beck and Katz have received. Similarly, Desmarais and Harden (2011) has received only one citation, and it comes from the authors themselves. Anderson's (2008) broad and accessible introduction to robust estimation methods has received only about 150 citations, most from outside political science.
 
 This focus on obtaining reasonable standard errors at the expense of reasonable estimates can be seen in Gujarati (????, p. ??, ), a popular textbook for political science classes focusing on linear models. Though the text deals with robust standard errors in some detail, Gujarati writes (in a footnote):
 \begin{quote}
 In passing, note that the effects of departure from normality and related topics are often discussed under the topic of robust estimation in the literature, a topic \textit{beyond the scope of this book} [italics ours].
 \end{quote}
-Another popular textbook, Wooldridge (????) does briefly discuss robust estimators, though in a much more limited manner than his discussion of robust standard errors. Angrist and Pischke (2008), though, devote an entire chapter to robust standard errors and completely ignore robust estimation of model coefficients.
+Angrist and Pischke (2008), though, devote an entire chapter to robust standard errors and completely ignore robust estimation of model coefficients. Wooldridge (????) does devote about two pages to robust estimation, though the tone is skeptical.
 
 \section*{Dealing with Skewness: Transforming the Outcome}
 
-Skewed error distribution create two problems for the linear model. First, because least squares models the quantity $E(Y | X)$ and the mean is not a good summary of location for skewed variables. Symmetric error distributions are easier to understand. Second, and perhaps most importantly, we take skewed error distributions as a lack of model fit. For example, it is theoretically intuitive to believe that the explanatory variables should have increasing effects non-negative outcome variables, such as an individual's annual income. For example, rather than a college degree increasing one expected income by \$10,000, perhaps it increases one's expected income by 10\%. We consider skewed error distributions as evidence that the basic structure of the model could be improved.
+There are two ways in which the errors can deviate from normality. First, the error distribution might be skewed. Second, the error distribution might have heavy-tails. We suggest dealing with these deviations differently so we discuss each separately.
 
-Points that are unusual prior to transformation might be quite typical after transformation.
+Skewed error distributions create two problems for the linear model. First, least squares models the quantity $E(Y | X)$ and the mean is not a good summary of location for skewed variables. Symmetric error distributions are easier to understand. Second, and perhaps most importantly, we interpret skewed error distributions as a lack of model fit. It is sometimes theoretically intuitive to believe that the explanatory variables should have increasing effects non-negative outcome variables, such as an individual's annual income. For example, rather than a college degree increasing one expected income by \$10,000, perhaps it increases one's expected income by 10\%. If this intuition is correct and a researcher relies on the statistical model $\text{Income}_i = \beta_0 + \beta_1 \text{College Degree}_i + \epsilon_i$, then the estimated residuals will likely have a strong skew to the right. Simply logging the outcome, or using the model $\log (\text{Income}_i) = \beta_0 + \beta_1 \text{College Degree}_i + \epsilon_i$ better captures the theoretical intuition.
 
-Even if we remain indifferent toward the theoretical implications of skewed error distributions, we must remain cautious about the statistical implications. The performance of least squares estimators improves as the error distribution approaches a normal distribution. Further, the theoretical properties of alternative, more robust estimators, such as the $M$-estimator we discuss below, depend on a symmetric error distribution distribution.
+% We consider skewed error distributions as evidence that the basic structure of the model could be improved.
 
-It is quite common in disciplines such as economics, for example, to log-transform non-negative outcome variables by default. The motivation is that since non-negative (or strictly positive) outcomes are bounded below by zero, then these variables are likely skewed to the right. In this case, the model $\log(y) = X\beta + \epsilon$ will likely provide a better approximation to the data.
+% Points that are unusual prior to transformation might be quite typical after transformation.
 
-While we agree with the spirit of this suggestion, we have much more precise empirical methods for choosing \textit{whether} and \textit{how} to transform the outcome variable $y$. Box and Cox (1964) proposed the Box-Cox transformation 
+Even if we remain indifferent toward the theoretical implications of skewed error distributions, we must remain cautious about the statistical implications. Indeed, the log-transformation in the example above improves the efficiency of the least squares estimator by making the assumption of normally-distributed errors more appropriate.The performance of least squares estimators improves as the error distribution approaches a normal distribution. 
+
+It is quite common in disciplines such as economics, for example, to log-transform non-negative outcome variables by default. Since non-negative (or strictly positive) outcomes are bounded below by zero, then these variables are likely skewed to the right. In this case, the model $\log(y) = X\beta + \epsilon$ will likely provide a better approximation to the data.
+
+\subsection*{The Box-Cox Transformation}
+
+While we agree with the spirit of this suggestion, statisticians have created more precise empirical methods for choosing \textit{whether} and \textit{how} to transform the outcome variable $y$. Box and Cox (1964) propose the Box-Cox transformation 
 
 \begin{displaymath}
    y^{(\lambda)} = BC(y, \lambda) = \left\{
@@ -229,17 +264,22 @@ While we agree with the spirit of this suggestion, we have much more precise emp
        \log y & \text{for } \lambda \neq 0
      \end{array}
    \right.
-\end{displaymath}.
+\end{displaymath},
 
-\noindent In this case, the model becomes $y^{(\lambda)} = X\beta + \epsilon$. The researcher can easily use maximum likelihood to obtain estimates $\hat{\lambda}$ and standard errors for the transformation parameter $\lambda$. This is particularly convenient because if $\hat{\lambda}$ is near one, this suggests no transformation is needed and if $\hat{\lambda}$ is near zero, then only an intuitive log-transformation is needed.
+\noindent where the transformation parameter $\lambda$ is estimated with maximum likelihood. In this case, the model becomes $y^{(\lambda)} = X\beta + \epsilon$. This is particularly convenient because if $\hat{\lambda}$ is near one, this suggests no transformation is needed and if $\hat{\lambda}$ is near zero, then only an intuitive log-transformation is needed.
 
-It is quite easy to assess the skewness in the residuals using a simple histogram of the residuals or a QQ plot of the residuals compared to their normal quantiles. For a formal test of skewness, one might use a direct test for symmetry on residuals $\hat{e}$, such as the Mira test (Mira 1999) or simply test whether $\lambda \neq 1$ under the Box-Cox framework. However, the important point is not to argue for any particular test, but to point out (1) that asymmetries worsen the performance of least squares and alternative methods and (2) this potential problem can and should be addressed using simple transformations that are easy to implement.
+It is quite easy to assess the skewness in the residuals using a simple histogram of the residuals or a QQ plot of the residuals compared to their normal quantiles. For a formal test of skewness, one might use a direct test for symmetry on residuals $\hat{e}$, such as the Mira test (Mira 1999) or simply test whether $\lambda \neq 1$ under the Box-Cox framework. However, the important point is not to argue for any particular test, but to point out (1) that asymmetries worsen the performance of least squares and alternative methods and (2) this potential problem can be addressed using simple transformations that are easy to implement.
 
-However, applying transformation to the outcome variable $y$ does raise an interpretational difficulty. The usual, untransformed linear model is given by $y = X\beta + \epsilon$ and the quantity of interest is $E(y | X)$ or $\frac{\partial E(y | X)}{\partial x_j}$. For concreteness, consider the log-transformation. Using the same logic, then the model is $log(y) = X\beta + \epsilon$ and we might take the quantity of interest to be $E[\log(y) | X]$ or $\frac{\partial E[\log(y) | X]}{\partial x_j}$. However, these quantities are not as easy to understand substantively--$\frac{\partial E[\log(y) | X]}{\partial x_j}$ is more difficult to understand than $\frac{\partial E(y | X)}{\partial x_j}$. To make the results more understandable, we simply need to ``undo'' the transformation. However, it is important to note that $E[\log(y) | X] \neq \log [E(y | X)]$, which means that the log cannot simply be undone (without additional computation) because $e^{E[\log(y) | X]} \neq E(y | X)$. 
+\subsection*{Mean or Median?}
 
-However, in the context of skewed distributions, the mean $E(\dot)$ might be a misleading summary of the ``center'' of the data. While the mean is often more mathematically convenient, the median offers a better summary of location than the mean. Further, the median has an intuitive interpretation because there is a one-half of the distribution lies above the median and one-half lies below. This mean that there is approximately a one-half chance that $y |X$ falls above $\med(y | X)$ and a one-half changes that $y |X$ falls below.
+Applying transformation to the outcome variable $y$ does raise an interpretational difficulty. The usual, untransformed linear model is given by $y = X\beta + \epsilon$ and the quantity of interest is usually $E(y | X)$ or $\frac{\partial E(y | X)}{\partial x_j}$. For concreteness, consider the log-transformation. Using the same logic, then the model is $log(y) = X\beta + \epsilon$ and we might take the quantity of interest to be $E[\log(y) | X]$ or $\frac{\partial E[\log(y) | X]}{\partial x_j}$. However, these quantities are not as easy to understand substantively. After all, the substantive researcher is usually interested in $y$, not $\log(y), making $$\frac{\partial E[\log(y) | X]}{\partial x_j}$ more difficult to understand than $\frac{\partial E(y | X)}{\partial x_j}$. To make the results more understandable, we simply need to ``undo'' the transformation. However, it is important to note that $E[\log(y) | X] \neq \log [E(y | X)]$, which means that the log cannot simply be undone (without additional computation) because $e^{E[\log(y) | X]} \neq E(y | X)$. 
 
-In addition to the intuitive substantive interpretation of $\med(y | X)$, the median has another desirable property. Because the log-transformation is order-preserving $\med[\log(y) | X] = \log [\med(y | X)]$, which means that the log \textit{can} easily be undone because $e^{med[\log(y) | X]} = e^{\log[\med(y | X)]} = \med(y | X)$. Therefore, by adopting $\med(y | X)$ and $\frac{\partial \med(y | X)}{\partial x_j}$, one gains a more intuitive quantity of interest and can easily move between transformed and untransformed outcomes (e.g., $\med[\log(y)] \rightarrow \med(y)$). This holds for the more general case of $y^{(\lambda)}$ in addition to $\log(y)$.
+These interpretational difficulties not due to the choice to transform the data, but imbedded in the data themselves. In the context of skewed distributions, the mean $E(\cdot)$ might be a misleading summary of the ``center'' of the data. While the mean is often more mathematically convenient, the median offers a better summary of location than the mean. Further, the median has an intuitive interpretation because one-half of the distribution lies above the median and one-half lies below. If we use $\med(y_{new} | X_{new})$ to predict the unknown outcome $y_{new}$ for a known case $X_{new}$, then there is a 50\% chance of being to high and a 50\% chance of being to low. 
+%This mean that there is approximately a one-half chance that $y |X$ falls above $\med(y | X)$ and a one-half changes that $y |X$ falls below.
+
+In addition to the intuitive substantive interpretation of $\med(y | X)$, the median has another desirable property. Because the log-transformation is order-preserving, $\med[\log(y) | X] = \log [\med(y | X)]$, which means that the log \textit{can} easily be undone because $e^{med[\log(y) | X]} = e^{\log[\med(y | X)]} = \med(y | X)$. Therefore, by adopting $\med(y | X)$ and $\frac{\partial \med(y | X)}{\partial x_j}$, one gains a more intuitive quantity of interest and can easily move between transformed and untransformed outcomes (e.g., $\med[\log(y)] \rightarrow \med(y)$). This holds for the more general case of $y^{(\lambda)}$ as well.
+
+\subsection*{Simulating Quantities of Interest Under Transformation}
 
 To obtain quantities of interest for $\med(y)$ when the estimated model has the generic form $y^{(\lambda)} = X\beta + \epsilon$, one can simply use the algorithm described in King, Tomz, and Wittenberg (2000).
 \begin{enumerate}
@@ -248,35 +288,35 @@ To obtain quantities of interest for $\med(y)$ when the estimated model has the 
 \item Estimate the transformed model $y^{(\lambda)} = X\beta + \epsilon$ using least squares to obtain the estimated model coefficients $\hat{\beta}^{ls}_{trans}$, residuals $\hat{e}^{ls}_{trans}$, and covariance matrix $\Sigma^{ls}_{trans}$.
 \item Choose a hypothetical case or set of cases $X_{pred}$ for which to calculate the quantity of interest. If one is interested in calculating a first difference, it is convenient to use $X_{hi}$ and $X_{lo}$, where the first-difference $\Delta(y, X_{hi}, X_{lo}) = \med(y | X_{hi}) - \med(y | X_{lo})$.
 \item Following King, Tomz, and Wittenberg (2000), for $i$ from one to a large (e.g., 1,000) number of iterations $n_{sims}$:
-	\begin{enumerate}
-	\item Simulate $\tilde{\beta}^{ls}_{trans} \sim N\left(\hat{\beta}^{ls}_{trans}, \Sigma^{ls}_{trans}\right)$.
-	\item Calculate and store $\tilde{Q}_i = \med(y | X_{red}, \tilde{\beta}^{ls}_{trans}) = X_{red}\tilde{\beta}^{ls}_{trans}$ or, if interested in the first-difference, $\tilde{Q}_i = \tilde{\Delta}(y, X_{hi}, X_{lo}, \tilde{\beta}^{ls}_{trans}) = X_{hi}\tilde{\beta}^{ls}_{trans} - X_{lo}\tilde{\beta}^{ls}_{trans}$.
-	\end{enumerate}
+        \begin{enumerate}
+        \item Simulate $\tilde{\beta}^{ls}_{trans} \sim N\left(\hat{\beta}^{ls}_{trans}, \Sigma^{ls}_{trans}\right)$.
+        \item Calculate and store $\tilde{Q}_i = \med(y | X_{red}, \tilde{\beta}^{ls}_{trans}) = X_{red}\tilde{\beta}^{ls}_{trans}$ or, if interested in the first-difference, $\tilde{Q}_i = \tilde{\Delta}(y, X_{hi}, X_{lo}, \tilde{\beta}^{ls}_{trans}) = X_{hi}\tilde{\beta}^{ls}_{trans} - X_{lo}\tilde{\beta}^{ls}_{trans}$.
+        \end{enumerate}
 \item Summarize the $n_{sims}$ simulations. The mean or median of $\tilde{Q}_i$ serves as an estimate of $\med(y | X_{pred})$, the standard deviation of $\tilde{Q}_i$ serves as an estimate of the standard error of $\med(y | X_{pred})$, and the 5th and 95th percentiles of $\tilde{Q}_i$ serve as an estimate of the (likely asymmetric) 90\% confidence interval for $\med(y | X_{pred})$.
 \end{enumerate}
 
 \section*{Dealing with Heavy-Tails: $M$-Estimation}
 
-In spite of the scant attention paid to robust estimators in political science, statisticians have developed and refined many robust methods since the seminal work of Box (1953) and Huber (1964). Huber and Ronchetti (2009) provide a detailed review of these developments and Anderson (2008) provides an accessible introduction. 
+In spite of the scant attention paid to robust estimators in political science, statisticians have developed and refined many robust methods since the seminal work of Box (1953) and Huber (1964). Huber and Ronchetti (2009) provide a detailed review of these developments and Anderson (2008) provides an accessible introduction. Adjudicating among the many robust alternatives to least squares is beyond the scope of our paper, but, to fix ideas, we do introduce one robust estimator in detail which has several desirable properties--the $M$-estimator with Tukey's biweight function. [\ctk{Add some more examples of robust estimators here.}]
 
-Adjudicating among these many robust alternatives to least squares is beyond the scope of our paper, but, to fix ideas, we do introduce one robust estimator in detail which has several desirable properties--the $M$-estimator with Tukey's biweight function. 
-
-While least squares yields the coefficients that minimize the sum of the squared residuals, so that $\hat{\beta}^{ls} =\argmin_{b} \sum_{i = 1}^n (y_i - X_ib)^2$, M-estimation minimizes an arbitrary, less-rapidly increasing function of the residuals $\hat{\beta}^{\rho} =\argmin_{b} \sum_{i = 1}^n \rho(y_i - X_ib)$. For example, Harden and Desmarais (2011) recommend the least absolute deviation (LAD) estimator that chooses $\rho(\dot) = abs(\dot)$. However, other estimators offer similarly robust alternatives. In particular, we recommend Tukey's biweight function, so that
+While least squares yields the coefficients that minimize the sum of the squared residuals, so that $\hat{\beta}^{ls} =\argmin_{b} \sum_{i = 1}^n (y_i - X_ib)^2$, M-estimation minimizes an arbitrary, less-rapidly increasing function of the residuals $\hat{\beta}^{\rho} =\argmin_{b} \sum_{i = 1}^n \rho(y_i - X_ib)$. The function $\rho(\cdot)$ is typically chosen to be non-negative, symmetric about zero, and decreasing away from zero. For example, Harden and Desmarais (2011) recommend the least absolute deviation (LAD) estimator that such $\rho(\cdot) = abs(\cdot)$. However, other estimators offer similarly robust alternatives. In particular, we recommend Tukey's biweight function, so that
 
 \begin{displaymath}
-   \rho_{bw}(r_i) = \left\{
+   \rho_{BW}(r_i) = \left\{
      \begin{array}{lr}
        \dfrac{k^2}{6}\left\{ 1 - \left[ 1 - \left( \dfrac{r_i}{k} \right)^2 \right]^3\right\} & \text{for } |r_i| \leq k\\
-	\dfrac{k^2}{6} & \text{for } |r_i| > k 
+        \dfrac{k^2}{6} & \text{for } |r_i| > k 
 \end{array}
    \right.,
 \end{displaymath}.
 
-where $r_i = y_i - X_ib$.
+where $r_i = y_i - X_ib$. We refer to the $M$-estimator using the biweight objective function as the ``biweight (BW) estimator.'' The BW estimator is a compelling alternative to the LAD estimator suggested by Harden and Desmarais (2011) for two reasons. First, the biweight objective function is redescending, which means that it has the ability to weight unusual observations all the way down to zero. The absolute value objective function, on the other hand, does downweight unusual observations, but these always received some weight. Secondly, the BW estimator is much more efficient than the LAD estimator when the errors are approximately normal. 
 
-[Discuss the desirable substantive properties of bw, such as fitting the majority of the data well and ignoring, rather than simply down weighting unusual data.]
+Two cautions are in order. Second, the optimization problem is not convex, so standard optimization routines can produce a local rather than a global minimum. However, this problem can usually be handled in practice by using a good starting value, such as the LTS estimate. Second, because the solution is not scale invariant, the residuals $\hat{e_i}$ are standardized by a robust estimate of scale $\hat{\sigma}_{(mad)}$, which must of course be estimated jointly, so that $\hat{\beta}^{bw} =\argmin_{b} \sum_{i = 1}^n \rho_{bw}\left(\dfrac{y_i - X_ib}{\hat{\sigma}_{mad}}\right)$, where $\hat{\sigma}_{mad} = \dfrac{\med\left( |y - X\b|\right)}{0.6745}$. Dividing by 0.6745 makes $\hat{\sigma}_{mad}$ a consistent estimator of the standard deviation of normal errors.
 
-Two cautions are in order. Second, the optimization problem is not convex, so standard optimization routines can produce a local rather than a global minimum. Second, because the solution is not scale invariant, the residuals $\hat{e_i}$ are standardized by a robust estimate of scale $\hat{\sigma}_{(mad)}$, which must of course be estimated jointly, so that $\hat{\beta}^{bw} =\argmin_{b} \sum_{i = 1}^n \rho_{bw}\left(\dfrac{y_i - X_ib}{\hat{\sigma}_{mad}}\right)$, where $\hat{\sigma}_{mad} = \dfrac{\med\left( |y - X\b|\right)}{0.6745}$. Dividing by 0.6745 makes $\hat{\sigma}_{mad}$ a consistent estimator of the standard deviation of normal errors.
+While the theory for $M$-estimators is not as elegant as for least squares estimators, $M$-estimators do have desirable properties. In general, $M$-estimators are consistent as long as (1) $\rho(\cdot)$ is convex and (2) the distribution of the errors is strongly unimodal (decreasing away from zero). Because the biweight objective function is non-convex, we must assume that the distribution of the errors is strongly unimodal. The estimates are distributed asymptotically normal and consistent 
+
+\subsection*{Estimation}
 
 The model parameters $\hat{\beta}^{bw}$ and $\hat{\sigma}_{bw}$ can be quickly estimated jointly using the following iterative algorithm.
 \begin{enumerate}
@@ -284,21 +324,21 @@ The model parameters $\hat{\beta}^{bw}$ and $\hat{\sigma}_{bw}$ can be quickly e
 \item Extract the residuals $r^{(0)} = X\hat{\beta}^{(0)}$. Use these residuals to estimate the rescaled MAD so that $\hat{\sigma}^{(0)}_{mad} = \dfrac{\med\left( |y - X\hat{\beta}^{(0)}|\right)}{0.6745}$.
 \item ssign weights $w$ according to the function $\rho$ and denote $\text{diag}(w) = W$.
 \item For $i$ from one until convergence:
-	\begin{enumerate}
-	\item Using $\hat{\beta}^{(i-1)}$ and $\hat{\sigma}^{(i-1)}_{mad}$ assign weights $w$ according to the function $\rho$ and denote $\text{diag}(w) = W$.
-	\item Calculate $\hat{\beta}^{(i)} = (X'WX)^{-1}X'Wy$.
-	\item Calculate $\hat{\sigma}^{(i)}_{mad} = \dfrac{\med\left( |y - X\hat{\beta}^{(0)}|\right)}{0.6745}$
-	\item The algorithm has converged when $r^{(i-1)} \approx r^{(i)}$.
-	\end{enumerate}
+        \begin{enumerate}
+        \item Using $\hat{\beta}^{(i-1)}$ and $\hat{\sigma}^{(i-1)}_{mad}$ assign weights $w$ according to the function $\rho$ and denote $\text{diag}(w) = W$.
+        \item Calculate $\hat{\beta}^{(i)} = (X'WX)^{-1}X'Wy$.
+        \item Calculate $\hat{\sigma}^{(i)}_{mad} = \dfrac{\med\left( |y - X\hat{\beta}^{(0)}|\right)}{0.6745}$
+        \item The algorithm has converged when $r^{(i-1)} \approx r^{(i)}$.
+        \end{enumerate}
 \end{enumerate}
 
-[Discuss some properties of M-estimators, unbiased for symmetric error distributions, consistent.]
+If we assume the distribution of the errors to be symmetric about zero, then any objective function $\rho$ that is also symmetric about zero (including, for example, the biweight objective function) produces an unbiased estimate of the parameters. Only if $\rho(r_i) = r_i^2$ is this estimator a \textit{linear} estimator though. Other choices of $\rho(\cdot)$ might produce estimators that are better than the BLUE estimator. These $M$-estimators are consistent if (1) $\rho(\cdot)$ is convex \textit{or} (2) the distribution of the errors is strongly unimodal (that is, the density is decreasing away from zero). Because  
 
-[Discuss standard errors for m-estimators.]
+The theory for the variance for this broad class of unbiased $M$-estimators, though, is asymptotic. The requires sample size for the asymptotic approximations to work well depends on the sample size, but valid confidence intervals for small data can easily be computed by bootstrapping (Efron ????, Duval and Mooney ????).
 
 \section*{Monte Carlo Simulations}
 
-To understand and illustrate how the performance of the biweight $M$-estimator, we simulated from the linear model $y_i = \beta_0 + \beta_1x_1 + \beta_2 x_2 + \beta_3 x_3 + \epsilon_i$, where $\beta_0 = 0$ and $\beta_1 = \beta_2 = \beta_3 = 1$ and the $x_i$'s follow an approximately normal distribution. We used four different distribution for the errors.
+To understand and illustrate how the performance of the BW estimator compares with the LS and LAD estimators, we simulated from the linear model $y_i = \beta_0 + \beta_1x_1 + \beta_2 x_2 + \beta_3 x_3 + \epsilon_i$, where $\beta_0 = 0$ and $\beta_1 = \beta_2 = \beta_3 = 1$ and the $x_i$'s follow an approximately normal distribution. We used four different distribution for the errors.
 \begin{itemize}
 \item \textit{Laplace distribution.} The Laplace distribution has tails that decrease exponentially, but behaves much differently from the normal distribution near zero. Rather than ``shoulders,'' the Laplace distribution has a sharp peak at zero and can be thought of as combining two exponential distributions, one in the positive direction and the other in the negative direction. The least absolute deviation estimator is the maximum likelihood estimator when the errors follow a Laplace distribution.
 \item \textit{$t_2$ distribution.} The $t$ distribution with two degrees of freedom has very heavy tails. Because the least squares estimator weights all points equally (conditional on $X$), the extreme outliers produces by the $t_2$ distribution makes least squares a very inefficient estimator.
@@ -306,35 +346,35 @@ To understand and illustrate how the performance of the biweight $M$-estimator, 
 \item \textit{Normal Distribution.} The normal distribution yields the optimal conditions for the least squares estimator. Indeed, when the errors follow a normal distribution, the least squares estimator is has the smallest variance of all unbiased estimators. 
 \end{itemize}
 
-For two different sample sizes, 100 and 1,000, and the four different error distributions, we simulated 10,000 data sets, estimated $\beta_1$ using the least squares estimator, the median absolute deviation estimator, and the biweight estimator. For each condition, we calculated the expected value of the estimate, the standard deviation, and the mean squared error. Table \ref{tab:tab:mc-sims-100} provides the results for the sample size of 100 and \ref{tab:tab:mc-sims-1000} provides the results for the sample size of 1,000. 
+For each of two different sample sizes, 100 and 1,000, and the four different error distributions, we simulated 10,000 data sets, estimated $\beta_1$ using the LS estimator, the LAD estimator, and the BW estimator. For each condition, we calculated the expected value of the estimate, the standard deviation, and the mean squared error. Table \ref{tab:tab:mc-sims-100} provides the results for the sample size of 100 and \ref{tab:tab:mc-sims-1000} provides the results for the sample size of 1,000. 
 
 \begin{table}
 {\tiny
 \input{tabs/mc-sims-100.tex}
 }
-\caption{Summarizes of the Monte Carlo simulations for four different error distributions with a sample size of 100.}\label{tab:mc-sims-100}
+\caption{Summarizes of the Monte Carlo simulations for four different error distributions with a sample size of 100. Notice that the BW has the best or nearly best performance in each condition, while the LAD estimator performs quite poorly for the $t_{10}$ and normal distributions and the LS estimator performs quite poorly for the Laplace and $t_2$ distributions.}\label{tab:mc-sims-100}
 \end{table}
 
 \begin{table}
 {\tiny
 \input{tabs/mc-sims-1000.tex}
 }
-\caption{Summary of Monte Carlo simulations identical to those in Table Table \ref{tab:mc-sims-100}, except with a sample size of 1,000 rather than 100. }\label{tab:mc-sims-1000}
+\caption{Summary of Monte Carlo simulations identical to those in Table \ref{tab:mc-sims-100}, except with a sample size of 1,000 rather than 100. As with Table \ref{tab:mc-sims-100}, notice that the BW has the best or nearly best performance in each condition, while the LAD estimator performs quite poorly for the $t_{10}$ and normal distributions and the LS estimator performs quite poorly for the Laplace and $t_2$ distributions.}\label{tab:mc-sims-1000}
 \end{table}
 
-These result show that all three estimators are essentially unbiased regardless of the error distribution and sample size. Efficiency, however, varies considerably across the estimators.
+These result show that all three estimators are unbiased regardless of the error distribution and sample size. Efficiency, however, varies considerably across the estimators.
 
-The MAD estimator is the MLE when the errors follow a Laplace distribution, so as we might expect, the MAD performs well for Laplace errors, with a mean squared error about 30\% lower than the least squares error distribution. However, the biweight estimator also performs quite well for the Laplace distribution, with a mean squared error about 25\% less than the least squares estimator for $N = 100$. For $N = 1,000$ the MSE of the MAD estimator outperforms the LS estimator by about 43\% and the biweight estimator outperforms the LS estimator by about 27\%.
+The LAD estimator is the MLE when the errors follow a Laplace distribution, so as we might expect, the LAD performs well for Laplace errors, with a mean squared error about 30\% lower than the LS estimate. However, the BW estimator also performs quite well for the Laplace distribution, with a mean squared error about 25\% less than the least squares estimator for $N = 100$. For $N = 1,000$ the MSE of the LAD estimator outperforms the LS estimator by about 43\% and the BW estimator outperforms the LS estimator by about 27\%.
 
-The $t_2$ distribution is nearly a worst case for the least squares estimator, so both robust alternatives perform considerably better. The MAD estimator is has a mean squared error of about 92\% less than the least squares estimator and the biweight estimator has a MSE about 93\% less than the LS estimator for $N = 100$ and 15\% and 14\% for $N = 1,000$, respectively. 
+The $t_2$ distribution is nearly a worst case for the LS estimator, so both robust alternatives perform considerably better. The LAD estimator is has a mean squared error of about 79\% less than the LS estimator and the BW estimator has a MSE about 81\% less than the LS estimator for $N = 100$ and 85\% and 86\% for $N = 1,000$, respectively. 
 
-However, the $t_{10}$ distribution is a much more interesting case, because it is very similar to a normal distribution. Indeed, even statistical tests have trouble distinguishing the $t_{10}$ from the normal, even with large samples (e.g., $N = 500$). In this case, the MAD estimator has a MSE of about 34\% more than the LS estimator for $N = 100$ and about 32\% for $N = 1,000$. The biweight estimator on the other hand, shows a small \textit{improvement} over the LS estimator, with an MSE of about 2\% less than the LS estimator for $N = 100$ and about $4\%$ less for $N = 1,000$.
+However, the $t_{10}$ distribution is a much more interesting case, because it is very similar to a normal distribution. Indeed, even statistical tests have trouble distinguishing the $t_{10}$ from the normal, even with large samples (e.g., $N = 500 \, \rightarrow \,\,\, \approx40\% \text{ power}$ for a Shapiro-Wilk test of normality). In this case, the LAD estimator has a MSE of about 34\% more than the LS estimator for $N = 100$ and about 32\% for $N = 1,000$. The BW estimator on the other hand, shows a small \textit{improvement} over the LS estimator, with an MSE of about 2\% less than the LS estimator for $N = 100$ and about $4\%$ less for $N = 1,000$. This is crucial because it demonstrates that only a small deviation from normality is required before the BLUE LS estimator is no longer the best estimator. 
 
-The normal distribution is the optimal scenario for the least squares estimator and it outperforms the the MAD estimator considerably with the errors are normal. For both $N = 100$ and $N = 1000$, the MSE for the MAD estimator is about 57\% larger than the MSE for the LS estimator. However, the biweight estimator performs nearly as well as the LS estimator. Indeed, the MSE for the biweight estimator is only about 6\% larger than the MSE for the LS estimator for both $N = 100$ and $N = 1000$.
+The normal distribution is the optimal scenario for the least squares estimator and it outperforms the the LAD estimator considerably with the errors are normal. For both $N = 100$ and $N = 1000$, the MSE for the LAD estimator is about 57\% larger than the MSE for the LS estimator. However, the BW estimator performs nearly as well as the LS estimator. Indeed, the MSE for the BW estimator is only about 6\% larger than the MSE for the LS estimator for both $N = 100$ and $N = 1000$.
 
-Notice that while the biweight estimator was not the most efficient estimator for the Laplace and normal distributions, it was a close second. It was the most efficient estimator for the $t_2$ and $t_10$ distributions and considerably outperforms the LS estimator for Laplace errors and considerably outperforms the MAD estimator for normal errors. Thus, the biweight estimator works quite well across a range of error distributions, whereas the LS and MAD estimators work well only in particular situations.
+Notice that, among the estimators we consider, the BW estimator is not the most efficient estimator for the Laplace and normal distributions, but it is a close second. It is the most efficient estimator for the $t_2$ and $t_10$ distributions and considerably outperforms the LS estimator for Laplace and $t_2$ errors and considerably outperforms the LAD estimator for normal and $t_{10}$ errors. Thus, the BW estimator works quite well across a range of error distributions, whereas the LS and LAD estimators work well only in particular situations. Even in situations where the LS and LAD estimators work well, the BW estimator performs comparably.
 
-To better understand how the heaviness of the tails of the error distribution affects the efficiency of these estimators, we repeated these simulates for $t$ distributions for degrees of freedom ranging from two to thirty and sample sizes 25, 100, 500, and 2,000. Figure \ref{fg:mc-sims} shows the performance of the MAD and biweight estimators relative to the LS estimtator.
+To better understand how the heaviness of the tails of the error distribution affects the efficiency of these estimators, we repeated these simulates for $t$ distributions for degrees of freedom ranging from two to thirty and sample sizes 25, 100, 500, and 2,000. Figure \ref{fg:mc-sims} shows the performance of the LAD and BW estimators relative to the LS estimator.
 
 \begin{figure}[h!]
 \begin{center}
@@ -343,10 +383,9 @@ To better understand how the heaviness of the tails of the error distribution af
 \end{center}
 \end{figure}
 
-Notice that the MAD and biweight estimators perform quite well for very heavy tailed distribution (i.e., df of 2 to 4), but as the tails grow lighter, the least squares estimator quickly begins to outperform the MAD estimator. Indeed, expect of all but very heavy tailed distributions, the LS estimator is considerably more efficient than the MAD estimator. 
+Notice that the LAD and BW estimators perform quite well for very heavy tailed distribution (i.e., df of 2 to 4), but as the tails grow lighter, the LS estimator quickly begins to outperform the LAD estimator. Indeed, expect of all but very heavy tailed distributions, the LS estimator is considerably more efficient than the LAD estimator. 
 
-The biweight estimator, though, is a much stronger competitor for the least squares estimator. While the LS estimator is more efficient for lighter-tailed distributions (i.e., $df > 10$), the difference is very small except in very small samples. Indeed, for sample sizes of 100 or larger, the LS estimator is about 5\% more efficient \textit{at best}. This simulation again suggests that the biweight estimator works almost as well as the LS estimator under ideal conditions for LS estimator and considerably better across a wide range of other, substantively plausible scenarios.
-
+The BW estimator, though, is a much stronger competitor for the LS estimator. While the LS estimator is more efficient for lighter-tailed distributions (i.e., $df > 10$), the difference is very small except in very small samples. Indeed, for sample sizes of 100 or larger, the LS estimator is about 5\% more efficient than the BW estimator \textit{at best}. This simulation again suggests that the BW estimator works almost as well as the LS estimator under ideal conditions for LS estimator and considerably better across a wide range of other, substantively plausible scenarios.
 
 \section*{Replication of Clark and Golder (2006)}
 
@@ -363,15 +402,26 @@ For our replication, we focus specifically on their hypothesis:
 
 This suggests that the marginal effect of social heterogeneity should be positive and statistically significant under permissive electoral rules (i.e., large district magnitude) and about zero and statistically insignificant (though see Rainey 2014) under restrictive electoral rules (i.e., district magnitude near one).
 
-[Summarize G and G's measures of ENEG, ENEP, and Magnitude.]
+
+
+To measure their key outcome variable, the number of political parties, Clark and Golder use the \textit{effective} number of political parties (ENEP), where $\text{ENEP} = \sum_{i = 1}^n\frac{1}{v_i^2}$, for $v_i$ represents the vote share of party $i$ in the election. Similarly, for there measure of social heterogeneity, Clark and Golder use the effective number of ethnic groups (ENEG), taken from Fearon's (2003) measure of ethnic fragmentation. To measure the restrictiveness, of the electoral rules, Clark and Golder simply use the average district magnitude in the election. 
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[scale = 0.8]{figs/cg-scatter.pdf}
+\caption{}\label{fig:cg-scatter}
+\end{center}
+\end{figure}
+
+Figure \ref{fig:cg-scatter} plots the key explanatory variables, district magnitude and the effective number of ethnic groups, along the horizontal and vertical axes, respectively. The size of the points indicates the effective number of political parties for each election. The hypothesis predicts that the large points should lie in the upper-right section of the plot and small points should lie near the horizontal and vertical axes.
 
 To test this hypothesis, Clark and Golder fit the following regression model using least squares:
 
 \begin{align*}
 \text{ENEP}_i = \beta_0 &+ \beta_1 \text{ENEG}_i + \beta_2 \log(\text{Magntiude}_i) + \beta_3 \text{Upper-Tier Seats}_i\\
-						     &+\beta_4 \text{Presidential Candidates}_i + \beta_5 \text{Proximity}_i\\
-						     &+ \beta_6 \text{Ethnic}_i \times \log (\text{Magnitude}_i) + \beta_7 \text{Ethnic}_i \times \text{Upper-Tier Seats}_i\\
-						     &+ \beta_7 \text{Presidential Candidates}_i \times \times \text{Proximity}_i + \epsilon_i\text{ ,}
+                                                     &+\beta_4 \text{Presidential Candidates}_i + \beta_5 \text{Proximity}_i\\
+                                                     &+ \beta_6 \text{Ethnic}_i \times \log (\text{Magnitude}_i) + \beta_7 \text{Ethnic}_i \times \text{Upper-Tier Seats}_i\\
+                                                     &+ \beta_7 \text{Presidential Candidates}_i \times \times \text{Proximity}_i + \epsilon_i\text{ ,}
 \end{align*}
 
 The first key coefficient in this analysis is $\beta_1$, which summarizes the effect of social heterogeneity when district magnitude is one (i.e., the log of district magnitude is zero) and there are no upper-tier seats. According to the hypothesis, $\beta_1$ should be about zero. The second key coefficient is $\beta_6$, captures how the effect of social heterogeneity changes with the electoral rules. According to the hypothesis, $\beta_6$ should be positive, so that the effect of social heterogeneity becomes (perhaps more) positive as the district magnitude increases.
@@ -427,6 +477,24 @@ Although the Box-Cox transformation removes much or all of the skew, the residua
 
 After the Box-Cox transformation, the residuals are well-behaved. They are highly symmetric and only slightly heavy-tailed. In spite of nearly ideal situation, the simulations in Tables \ref{tab:mc-sims-100} and \ref{tab:mc-sims-1000} and Figure \ref{fig:mc-sims} suggest that the biweight estimate is a slightly better estimator. However, these differences are slight so it can be valuable to carefully examine examine both models--one that tries to fit all the data well and another that tries to fit most of the data well. 
 
+Figure \ref{fig:cg-residuals-compare} compares the residuals from the least squares fit and the biweight fit after the Box-Cox transformation. Notice that the residuals tend to agree, with the exception of the 1980 election in Uganda, which is the largest residual in the biweight fit, but does not stand out among the least squares residuals.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[scale = 0.8]{figs/cg-residuals-compare.pdf}
+\caption{}\label{fig:cg-residuals-compare}
+\end{center}
+\end{figure}
+
+Figure \ref{fig:cg-weights} presents the 35 smallest weights from the biweight fit. Recall that as cases become increasingly inconsistent with the majority of the data, the biweight estimator increasingly down weights the cases, potentially to zero. As we might expect, given the residuals in Figure \ref{fig:cg-residuals-compare}, only the 1980 election in Uganda receives zero weight. This election is highly consistent with the hypothesis because it features single member districts, an extremely large number of ethnic groups, and featured only two major political parties. Unfortunately for the hypothesis, this case is inconsistent the the majority of the data.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[scale = 0.8]{figs/cg-weights.pdf}
+\caption{}\label{fig:cg-weights}
+\end{center}
+\end{figure}
+
 %Table \ref{tab:cg-coef-tab} presents the coefficient estimate and confidence intervals, creating using the cluster-robust bootstrap recommend by Harden and Desmarais (????). The coefficients for the transformed and untransformed outcomes are not comparable, since the outcome is rescaled. The first column of Table \ref{tab:cg-coef-tab} uses Clark and Golder's approach (except for the bootstrapped confidence intervals). Notice that the interaction term $ENEG $\times$ log(Magnitude)$ is large and almost significant in Clark and Golder's model. 
 
 
@@ -439,7 +507,7 @@ After the Box-Cox transformation, the residuals are well-behaved. They are highl
 %\end{center}
 %\end{table}
 
-Figure \ref{fig:cg-fd-plots} plots the effect of increasing social heterogenty from ENEP = 1.06 (10th percentile) to ENEP = 2.48 (90th percentile) as the district magnitude varies. Note the the effect of district magnitude is nonlinear because it is logged in the regression model but unlogged along the horizontal axis. The upper-left figure replicates Clark and Golder's approach (except of the cluster-bootstrap confidence intervals) and replicates their finding, which they summarize:
+Figure \ref{fig:cg-fd-plots} plots the effect of increasing social heterogeneity from ENEP = 1.06 (10th percentile) to ENEP = 2.48 (90th percentile) as the district magnitude varies. Note the the effect of district magnitude is nonlinear because it is logged in the regression model but unlogged along the horizontal axis. The upper-left figure replicates Clark and Golder's approach (except of the cluster-bootstrap confidence intervals) and replicates their finding, which they summarize:
 
 \begin{quote}
 [These results] clearly illustrate that in established democracies, ethnic heterogeneity significantly increases the number of parties once the electoral system is sufficiently permissive. This is exactly what Duverger?s theory predicts. To be more specific, Figure 1a [our upper-left panel of Figure \ref{fig:cg-fd-plots}], based on the pooled model with established democracies, indicates that ethnic heterogeneity will increase the number of electoral parties once we move beyond nonpermissive electoral systems with single-member districts?when [Magnitude = 1].
@@ -464,8 +532,6 @@ However, once we make an effort to account for the non-normality of the residual
 
 Clark and Golder adopt the convention of many researchers in political science--taking least squares estimates at face value without thinking carefully about the distribution of the errors. Indeed, the Gauss-Markov theorem encourages this convention by noting that least squares is the \textit{best} linear unbiased estimator. However, we argue that the restriction to linear estimators is unnecessary and counter-productive. By taking advantage of transformations to make the errors more consistent with the normal-linear model (approximately normal or at least symmetric) and using robust estimators if necessary to deal with remaining heavy tails, we show that we can reach different conclusions. 
 
-[Discuss the residuals from the transformed models.]
-
 \begin{table}
 {\scriptsize
 \input{tabs/cg-qi.tex}
@@ -473,27 +539,48 @@ Clark and Golder adopt the convention of many researchers in political science--
 \caption{Quantities of interest from least squares and biweight estmates, with and without the Box-Cox transformation of the outcome variable. Notice that the least squares estimates without transforming the outcome variable are consistent with Clark and Golder's hypothesis. However, using the robust biweight estimator,  transforming the outcome variable, or both substantially reduce the amount of evidence that these data offer in favor of the hypothesis. In particular, the biweight estimator suggests that social heterogeneity has small, substantively insignificant effects regardless of the electoral rules. Indeed, the effect is, \textit{at most}, about 1/5 of of a political party per ethnic group, with a estimate of about 1/20 of a political party per ethnic group. }\label{tab:cg-qi}
 \end{table}
 
-\section*{The Context of the 1980 Election in Uganda}
 
+We offer a different approach than most applied research in political science adopts in practice. Rather than relying on the artificial Gauss-Markov theorem and BLUE estimators, we suggest that careful consideration of residual is very important. We have shown that can be tremendous gains in efficiency by using robust estimators in the face of heavy-tailed error distributions, and we have shown that our approach leads to different conclusions than Clark and Golder (2006). But the approach we advocate is not powerful because it gives different results. It is powerful because it is substantively informative. Below we discuss several \textit{substantive} points that one can take from our brief analysis of Clark and Golder's data.
+
+\subsection*{Some Implications of the Analysis of the Residuals}
+
+\subsubsection*{Evidence for the Theory}
+
+\textit{Perhaps Duverger's logic is not as well-supported empirically as the literature would suggest.} Indeed, the evidence offered by the normal linear model seems to hinge on a few cases that seem inconsistent with the majority of the data. However, rejection of Duverger's theory or Clark and Golder's (2006) analysis is premature for three reasons. First, the theoretical logic for Duverger's hypotheses is clear and compelling (CITES). Second, many studies beyond Clark and Golder (2006), including experimental work, find substantial empirical support for the hypotheses. Finally, the biweight $M$-estimator suggests several potential shortcomings in terms of theory and measures that might currently undermine the evidence for these theories.
+
+\subsubsection*{Questions about Measuring ``Established Democracies''}
+
+\textit{Room for improvement exists in the measurement of ``established democracies.''} Consider, just to take one example, Uganda in 1980.
 Uganda was under British rule until 1962, when it was granted independence from Britain. The 1962 elections led to the election of Milton Obote as prime minister. Four years later, facing scandal, Obote suspended the constitution, assumed all government powers, and declared himself president. In 1967, the parliament adopted a new constitution that solidified the expansive powers in the hands of the president. In 1971, Obote was ousted by Major General Idi Amin. During Amin's rule, between 80,000 and 300,000 civilians were killed. With the support of the Tanzanian military, Amin's bloody rule ended in 1979. In the following year, one leader was forcibly removed from office and the following government experience yet another military coup and elections were scheduled in 1980. In anticipation of these elections, Milton Obote returned to Uganda. In an elections that were with corruption and irregularity, Obote's party won a majority of the seats. Amin's bloody rule continued into Obote's second tenure with a death toll between 100,000 and 500,000 over the next five years--a second conflict with civilian casualties on the scale of the recent tragedies in Darfur. Although elections were again held in 1996, 2001, 2006, and 2011, these election featured irregularities, harassment, and did not lead to a change in power.
 
 The context of the election raises question about whether Uganda was an ``established democracy'' in 1980, or event a democracy. One common measure offered by Cherub, Gandhi, and Vreeland (2010), does indeed code Uganda as a democracy in 1980. They code countries as a democracy if and only if it meets all following four conditions:
 \begin{enumerate}
-\item The chief executive must be chosen by popular election or by a body that was itself popularly elected.\item The legislature must be popularly elected.\item There must be more than one party competing in the elections.\item An alternation in power under electoral rules identical to the ones that brought the incumbent to office must have taken place.
+\item The chief executive must be chosen by popular election or by a body that was itself popularly elected.
+\item The legislature must be popularly elected.
+\item There must be more than one party competing in the elections.
+\item An alternation in power under electoral rules identical to the ones that brought the incumbent to office must have taken place.
 \end{enumerate}
 
 Although the election showed signs of irregularities and harassment of voters and candidates, it is plausible that Uganda in 1980 meets the first three criteria. But what about the forth. Because these author indeed code Uganda in 1980 as a democracy, they consider this condition met. However, this was a single election, nested between two military dictatorships, and during the winner's administration, he seized powers and dragged the country into civil war. It remains unclear to us how this meets the condition of democracy more broadly or the alternation condition more specifically.
 
-Secondly, even if Unhanda was a democracy in 1980, was it ``established''? Surely not, as this was the first election in 18 years following 10 years of brutal dictatorship
+Secondly, even if Uganda was a democracy in 1980, was it ``established''? Surely not, as this was the first election in 18 years following 10 years of brutal dictatorship. However, according to Clark and Golder's define ``established democracies'' as countries that transitioned to democracy after 1989 (see note b in their Tables 1 and 2). Yet why is it important to focus on \textit{established} democracies. Clark and Golder (2006, p. 706) summarize Duverger's argument: 
 
-We offer a different approach than most applied research in political science adopts in practice. Rather than relying on the artificial Gauss-Markov theorem and BLUE estimators, we suggest that careful consideration of residual is very important. We have shown that can be tremendous gains in efficiency by using robust estimators in the face of heavy-tailed error distributions, and we have shown that our approach leads to different conclusions than Clark and Golder (2006). But the approach we advocate is not powerful because it gives different results. It is powerful because it is substantively informative. Below we discuss several \textit{substantive} points that one can take from our brief analysis of Clark and Golder's data.
-\begin{itemize}
-\item \textit{Perhaps Duverger's logic is not as well-supported empirically as the literature would suggest.} Indeed, the evidence offered by the normal linear model seems to hinge on a few cases that seem inconsistent with the majority of the data. However, rejection of Duverger's theory or Clark and Golder's (2006) analysis is premature for three reasons. First, the theoretical logic for Duverger's hypotheses is clear and compelling (CITES). Second, many studies beyond Clark and Golder (2006), including experimental work, find substantial empirical support for the hypotheses. Finally, the biweight $M$-estimator suggests several potential shortcomings in terms of theory and measures that might currently undermine the evidence for these theories.
-\item \textit{Room for improvement exists in the measurement of ``established democracies.''}
-\item \textit{Room for improvement exists in the measurement of ``social heterogeneity.''}
-\item \textit{We need a stronger theory about the dynamics with which systems reach an equilibrium number of parties.}
-\item \textit{We need additional research into how systems respond to the introduction of additional parties into formerly authoritarian, single-party systems.}
-\end{itemize}
+\begin{quote}
+Another intriguing finding is that Duverger?s theory receives much weaker support when we include elections from countries that transitioned to democracy after 1989. This finding is perhaps understandable if we think that party systems in newly democratic countries take a while to reach their equilibrium. It is interesting that Duverger himself took this view in regard to the fledgling democracies of Central Europe, Latin America, and Africa earlier in the 20th century. By warning about the danger of confusing multipartism with the absence of (fully institutionalized) parties, Duverger was indicating that he did not expect his theory to work particularly well in new democracies. 
+\end{quote}
+
+This suggests some rethinking of the concept of ``\textit{established} democracy'' might be in order. For example, it surely must be the case that countries transitioning to democracy before 1989 (e.g., Uganda) are ``established'' immediately after transitioning to democracy. As Clark and Golder explain, the hypothesis assumes that the party system has reached an equilibrium. If systems that have not yet reached an equilibrium are included in the analysis, then we can expect the data to offer little support for the hypothesis. Perhaps with some rethinking of how this equilibrium is reached, we can find a better measure that indicated when systems (are likely to) reach an equilibrium.
+
+%\subsubsection*{Questions About Measuring ``Social Heterogeneity''}
+%\textit{Room for improvement exists in the measurement of ``social heterogeneity.''}
+
+\subsubsection*{Questions About Dynamics Prior to Equilibrium}
+
+\textit{We need a stronger theory about the dynamics with which systems reach an equilibrium number of parties.} Duverger's logic offers a compelling explanation for the number of political parties \textit{in equilibrium}, but this tells us little about the number of political parties prior to reaching an equilibrium or the dynamics that lead to an equilibrium. A theory about the dynamics to reaching an equilibrium is crucial to measuring whether a party system has reach equilibrium, which, in turn, is crucial to testing Duverger's theory. Perhaps new democracies begin with many parties and the number shrinks until equilibrium. Perhaps they begin with many and the number grows until equilibrium. Perhaps it depends on the context of the election.
+
+\subsubsection*{Questions About the Impact of a Prior Authoritarian Regime}
+
+\textit{We need additional research into how systems respond to the introduction of additional parties into formerly authoritarian, single-party systems.} The fact that the 1980 election in Uganda featured essentially two political parties is quite interested. Indeed, given the social heterogeneity, we would expect many more political parties-- more than eight according to the biweight estimate and more than four according to the least squares estimate. Indeed, this case is so different from the majority rest of the data that it receives zero weight in the biweight estimator. But why? One potential explanation might rely on the fact that Milton Obote, elected 18 years prior before he seized power, had returned. The people were quite familiar with Obote. Perhaps this enables groups to coordinate in support of or in oppositions to Obote. It is difficult to know without a thorough analysis, but this analysis is suggestive that the dynamics toward an equilibrium number of parties might depend on the nature of the prior regime. When parties representing the prior authoritarian regime participate in the election, perhaps this helps solve the coordination problem. One the other hand, when the prior regime does not participate in the elections, perhaps this makes coordination difficult. The point is not to answer this question but to highlight that a careful consideration of the residuals along with an estimation approach that allows unusual cases to be unusual allows the analysis to raise these types of questions.
 
 \singlespace
 \bibliographystyle{apsr_fs}
