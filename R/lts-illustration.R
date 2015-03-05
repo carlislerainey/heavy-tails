@@ -45,7 +45,7 @@ h.ls <- hist(b.hat.ls, plot = FALSE)
 h.lts <- hist(b.hat.lts, plot = FALSE)
 breaks.at <- seq(from = min(c(h.ls$breaks, h.lts$breaks)),
                  to = max(c(h.ls$breaks, h.lts$breaks)),
-                 length.out = 100)
+                 length.out = 60)
 h.ls <- hist(b.hat.ls, breaks = breaks.at, plot = FALSE)
 h.lts <- hist(b.hat.lts, breaks = breaks.at, plot = FALSE)
 
@@ -55,14 +55,14 @@ eplot(xlim = mm(c(h.ls$breaks, h.lts$breaks)),
       xlab = "Coefficient Estimates",
       ylab = "Counts",
       main = "Least Squares")
-plot(h.ls, freq = FALSE, add = TRUE, border = "black", col = "black")
+plot(h.ls, freq = FALSE, add = TRUE, border = "black", col = "grey70")
 #lines(density(b.hat.ls), lwd = 2)
 text(par("usr")[2], .8*par("usr")[4], paste("True = 1.00\nMean = ", format(round(mean(b.hat.ls), 2), nsmall = 2), 
                  "\nSD = ", format(round(sd(b.hat.ls), 2), nsmall = 2),
                  "\nMSE = ", format(round(sum((b.hat.ls - b)^2), 2), nsmall = 2), sep = ""), 
      pos = 2, cex = 0.7)
 aplot("Least Trimmed Squares")
-plot(h.lts, freq = FALSE, add = TRUE, border = "black", col = "black")
+plot(h.lts, freq = FALSE, add = TRUE, border = "black", col = "grey70")
 #lines(density(b.hat.lts), lwd = 2)
 text(par("usr")[2], .8*par("usr")[4], paste("True = 1.00\nMean = ", format(round(mean(b.hat.lts), 2), nsmall = 2), 
                              "\nSD = ", format(round(sd(b.hat.lts), 2), nsmall = 2),

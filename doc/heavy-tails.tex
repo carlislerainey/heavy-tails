@@ -315,7 +315,9 @@ where $r_i = y_i - X_ib$. We refer to the $M$-estimator using the biweight objec
 
 Two cautions are in order. Second, the optimization problem is not convex, so standard optimization routines can produce a local rather than a global minimum. However, this problem can usually be handled in practice by using a good starting value, such as the LTS estimate. Second, because the solution is not scale invariant, the residuals $\hat{e_i}$ are standardized by a robust estimate of scale $\hat{\sigma}_{(mad)}$, which must of course be estimated jointly, so that $\hat{\beta}^{bw} =\argmin_{b} \sum_{i = 1}^n \rho_{bw}\left(\dfrac{y_i - X_ib}{\hat{\sigma}_{mad}}\right)$, where $\hat{\sigma}_{mad} = \dfrac{\med\left( |y - X\b|\right)}{0.6745}$. Dividing by 0.6745 makes $\hat{\sigma}_{mad}$ a consistent estimator of the standard deviation of normal errors.
 
-While the theory for $M$-estimators is not as elegant as for least squares estimators, $M$-estimators do have desirable properties. In general, $M$-estimators are consistent as long as (1) $\rho(\cdot)$ is convex and (2) the distribution of the errors is strongly unimodal (decreasing away from zero). Because the biweight objective function is non-convex, we must assume that the distribution of the errors is strongly unimodal. The estimates are distributed asymptotically normal and consistent 
+While the theory for $M$-estimators is not as elegant as for least squares estimators, $M$-estimators do have desirable properties. In general, $M$-estimators are consistent as long as (1) $\rho(\cdot)$ is convex and (2) the distribution of the errors is strongly unimodal (decreasing away from zero). Because the biweight objective function is non-convex, we must assume that the distribution of the errors is strongly unimodal. Under the assumption of strong unimodality, estimates are distributed asymptotically normal and consistent.
+
+$M$-estimators in general and the biweight estimator in particular have the desirable substantive property that they allow unusual cases to be unusual. Least squares, on the other hand, sacrifices fit on typical cases to better fit unusual cases. Unusual cases can be extremely informative. Knowing what cases fall outside the explanatory power of the model enables the researcher to ask ``Why?'' and raise issues relating to concepts, theory, and measurement that might otherwise have been missed.
 
 \subsection*{Estimation}
 
@@ -387,6 +389,19 @@ To better understand how the heaviness of the tails of the error distribution af
 Notice that the LAD and BW estimators perform quite well for very heavy tailed distribution (i.e., df of 2 to 4), but as the tails grow lighter, the LS estimator quickly begins to outperform the LAD estimator. Indeed, expect of all but very heavy tailed distributions, the LS estimator is considerably more efficient than the LAD estimator. 
 
 The BW estimator, though, is a much stronger competitor for the LS estimator. While the LS estimator is more efficient for lighter-tailed distributions (i.e., $df > 10$), the difference is very small except in very small samples. Indeed, for sample sizes of 100 or larger, the LS estimator is about 5\% more efficient than the BW estimator \textit{at best}. This simulation again suggests that the BW estimator works almost as well as the LS estimator under ideal conditions for LS estimator and considerably better across a wide range of other, substantively plausible scenarios.
+
+\section*{Recommendation for Applied Researchers}
+
+When using the linear model, we suggest that researchers take several steps to ensure that their inferences are consistent with the majority of the data and not driven exclusively by a small, unusual minority. 
+\begin{enumerate}
+	\item Initially fit the model using least squares. 
+	\item As a ``robustness check,'' re-fit the model using a robust alternative, such as the biweight estimator. 
+	\item If the inferences change (and perhaps if not), carefully examine the residuals. Be careful to check for skewness.
+	\item If the residuals are not symmetrically distributed, then consider a transformation. The log-transformation has a nice substantive interpretation, so it makes sense as a first cut. If the log-transformation over- or under-corrects the skew, then the Box-Cox transformation parameter should ensure that the residuals are roughly symmetric. This transformation allows the model to represent non-linear relationships implied by the skewness and allows the statistical model to more closely approximate the data.
+	\item Once the residuals are roughly symmetric, it makes sense to re-fit the model using least squares and a robust alternative. Especially if the residuals appear to have heavy tails, then the robust estimator might serve as a more efficient estimator.
+	\item Always pay close attention to the residuals from each model, especially differences, as these can be especially substantively informative.
+	\item To the extent that some cases seem unusual, especially in the context of the robust regression, give these cases careful review. Is it possible that these unusual outcomes are simply data entry errors? In light of these cases, can the measurement be improved? Might a subset of the cases be operating under a substantially different causal process that could be built into the statistical model? 
+\end{enumerate}
 
 \section*{Replication of Clark and Golder (2006)}
 
