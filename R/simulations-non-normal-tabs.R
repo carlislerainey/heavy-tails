@@ -1,7 +1,6 @@
 rm(list = ls())
 #load packages
-library(quantreg)
-library(VGAM)
+library(MASS)
 
 # function to compute mse
 mse <- function(x) {
