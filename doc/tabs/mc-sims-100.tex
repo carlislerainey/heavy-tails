@@ -1,16 +1,16 @@
-% quantreg::latex.table(x = ta, file = "doc/tabs/mc-sims-100",      rowlabel = "", cgroup = c("Mean", "Standard Deviation", "Mean Squared Error"),      rgroup = c("Absolute Performance", "Relative Performance"),      n.rgroup = c(3, 2), dec = 3, table.env = FALSE, label = "tab:mc-sims-100") 
+% quantreg::latex.table(x = ta, file = "doc/tabs/mc-sims-100",      rowlabel = "", cgroup = c("Mean", "Mean Squared Error"),      rgroup = c("Absolute Performance", "Relative Performance"),      n.rgroup = c(3, 2), dec = 3, table.env = FALSE, label = "tab:mc-sims-100") 
 %
 \begin{center}
-\begin{tabular}{|l||c|c|c|c||c|c|c|c||c|c|c|c|} \hline
-\multicolumn{1}{|l||}{\bf }&\multicolumn{4}{c||}{\bf Mean}&\multicolumn{4}{c||}{\bf Standard Deviation}&\multicolumn{4}{c|}{\bf Mean Squared Error}\\ \cline{2-13}
-\multicolumn{1}{|l||}{}&\multicolumn{1}{c|}{Lapl.}&\multicolumn{1}{c|}{$t_2$}&\multicolumn{1}{c|}{$t_{10}$}&\multicolumn{1}{c||}{Norm.}&\multicolumn{1}{c|}{Lapl.}&\multicolumn{1}{c|}{$t_2$}&\multicolumn{1}{c|}{$t_{10}$}&\multicolumn{1}{c||}{Norm.}&\multicolumn{1}{c|}{Lapl.}&\multicolumn{1}{c|}{$t_2$}&\multicolumn{1}{c|}{$t_{10}$}&\multicolumn{1}{c|}{Norm.}\\ \hline
-{\bf Absolute Performance}&&&&&&&&&&&&\\
-~~Least Squares&~~~0.999&~~~1.000&~~~1.001&~~~0.999&~~~0.151&~~~0.319&~~~0.114&~~~0.099&~227.419&1016.182&~130.867&~~98.850\\ 
-~~Least Absolute Deviation&~~~0.999&~~~0.999&~~~1.003&~~~1.000&~~~0.126&~~~0.146&~~~0.131&~~~0.124&~159.499&~212.360&~172.911&~154.714\\ 
-~~Tukey's Biweight&~~~1.000&~~~0.999&~~~1.001&~~~0.999&~~~0.131&~~~0.138&~~~0.113&~~~0.102&~172.043&~189.519&~127.731&~104.759\\ \hline
-{\bf Relative Performance}&&&&&&&&&&&&\\
-~~LAD/LS&~~~1.001&~~~0.999&~~~1.002&~~~1.001&~~~0.837&~~~0.457&~~~1.149&~~~1.251&~~~0.701&~~~0.209&~~~1.321&~~~1.565\\ 
-~~BW/LS&~~~1.001&~~~1.000&~~~1.000&~~~1.000&~~~0.870&~~~0.432&~~~0.988&~~~1.029&~~~0.757&~~~0.187&~~~0.976&~~~1.060\\ 
+\begin{tabular}{|l||c|c|c|c||c|c|c|c|} \hline
+\multicolumn{1}{|l||}{\bf }&\multicolumn{4}{c||}{\bf Mean}&\multicolumn{4}{c|}{\bf Mean Squared Error}\\ \cline{2-9}
+\multicolumn{1}{|l||}{}&\multicolumn{1}{c|}{Lapl.}&\multicolumn{1}{c|}{$t_2$}&\multicolumn{1}{c|}{$t_{10}$}&\multicolumn{1}{c||}{Norm.}&\multicolumn{1}{c|}{Lapl.}&\multicolumn{1}{c|}{$t_2$}&\multicolumn{1}{c|}{$t_{10}$}&\multicolumn{1}{c|}{Norm.}\\ \hline
+{\bf Absolute Performance}&&&&&&&&\\
+~~Least Squares&0.987&0.957&1.005&1.008&2.518&9.586&1.032&0.869\\ 
+~~Least Absolute Deviation&0.990&0.976&1.005&0.996&1.421&2.219&1.312&1.053\\ 
+~~Tukey's Biweight&0.992&0.979&1.003&1.006&1.738&1.580&1.117&0.866\\ \hline
+{\bf Relative Performance}&&&&&&&&\\
+~~LAD/LS&1.002&1.020&1.000&0.988&0.564&0.231&1.271&1.211\\ 
+~~BW/LS&1.005&1.022&0.998&0.998&0.690&0.165&1.082&0.996\\ 
 \hline
 \end{tabular}
 \end{center}

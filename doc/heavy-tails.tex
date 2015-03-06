@@ -6,7 +6,7 @@
 \usepackage{breakcites}
 \usepackage{setspace}
 \usepackage{endnotes}
-\usepackage{float}
+%\usepackage{float} % can't use with floatrow
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -21,14 +21,17 @@
 \usepackage{framed}
 \usepackage{epigraph}
 \usepackage{lipsum}
-\usepackage[font=small,labelfont=sc]{caption}
-\restylefloat{table}
-\usepackage{float}
+%\usepackage{dcolumn}
+%\restylefloat{table}
 \bibpunct{(}{)}{;}{a}{}{,}
 
 % Set paragraph spacing the way I like
 \parskip=0pt
 \parindent=20pt
+
+%\usepackage{helvet}
+%\usepackage[font=sf, labelfont={sf,bf}, margin=1cm]{caption}
+
 
 % Define mathematical results
 \newtheorem{lemma}{Lemma}
@@ -188,7 +191,7 @@ Indeed, there is a substantive argument \textit{against linear estimators} (i.e.
 
 For example, consider the estimates shown in the left panel of Figure \ref{fig:best-fit-illustration}. Which of the two estimates, A or B, best summarizes the relationship between the explanatory and outcome variable? Estimate A fits all the data decently, but estimate B provides an excellent summary for most of the data. Which is preferred? At least in some cases, we might prefer estimate B because we wish to discount the three unusual cases as inconsistent with the model (perhaps these cases are elections marred with scandals, etc.).
 
-\begin{figure}[H]
+\begin{figure}[h!]
 \begin{center}
 \includegraphics[scale = .7]{figs/best-fit-illustration.pdf}
 \caption{Two scatterplots of hypothetical data. The left panel suggests that we might prefer an estimate that provides an excellent fit to most of the data rather than a mediocre fit to all the data. The right panel highlights that we might prefer an estimate that does not respond to movement in points that seem to fall outside the explanatory power of the model. Both the these characteristics violate the assumption of normality.}\label{fig:best-fit-illustration}
@@ -217,7 +220,7 @@ To see the importance of this in practice, we simulated 10,000 data sets 50 obse
 
 But we also consider a least trimmed squares (LTS) estimator in which we minimize the smallest 90\% of the residuals. This method literally throws away data. Though it lacks the elegant theory of the least-squares estimator, the right panel of Figure \ref{fig:lts-illustration} shows that it is essentially unbiased and, compared to the least-squares more efficient (standard deviation about 18\% smaller), and has a much smaller mean squared error (about 32\% smaller) . By any reasonable standard, it is a better estimator than the least squares estimator. We make this gain by expanding our focus to non-linear estimators. In this case, the LTS estimator is not linear because it places zero weight on the largest 10\% of the residuals and weights of one on the smallest 90\% of the residuals.
 
-\begin{figure}[H]
+\begin{figure}[h!]
 \begin{center}
 \includegraphics[scale = .7]{figs/lts-illustration.pdf}
 \caption{These two histograms show the sampling distribution for the least squares estimator and the least trimmed squares estimator under the true model $y = x + \epsilon$, where $\epsilon \sim t_3$. Notice that despite least squares being the best \textit{linear} unbiased estimator for the problem, the least trimmed squares estimator is a better estimator.}\label{fig:lts-illustration}
@@ -349,15 +352,15 @@ To understand and illustrate how the performance of the BW estimator compares wi
 
 For each of two different sample sizes, 100 and 1,000, and the four different error distributions, we simulated 10,000 data sets, estimated $\beta_1$ using the LS estimator, the LAD estimator, and the BW estimator. For each condition, we calculated the expected value of the estimate, the standard deviation, and the mean squared error. Table \ref{tab:mc-sims-100} provides the results for the sample size of 100 and \ref{tab:mc-sims-1000} provides the results for the sample size of 1,000. 
 
-\begin{table}[H]
-{\tiny
+\begin{table}[h!]
+{\small
 \input{tabs/mc-sims-100.tex}
 }
 \caption{Summarizes of the Monte Carlo simulations for four different error distributions with a sample size of 100. Notice that the BW has the best or nearly best performance in each condition, while the LAD estimator performs quite poorly for the $t_{10}$ and normal distributions and the LS estimator performs quite poorly for the Laplace and $t_2$ distributions.}\label{tab:mc-sims-100}
 \end{table}
 
-\begin{table}[H]
-{\tiny
+\begin{table}[h!]
+{\small
 \input{tabs/mc-sims-1000.tex}
 }
 \caption{Summary of Monte Carlo simulations identical to those in Table \ref{tab:mc-sims-100}, except with a sample size of 1,000 rather than 100. As with Table \ref{tab:mc-sims-100}, notice that the BW has the best or nearly best performance in each condition, while the LAD estimator performs quite poorly for the $t_{10}$ and normal distributions and the LS estimator performs quite poorly for the Laplace and $t_2$ distributions.}\label{tab:mc-sims-1000}
@@ -377,7 +380,7 @@ Notice that, among the estimators we consider, the BW estimator is not the most 
 
 To better understand how the heaviness of the tails of the error distribution affects the efficiency of these estimators, we repeated these simulates for $t$ distributions for degrees of freedom ranging from two to thirty and sample sizes 25, 100, 500, and 2,000. Figure \ref{fg:mc-sims} shows the performance of the LAD and BW estimators relative to the LS estimator.
 
-\begin{figure}[H]
+\begin{figure}[h!]
 \begin{center}
 \includegraphics[width = \textwidth]{figs/mc-sims.pdf}
 \caption{This figure shows the relative mean squared error for the LAD estimator and the BW estimator compared to the LS estimator for $t$ distributed errors as the degrees of freedom varies. Notice that for very heavy-tailed distributions (e.g., two to five degrees of freedom), both the LAD and the BW estimators significantly outperform the LS estimator. And while the performance of the LAD estimator significantly worse as the distribution becomes more normal, the BW estimator is comparable to the LS estimator.}\label{fig:mc-sims}
@@ -420,7 +423,7 @@ To measure their key outcome variable, the number of political parties, Clark an
 
 Figure \ref{fig:cg-scatter} plots the key explanatory variables, district magnitude and the effective number of ethnic groups, along the horizontal and vertical axes, respectively. The size of the points indicates the effective number of political parties for each election. The hypothesis predicts that the large points should lie in the upper-right section of the plot and small points should lie near the horizontal and vertical axes.
 
-\begin{figure}[H]
+\begin{figure}[h!]
 \begin{center}
 \includegraphics[scale = 0.8]{figs/cg-scatter.pdf}
 \caption{This figure shows the distribution of district magnitude (on the log scale) and ethnic heterogeneity, where the point sizes indicate the number of political parties. According to Clark and Golder's hypothesis, large points should lie in the upper-right portion of the plot and small points should lie along the axes.}\label{fig:cg-scatter}
@@ -441,7 +444,7 @@ Clark and Golder use least squares to obtain their estimates of the model coeffi
 
 To get an initial sense of how the results might change using an alternative (perhaps more efficient) estimator, we replicated the estimates from four models in their Table 2 using least squares and the biweight estimator. For these initial estimates, we make no attempt to account for the clustered nature of the data in calculating the standard errors, but do supply the usual 90\% confidence intervals to serve as a lower-bound on the uncertainty. Figure \ref{fig:cg-coef-plots} presents these estimates and confidence intervals.
 
-\begin{figure}[H]
+\begin{figure}[h!]
 \begin{center}
 \includegraphics[scale = .8]{figs/cg-coef-plots.pdf}
 \caption{Replication of Clark and Golder (2006) using the biweight estimator with explanatory variables standardized to have mean zero and standard deviation one-half. The black lines and points show the least squares estimates and 90\% confidence intervals and the red lines and points show the biweight estimates and confidence intervals. Notice that the coefficient for the product of the effective number of ethnic groups and the district magnitude changes drastically with the choice of estimator.}\label{fig:cg-coef-plots}
@@ -452,14 +455,14 @@ Notice that the crucial estimate $\hat{\beta}_6$ changes substantially depending
 
 For the remainder of our analysis, we focus on the estimates from large sample of countries from 1946-2000 that includes only established democracies. Figure \ref{fig:cg-residuals-hist} presents the histogram of the residuals from the least-squares estimates and Figure \ref{fig:cg-qq-plot} presents the QQ plot for these residuals. Both figures indicate a substantial skew to the right. While this does not necessarily lead to biased estimates, it does, in our view, suggest that the linear model would be more appropriate for a transformed outcome variable. If the transformation makes the errors more closely approximate a normal distribution, then the least squares estimators will be more efficient. In our view, the model for the transformed outcome can capture potentially interesting substantive effects as well.
 
-\begin{figure}[H]
+\begin{figure}[h!]
 \begin{center}
 \includegraphics[scale = 0.6]{figs/cg-residuals-hist.pdf}
 \caption{A histogram showing the distribution of the residuals from Clark and Golder's (2006) main model. Notice that these residuals do not seem approximately normal. They have a strong skew and heavy tail to the right. For example, one would rarely expect to observe residuals more that three standard deviations from zero if the assumption of normality holds. In these data, we have several residuals more that three standard deviations away and one nearly six standard deviations away. This suggests that some transformation of the outcome variable might be useful.}\label{fig:cg-residuals-hist}	
 \end{center}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[h!]
 \begin{center}
 	\includegraphics[scale = 0.6]{figs/cg-qq-plot.pdf}
 \caption{A QQ plot showing the deviation of the residuals from normality. If the residuals were approximately normal, then the points in the QQ plot would approximately follow the line. However, notice that the positive residuals deviate sharply from the theoretical expectations. This also suggests that some transformation of the outcome variable might be useful.}\label{fig:cg-qq-plot}
@@ -469,7 +472,7 @@ For the remainder of our analysis, we focus on the estimates from large sample o
 
 The maximum likelihood estimate of the Box-Cox transformation parameter $\lambda$ is about $-\frac{1}{3}$ and the confidence interval does not include zero, which suggests that a log-transformation does not quite eliminate the skew. We estimated the model using both a log-transformation and Box-Cox transformation with $\lambda = -\frac{1}{3}$. Figure \ref{fig:cg-trans-residuals-hist} present the histogram of the residuals from these two regression models. Notice that log-transforming the effective number of electoral parties does not quite remove the skew in the residuals. However, the Box-Cox transformation with $\lambda = -\frac{1}{3}$ provides highly symmetric residuals. 
 
-\begin{figure}[H]
+\begin{figure}[h!]
 \begin{center}
 \includegraphics[width = \textwidth]{figs/cg-trans-residuals-hist.pdf}
 \caption{Histograms of the residuals after transforming the outcome variable. The left panel shows that the log transformation does not quite remove all of the skew, but the right panel shows that the Box-Cox transformation with $\lambda = -\frac{1}{3}$ creates an approximately symmetric error distribution.}\label{fig:cg-trans-residuals-hist}
@@ -478,7 +481,7 @@ The maximum likelihood estimate of the Box-Cox transformation parameter $\lambda
 
 Figure \ref{fig:cg-trans-qq-plot} shows the QQ plot for these residuals. The left panel confirms that a right-skew remains after the log-transformation, as suggested by the histogram in the left panel of Figure \ref{fig:cg-trans-residuals-hist}. The right panel of Figure \ref{fig:cg-trans-qq-plot} confirms that the Box-Cox transformation removes much or all of this skew, as suggested by the right panel of Figure \ref{fig:cg-trans-residuals-hist}. 
 
-\begin{figure}[H]
+\begin{figure}[h!]
 \begin{center}
 \includegraphics[width = \textwidth]{figs/cg-trans-qq-plot.pdf}
 \caption{QQ plots of the residuals after transforming the outcome variable. The left panel shows that the log transformation does not quite remove all of the skew, but the right panel shows that the Box-Cox transformation with $\lambda = -\frac{1}{3}$ creates an approximately symmetric error distribution, though it has heavier tails than a normal distribution.}\label{fig:cg-trans-qq-plot}
@@ -526,7 +529,7 @@ Because the scale of the estimates differ drastically across the choice to trans
 
 The first row of Table \ref{tab:cg-qi} suggest that in countries with single-member districts, a substantial increase in ENEG (10th to 90th percentile) increases the ENEP by about 0.16 [-0.24; 0.53] parties. On the other hand, in large, multimember districts (magnitude of 14), the same increase in social heterogeneity increases the ENEP by about 1.14 [0.26; 2.67] parties. This is just as the hypothesis predicts. Further, this increase of 0.98 [0.06; 2.65] is large and statistically significant.
 
-\begin{table}[H]
+\begin{table}[h!]
 {\scriptsize
 \input{tabs/cg-qi.tex}
 }
@@ -541,7 +544,7 @@ Clark and Golder adopt the convention of many researchers in political science--
 
 One major advantage of redescending estimators, such as the biweight estimator, is that these estimators allow unusual cases to stand out. Figure \ref{fig:cg-residuals-compare} compares the residuals from the least squares fit and the biweight fit after the Box-Cox transformation. Notice that the residuals tend to agree, with the exception of the 1980 election in Uganda, which is the largest residual in the biweight fit, but does not stand out among the least squares residuals.
 
-\begin{figure}[H]
+\begin{figure}[h!]
 \begin{center}
 \includegraphics[scale = 0.8]{figs/cg-residuals-compare.pdf}
 \caption{This figure shows the relationship between the least squares and biweight estimates after the Box-Cox transformation. Notice that the biweight estimate allows the unusual case of Uganda to stand out from the others.}\label{fig:cg-residuals-compare}
@@ -550,7 +553,7 @@ One major advantage of redescending estimators, such as the biweight estimator, 
 
 Similarly, Figure \ref{fig:cg-weights} presents the 35 smallest weights from the biweight fit. Recall that as cases become increasingly inconsistent with the majority of the data, the biweight estimator increasingly down weights these cases, potentially to zero. As we might expect, given the residuals in Figure \ref{fig:cg-residuals-compare}, the 1980 election in Uganda receives zero weight. This election is highly consistent with the hypothesis because it features single member districts, an extremely large number of ethnic groups, and only two major political parties. Unfortunately for the hypothesis, though, this case is inconsistent the the majority of the data.
 
-\begin{figure}[H]
+\begin{figure}[h!]
 \begin{center}
 \includegraphics[scale = 0.8]{figs/cg-weights.pdf}
 \caption{This figure shows the final weights implied by the biweight estimator. Because the 1980 election in Uganda is quite different from the remainder of the data, the biweight estimator downweights this case all the way to zero.}\label{fig:cg-weights}

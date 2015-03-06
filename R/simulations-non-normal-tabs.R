@@ -1,6 +1,14 @@
+
+# clear workspace
 rm(list = ls())
+
+# set working directory
+setwd("/Users/carlislerainey/Dropbox/projects/heavy-tails")
+
 #load packages
 library(MASS)
+library(VGAM)
+library(quantreg)
 
 # function to compute mse
 mse <- function(x) {
@@ -44,21 +52,24 @@ ta1 <- cbind(mc.lap$c1, mc.t2$c1, mc.t10$c1, mc.n$c1)
 ta2 <- cbind(mc.lap$c2, mc.t2$c2, mc.t10$c2, mc.n$c2)
 ta3 <- cbind(mc.lap$c3, mc.t2$c3, mc.t10$c3, mc.n$c3)
 
-ta <- cbind(ta1, ta2, ta3)
+ta <- cbind(ta1, 
+            #ta2, 
+            ta3)
 ta <- rbind(ta, ta[2, ]/ta[1, ])
 ta <- rbind(ta, ta[3, ]/ta[1, ])
 
 # ta <- format(round(ta, 2), nsmall = 2)
 rownames(ta) <- c("Least Squares", "Least Absolute Deviation", "Tukey's Biweight", 
                  "LAD/LS", "BW/LS")
-colnames(ta) <- rep(c("Lapl.", "$t_2$", "$t_{10}$", "Norm."), 3)
+colnames(ta) <- rep(c("Lapl.", "$t_2$", "$t_{10}$", "Norm."), 2)
 
 quantreg::latex.table(ta, dec = 3,
                       rowlabel = "",
                       file = "doc/tabs/mc-sims-100",
                       table.env = FALSE,
                       cgroup = c("Mean", 
-                                 "Standard Deviation", "Mean Squared Error"),
+                                 #"Standard Deviation", 
+                                 "Mean Squared Error"),
                       rgroup = c("Absolute Performance",
                                  "Relative Performance"),
                       n.rgroup = c(3, 2),
@@ -75,21 +86,24 @@ ta1 <- cbind(mc.lap$c1, mc.t2$c1, mc.t10$c1, mc.n$c1)
 ta2 <- cbind(mc.lap$c2, mc.t2$c2, mc.t10$c2, mc.n$c2)
 ta3 <- cbind(mc.lap$c3, mc.t2$c3, mc.t10$c3, mc.n$c3)
 
-ta <- cbind(ta1, ta2, ta3)
+ta <- cbind(ta1, 
+            #ta2, 
+            ta3)
 ta <- rbind(ta, ta[2, ]/ta[1, ])
 ta <- rbind(ta, ta[3, ]/ta[1, ])
 
 # ta <- format(round(ta, 2), nsmall = 2)
 rownames(ta) <- c("Least Squares", "Least Absolute Deviation", "Tukey's Biweight", 
                   "LAD/LS", "BW/LS")
-colnames(ta) <- rep(c("Lapl.", "$t_2$", "$t_{10}$", "Norm."), 3)
+colnames(ta) <- rep(c("Lapl.", "$t_2$", "$t_{10}$", "Norm."), 2)
 
 quantreg::latex.table(ta, dec = 3,
                       rowlabel = "",
                       file = "doc/tabs/mc-sims-1000",
                       table.env = FALSE,
                       cgroup = c("Mean", 
-                                 "Standard Deviation", "Mean Squared Error"),
+                                 #"Standard Deviation", 
+                                 "Mean Squared Error"),
                       rgroup = c("Absolute Performance",
                                  "Relative Performance"),
                       n.rgroup = c(3, 2),
