@@ -8,6 +8,7 @@ rm(list = ls())
 # load packages
 library(robustbase)
 library(galts)
+library(compactr)
 
 # parameters
 n <- 50
