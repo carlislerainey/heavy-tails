@@ -218,14 +218,10 @@ fitdistr(residuals(m3), "t",
 
 
 m4 <- rlm(f.bc, data = cg.old, method = "M", psi = psi.bisquare)
-screenreg(list(m3, m4), digits = 3)
 
 fitdistr(residuals(m4), "t", 
          start = list(s = 0.1, df = 10),
          m = 0, lower = 0)
-
-
-plot(residuals(m3), residuals(m4))
 
 ## cluster bootstrap simulations
 boot <- function(method = "ls", lambda = 1, n.bs = 1000) {
@@ -294,6 +290,7 @@ bs.bw.bc <- boot(method = "bw", lambda = -1/3)
 texreg(file = "doc/tabs/cg-coef-tab.tex", 
        scriptsize = TRUE,
        table = FALSE,
+       digits = 3,
        # single.row = TRUE,
        list(bs.lm.none$m, bs.bw.none$m, bs.lm.bc$m, bs.bw.bc$m),
           override.ci.low = list(bs.lm.none$ci.lwr, bs.bw.none$ci.lwr, 
@@ -316,34 +313,37 @@ texreg(file = "doc/tabs/cg-coef-tab.tex",
                               "\\specialcell{Biweight\\\\w/Box-Cox Transformation}"))
 
 pg.ci <- function(bs) {
-  polygon(c(1:150, rev(1:150)), c(bs$fd.ci[1, ], rev(bs$fd.ci[2, ])), 
+  polygon(c(log(1:150), rev(log(1:150))), c(bs$fd.ci[1, ], rev(bs$fd.ci[2, ])), 
           col = "grey70", border = NA)
 }
 
 ## FD plots
 pdf("doc/figs/cg-fd-plots.pdf", height = 4, width = 6)
 par(mfrow = c(2, 2), mar = c(1/2, 1/2, 1, 1/2), oma = c(3, 3, 1, 1))
-eplot(xlim = c(1, 150), ylim = c(-2, 15),
+eplot(xlim = log(c(1, 150)), ylim = c(-2, 15),
       xlab = "District Magnitude",
       ylab = "Effect of ENEG",
-      main = "Least Squares, No Transformation")
+      main = "Least Squares, No Transformation",
+      xat = log(c(1, 2, 5, 20, 50, 150)),
+      xticklab = c(1, 2, 5, 20, 50, 150))
 pg.ci(bs.lm.none)
-lines(1:150, bs.lm.none$fd, lwd = 3)
+
+lines(log(1:150), bs.lm.none$fd, lwd = 3)
 abline(h = 0, lty = 2)
 
 aplot("Least Squares, Box-Cox Transformation")
 pg.ci(bs.lm.bc)
-lines(1:150, bs.lm.bc$fd, lwd = 3)
+lines(log(1:150), bs.lm.bc$fd, lwd = 3)
 abline(h = 0, lty = 2)
 
 aplot("Biweight, No Transformation")
 pg.ci(bs.bw.none)
-lines(1:150, bs.bw.none$fd, lwd = 3)
+lines(log(1:150), bs.bw.none$fd, lwd = 3)
 abline(h = 0, lty = 2)
 
 aplot("Biweight, Box-Cox Transformation")
 pg.ci(bs.bw.bc)
-lines(1:150, bs.bw.bc$fd, lwd = 3)
+lines(log(1:150), bs.bw.bc$fd, lwd = 3)
 abline(h = 0, lty = 2)
 dev.off()
 
