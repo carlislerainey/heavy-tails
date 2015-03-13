@@ -1,7 +1,4 @@
 
-# set working directory
-setwd("~/Dropbox/projects/heavy-tails")
-
 # clear workspace
 rm(list = ls())
 

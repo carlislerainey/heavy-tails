@@ -2,9 +2,6 @@
 # clear workspace
 rm(list = ls())
 
-# set working directory
-setwd("/Users/carlislerainey/Dropbox/projects/heavy-tails")
-
 #load packages
 library(MASS)
 library(VGAM)

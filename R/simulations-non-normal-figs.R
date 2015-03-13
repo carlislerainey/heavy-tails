@@ -1,5 +1,7 @@
 
+# clear workspace
 rm(list = ls())
+
 #load packages
 library(quantreg)
 library(VGAM)

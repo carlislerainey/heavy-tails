@@ -4,9 +4,6 @@ rm(list = ls())
 ## set seed 
 set.seed(4897350)
 
-## set working directory
-setwd("~/Dropbox/projects/heavy-tails")
-
 ## load packages
 library(arm)  # a variety of useful functions\
 library(compactr)
