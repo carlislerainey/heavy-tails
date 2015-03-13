@@ -6,6 +6,7 @@ rm(list = ls())
 library(quantreg)
 library(VGAM)
 library(xtable)
+library(compactr)
 
 # simulation parameters
 pdf("doc/figs/mc-sims.pdf", height = 2, width = 8)
