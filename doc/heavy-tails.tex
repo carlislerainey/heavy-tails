@@ -157,7 +157,7 @@ Researchers studying the consequences of comparative electoral institutions, as 
 %These outcomes include measures of the number of political parties, proportionality of the electoral system, vote share, and others. 
 While it is well known that least-squares estimates are often sensitive to single, influential data points, this knowledge has not led to appropriate practices when using least-squares estimators. 
 We highlight the importance of using more robust estimators in conjunction with least squares and discuss several approaches to detect, summarize, and communicate the influence of particular data points. 
-We conclude with a reanalysis of Clark and Golder (2006) an show that the residuals are highly non-normal under their model specification. 
+We conclude with a reanalysis of \cite{ClarkGolder2006} an show that the residuals are highly non-normal under their model specification. 
 Applying an empirically-chosen transformation and/or using a robust estimator weakens their key conclusions about the conditional relationship between social heterogeneity and electoral rules in influencing the number of political parties.
  \end{quote}
 
@@ -186,7 +186,7 @@ In this manuscript, our goals are to (1) highlight powerful, robust alternatives
 The linear model can be written as $y = X\beta + \epsilon$.\footnote{As usual, $y$ is an outcome variable of interest (usually roughly continuous), $X$ is a $n \times (k + 1)$ matrix containing a single column of ones and $k$ columns holding $k$ explanatory variables, $\beta$ is a $(k + 1) \times 1$ matrix of model coefficients, and $\epsilon$ is an $n \times 1$ matrix of errors. As usual, the statistical properties of these estimators depend on this model being correct and a full rank $X$.} 
 Researchers in political science commonly estimate this model with least squares by minimizing the sum of the squared residuals, such that$\hat{\beta}^{LS} = \argmin_b S(b)$, where $S(b) = \sum_{i = 1}^n(y_i - X_ib)^2$. 
 %That is, OLS estimators choose the estimate $\hat{\beta}^{LS}$ that minimizes the sum of the squared residuals. 
-If we assume that the errors $\epsilon$ follow independent and identical normal distributions with mean zero and unknown variance, which we refer to as a ``normal-linear model,'' then the least squares estimator is the uniform minimum variance unbiased estimator (UMVUE) (Casella and Berger 2002, pp. 334-342, and Wooldridge 2013, pp. 807-815).
+If we assume that the errors $\epsilon$ follow independent and identical normal distributions with mean zero and unknown variance, which we refer to as a ``normal-linear model,'' then the least squares estimator is the uniform minimum variance unbiased estimator (UMVUE) (\citealt[pp. 334-342]{CasellaBerger2002}, and \citealt[807-815]{Wooldridge2013}).
 This is a powerful result. 
 Under the assumption of normally distributed errors, least squares is the most efficient unbiased estimator.
 
@@ -288,16 +288,16 @@ In this case, the LTS estimator is non-linear because it places zero weight on t
 \section*{The Relative Emphasis on Standard Errors}
 
 There has been a great deal of attention in the methodological literature to the sensitivity of standard errors to violations from the assumed model--and substantive scholars have paid attention.
-White's (1980) seminal paper developing heteroskedasticity-consistent standard errors has received over 20,000 citations, making it one of the most cited papers in economics.
-Beck and Katz's (1995) development panel corrected standard errors has received over 4,300 citations, making it one of the most cited papers in political science.
+White's (\citeyear{White1980}) seminal paper developing heteroskedasticity-consistent standard errors has received over 20,000 citations, making it one of the most cited papers in economics.
+Beck and Katz's (\citeyear{BeckKatz1995}) development panel corrected standard errors has received over 4,300 citations, making it one of the most cited papers in political science.
 
 On the other hand, there has been scant attention paid by substantive political scientists to the sensitivity of the \textit{estimates} to similar violations. 
-This is particularly problematic, since it makes little sense to find a good standard error for a poor estimate (Freedman 2012 and King and Roberts 2014). 
+This is particularly problematic, since it makes little sense to find a good standard error for a poor estimate (\citealt{Freedman2006} and \citealt{KingRoberts2014}). 
 Two papers in political science have addressed the issue of robust estimation. 
-Western (1995) introduces political scientists to robust estimators, but this work has been essentially ignored. 
-Although it is more broadly applicable than Beck and Katz (1995) and was published in the same year, but it has received only 99 citations, or  about 2\% of the citations that Beck and Katz have received. 
-Similarly, Desmarais and Harden (2011) have received only one citation, and it comes from the authors themselves.
-Anderson's (2008) broad and accessible introduction to robust estimation methods has received only about 150 citations, most from outside political science.
+\cite{Western1995} introduces political scientists to robust estimators, but this work has been essentially ignored. 
+Although it is more broadly applicable than \cite{BeckKatz1995} and was published in the same year, but it has received only 99 citations, or  about 2\% of the citations that Beck and Katz have received. 
+Similarly, \cite{HardenDesmarais2011} have received only one citation, and it comes from the authors themselves.
+Anderson's (\citeyear{Anderson2008}) broad and accessible introduction to robust estimation methods has received only about 150 citations, most from outside political science.
 
 This focus on obtaining reasonable standard errors at the expense of reasonable estimates can be seen in Gujarati (????, p. ??, ), a popular textbook for political science classes focusing on linear models. 
 Though the text deals with robust standard errors in some detail, Gujarati writes (in a footnote):
