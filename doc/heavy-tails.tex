@@ -18,7 +18,7 @@
 %\usepackage[usenames,dvipsnames]{color}
 \usepackage{url}
 \usepackage{natbib}
-\usepackage{framed}
+\usepackage{framed} 
 \usepackage{epigraph}
 \usepackage{lipsum}
 %\usepackage{dcolumn}
@@ -51,9 +51,9 @@
 
 
 % Set up fonts the way I like
-%\usepackage{tgpagella}
-%\usepackage[T1]{fontenc}
-%\usepackage[bitstream-charter]{mathdesign}
+\usepackage{tgpagella}
+\usepackage[T1]{fontenc}
+\usepackage[bitstream-charter]{mathdesign}
 
 %% Baskervald
 %\usepackage[lf]{Baskervaldx} % lining figures
@@ -299,13 +299,13 @@ Although it is more broadly applicable than \cite{BeckKatz1995} and was publishe
 Similarly, \cite{HardenDesmarais2011} have received only one citation, and it comes from the authors themselves.
 Anderson's (\citeyear{Anderson2008}) broad and accessible introduction to robust estimation methods has received only about 150 citations, most from outside political science.
 
-This focus on obtaining reasonable standard errors at the expense of reasonable estimates can be seen in Gujarati (????, p. ??, ), a popular textbook for political science classes focusing on linear models. 
-Though the text deals with robust standard errors in some detail, Gujarati writes (in a footnote):
+This focus on obtaining reasonable standard errors at the expense of reasonable estimates can be seen in \cite{Gujarati2004}, a popular textbook for political science classes focusing on linear models. 
+Though the text deals with robust standard errors in some detail, \cite[p. 339]{Gujarati2004} writes (in a footnote):
 \begin{quote}
 In passing, note that the effects of departure from normality and related topics are often discussed under the topic of robust estimation in the literature, a topic \textit{beyond the scope of this book} [italics ours].
 \end{quote}
-Angrist and Pischke (2008) devote an entire chapter to robust standard errors and completely ignore robust estimation of model coefficients. 
-Wooldridge (????) does devote about two pages to robust estimation, though the tone is skeptical.
+\cite{AngristPischke2009} devote an entire chapter to robust standard errors and completely ignore robust estimation of model coefficients. 
+\cite{Wooldridge2013} does devote about two pages to robust estimation, though the tone is skeptical.
 
 \section*{Dealing with Skewness: Transforming the Outcome}
 
@@ -337,7 +337,7 @@ In this case, the model $\log(y) = X\beta + \epsilon$ will likely provide a bett
 \subsection*{The Box-Cox Transformation}
 
 While we agree with the spirit of the suggestion to log-transform non-negative outcome variable $y$, statisticians have created more precise empirical methods for choosing \textit{whether} and \textit{how} to do the transformation. 
-Box and Cox (1964) propose the Box-Cox transformation 
+\cite{BoxCox1964} propose the Box-Cox transformation 
 \begin{displaymath}
    y^{(\lambda)} = BC(y, \lambda) = \left\{
      \begin{array}{lr}
@@ -351,7 +351,7 @@ In this case, the model becomes $y^{(\lambda)} = X\beta + \epsilon$.
 This is particularly convenient because if $\hat{\lambda} \approx 1$ suggests no transformation is needed and $\hat{\lambda} \approx zero$ suggests that only an intuitive log-transformation is needed.
 
 Researchers can easily assess the skewness in the residuals using a simple histogram of the residuals or a QQ plot of the residuals compared to their normal quantiles. 
-For a formal test of skewness, researchers might use a direct test for symmetry on residuals $\hat{e}$, such as the Mira test (Mira 1999) or simply test whether $\lambda \neq 1$ under the Box-Cox framework. 
+For a formal test of skewness, researchers might use a direct test for symmetry on residuals $\hat{e}$, such as the Mira test \citep{Mira1999} or simply test whether $\lambda \neq 1$ under the Box-Cox framework. 
 However, we do not want to argue for a particular test, but to highlight that (1) asymmetries worsen the performance of least squares (and many robust methods), (2) researchers can easily detect asymmetries by carefully examining the residuals, and (3) researchers can address this problem with simple, easy-to-use transformations.
 
 \subsection*{Mean or Median?}
@@ -377,13 +377,14 @@ This holds for the more general case of $y^{(\lambda)}$ as well.
 
 \subsection*{Simulating Quantities of Interest Under Transformation}
 
-To obtain quantities of interest relating to $\med(y)$ when the estimated model has the generic form $y^{(\lambda)} = X\beta + \epsilon$, one can simply use the algorithm described in King, Tomz, and Wittenberg (2000).
+To obtain quantities of interest relating to $\med(y)$ when the estimated model has the generic form $y^{(\lambda)} = X\beta + \epsilon$, one can simply use the algorithm described in \cite{KingTomzWittenberg2000}.
 \begin{enumerate}
-\item Estimate the Box-Cox transformation parameter $\hat{\lambda}$ using maximum likelihood. (If the values one or zero fall within the confidence interval, then one may wish to use those values to maintain the direct interpretability of the model coefficients.)
+\item Estimate the Box-Cox transformation parameter $\hat{\lambda}$ using maximum likelihood. 
+(If the values one or zero fall within the confidence interval, then one may wish to use those values to maintain the direct interpretability of the model coefficients.)
 \item Estimate the transformed model $y^{(\lambda)} = X\beta + \epsilon$ and obtain the estimated model coefficients $\hat{\beta}_{trans}$ and covariance matrix $\Sigma_{trans}$.
 \item Choose a hypothetical case or set of cases $X_{pred}$ for which to calculate the quantity of interest. 
 If one is interested in calculating a first difference, it is convenient to use $X_{hi}$ and $X_{lo}$, where the first-difference $\Delta(y, X_{hi}, X_{lo}) = \med(y | X_{hi}) - \med(y | X_{lo})$.
-\item Following King, Tomz, and Wittenberg (2000), for $i$ from one to a large (e.g., 1,000) number of iterations $n_{sims}$:
+\item Following \cite{KingTomzWittenberg2000}, for $i$ from one to a large (e.g., 1,000) number of iterations $n_{sims}$:
         \begin{enumerate}
         \item Simulate $\tilde{\beta}_{trans} \sim N\left(\hat{\beta}_{trans}, \Sigma_{trans}\right)$.
         \item Calculate and store $\tilde{Q}_i = \med(y | X_{red}, \tilde{\beta}_{trans}) = X_{red}\tilde{\beta}_{trans}$ or, if interested in the first-difference, $\tilde{Q}_i = \tilde{\Delta}(y, X_{hi}, X_{lo}, \tilde{\beta}_{trans}) = X_{hi}\tilde{\beta}_{trans} - X_{lo}\tilde{\beta}_{trans}$.
@@ -394,14 +395,14 @@ The mean or median of $\tilde{Q}_i$ serves as an estimate of $\med(y | X_{pred})
 
 \section*{Dealing with Heavy-Tails: $M$-Estimation}
 
-In spite of the scant attention paid to robust estimators in political science, statisticians have developed and refined many robust methods since the seminal work of Box (1953) and Huber (1964). 
-Huber and Ronchetti (2009) provide a detailed review of these developments and Anderson (2008) provides an accessible introduction. 
+In spite of the scant attention paid to robust estimators in political science, statisticians have developed and refined many robust methods since the seminal work of \cite{Box1953} and \cite{Huber1964}. 
+\cite{HuberRonchetti2009} provide a detailed review of these developments and \cite{Anderson2008} provides an accessible introduction. 
 Adjudicating among the many robust alternatives to least squares is beyond the scope of our paper, but, to fix ideas, we do introduce one robust estimator in detail which has several desirable properties--the $M$-estimator with Tukey's biweight function. 
-However, there are many other options that are beyond the scope of this paper, such as $M$-estimators with other objective functions (e.g., Huber 1973), LMS- and LTS-estimators (Rousseeuw 1984), S-estimators (Rousseeux and Yohai 1984), and MM-estimators (Yohai 1987).
+However, there are many other options that are beyond the scope of this paper, such as $M$-estimators with other objective functions (e.g., \citealt{Huber1973}), LMS- and LTS-estimators \citep{Rousseeuw1984}, S-estimators \citep{RousseeuwYohai1984}, and MM-estimators \citep{Yohai1987}.
 
 While least squares yields the coefficients that minimize the sum of the squared residuals, so that $\hat{\beta}^{ls} =\argmin_{b} \sum_{i = 1}^n (y_i - X_ib)^2$, M-estimators minimizes an arbitrary, less-rapidly increasing function of the residuals $\hat{\beta}^{\rho} =\argmin_{b} \sum_{i = 1}^n \rho(y_i - X_ib)$. 
 The function $\rho(\cdot)$ is typically chosen to be non-negative, symmetric about zero, and decreasing away from zero. 
-For example, Harden and Desmarais (2011) recommend the least absolute deviation (LAD) estimator (Dodge 1987) that such $\rho(\cdot) = abs(\cdot)$. 
+For example, \citep{HardenDesmarais2011} recommend the least absolute deviation (LAD) estimator \citep{Dodge1987} that such $\rho(\cdot) = abs(\cdot)$. 
 However, other estimators offer better performance, particularly when the normal-linear model is approximately correct. 
 In particular, we recommend Tukey's biweight function, so that
 \begin{displaymath}
@@ -412,9 +413,9 @@ In particular, we recommend Tukey's biweight function, so that
 \end{array}
    \right.,
 \end{displaymath}.
-\noindent where $r_i = y_i - X_ib$ and $k$ is a tuning parameter usually set to ???? to ensure good performance under the normal-linear model. 
+\noindent where $r_i = y_i - X_ib$ and $k$ is a tuning parameter usually set to 4.685 to ensure good performance under the normal-linear model. 
 We refer to the $M$-estimator using the biweight objective function as the ``biweight (BW) estimator.'' 
-The BW estimator is a compelling alternative to the LAD estimator suggested by Harden and Desmarais (2011) for two reasons. 
+The BW estimator is a compelling alternative to the LAD estimator suggested by \citep{HardenDesmarais2011} for two reasons. 
 First, the biweight objective function is redescending, which means that it has the ability to weight unusual observations all the way down to zero. 
 The absolute value objective function, on the other hand, does downweight unusual observations, but these always received some weight. 
 Secondly, the BW estimator is much more efficient than the LAD estimator when the errors are approximately normal. 
@@ -431,7 +432,7 @@ Because the biweight objective function is not convex, we must assume that the e
 
 $M$-estimators in general, and the biweight estimator in particular, have the desirable substantive property that they allow unusual cases to ``be unusual.''
 Least squares, on the other hand, sacrifices fit on typical cases to better fit unusual cases. 
-allowing unusal cases to stand out, though, is extremely important because unusual cases can inform and improve subsequent analyses. 
+allowing unusual cases to stand out, though, is extremely important because unusual cases can inform and improve subsequent analyses. 
 Knowing what cases fall outside the explanatory power of the model enables the researcher to ask ``Why?'' and raise issues relating to concepts, theory, and measurement that might otherwise have been missed.
 
 \subsection*{Estimation}
@@ -457,12 +458,12 @@ If we assume that the errors are symmetricaly distributed about zero, then any o
 But this estimator is \textit{linear} if and only if $\rho(r_i) = r_i^2$. Other choices of $\rho(\cdot)$ might produce better estimators than the BLUE estimator.  
 
 The theory for the variance for this broad class of unbiased $M$-estimators, though, is asymptotic. 
-The required sample size for the asymptotic approximations to work well depends on the problem, but valid confidence intervals for small data can easily be computed by bootstrapping (Efron ????, Duval and Mooney ????). 
+The required sample size for the asymptotic approximations to work well depends on the problem, but valid confidence intervals for small data can easily be computed by bootstrapping (\citealt{Efron1981} and \citealt{MooneyDuval1993}). 
 \ctk{maybe more here on required sample size.}
 
 \section*{Monte Carlo Simulations}
 
-To understand and illustrate how the performance of the biweight (BW) estimator compares with the least squares (LS) and least absolute deviation (LAD)8 estimators, we simulated from the linear model $y = \beta_0 + \beta_1x_1 + \beta_2 x_2 + \beta_3 x_3 + \epsilon$, where $\beta_0 = 0$ and $\beta_1 = \beta_2 = \beta_3 = 1$ and the $x_i$'s were generated from independent standard normal distributions. 
+To understand and illustrate how the performance of the biweight (BW) estimator compares with the least squares (LS) and least absolute deviation (LAD) estimators, we simulated from the linear model $y = \beta_0 + \beta_1x_1 + \beta_2 x_2 + \beta_3 x_3 + \epsilon$, where $\beta_0 = 0$ and $\beta_1 = \beta_2 = \beta_3 = 1$ and the $x_i$'s were generated from independent standard normal distributions. 
 We used four different distribution for the errors.
 \begin{itemize}
 \item \textit{Laplace distribution.} 
@@ -572,7 +573,7 @@ These steps ensure that inferences are consistent with the majority of the data 
 
 \section*{Replication of Clark and Golder (2006)}
 
-Clark and Golder (2006) attempt to ``rehabilitate'' Duverger's (????) classic explanation for the number of political parties in a system.
+\cite{ClarkGolder2006} attempt to ``rehabilitate'' Duverger's (\citeyear{Duverger1963}) classic explanation for the number of political parties in a system.
 They write: 
 
 \begin{quote}
@@ -710,7 +711,7 @@ But these differences are slight so it can be valuable to carefully examine exam
 \subsection*{Quantities of Interest}
 
 To estimate the quantity of interest--the effect of social heterogeneity as the permissiveness of the electoral rules varies--we re-estimated Clark and Golder's model with and without the Box-Cox transformation using both the least squares and biweight estimators. 
-To obtain standard errors, we using the cluster bootstrap suggested by Harden (2012) (see also Esarey and Menger 2015) to calculate the confidence intervals for each model.
+To obtain standard errors, we using the cluster bootstrap suggested by \cite{Harden2012} to calculate the confidence intervals for each model.
 
 Figure \ref{fig:cg-fd-plots} plots the effect of increasing social heterogeneity from ENEP = 1.06 (10th percentile) to ENEP = 2.48 (90th percentile) as the district magnitude varies. 
 The upper-left figure replicates Clark and Golder's approach (except for the cluster-bootstrap confidence intervals) and replicates their finding, which they summarize:
@@ -793,7 +794,7 @@ Because the 1980 election in Uganda is quite different from the remainder of the
 
 We offer a different approach than most applied research in political science adopts in practice. 
 Rather than relying on the artificial Gauss-Markov theorem and BLUE estimators, we suggest that a careful consideration of the residuals is important. 
-We have shown that there can be tremendous gains in efficiency by using robust estimators in the face of heavy-tailed error distributions, and we have shown that our approach leads to somewhat different conclusions than Clark and Golder (2006). 
+We have shown that there can be tremendous gains in efficiency by using robust estimators in the face of heavy-tailed error distributions, and we have shown that our approach leads to somewhat different conclusions than \cite{ClarkGolder2006}. 
 But the approach we advocate is not powerful because it gives different results--it is powerful because it is substantively informative. 
 Below we discuss several \textit{substantive} points that one can take from our brief analysis of Clark and Golder's data.
 
@@ -801,9 +802,9 @@ Below we discuss several \textit{substantive} points that one can take from our 
 
 At first glance, these results might make it seem Duverger's logic lacks the empirical support suggested by the literature. Indeed, the evidence offered by the normal-linear model seems to hinge on the improper assumption of normal errors. 
 Once we relax this assumption using a transformation and robust estimators, the evidence shrinks. However, rejection of Duverger's theory or Clark and Golder's (2006) analysis is premature for four reasons. 
-First, the theoretical logic for Duverger's hypotheses is clear and compelling (e.g., Duverger 1954, Riker 1982, Cox 1997, Anorim Neto and Cox 1997, Cox 1999). 
-Second, many empirical studies beyond Clark and Golder (2006) find substantial empirical support for the hypotheses, including observational (e.g., Chibber and Coleman 1998 and Singer and Stephenson 2009), quasi-experimental(e.g., Blais et al. 2009 and Fujiwara 2011), and incentivized experimental studies (for a review, see Rietz 2008). 
-Thirdly, in addition to the confidence intervals including effects that are inconsistent with the Clark and Golder's hypothesis, the confidence intervals now include \textit{even larger} effects.
+First, the theoretical logic for Duverger's hypotheses is clear and compelling (e.g., \citealt{Duverger1963}, \citealt{Riker1982}, \citealt{Cox1997}, \citealt{AmorimNetoCox1997}, \cite{Cox1999}). 
+Second, many empirical studies beyond \cite{ClarkGolder2006} find substantial empirical support for the hypotheses, including observational (e.g., \citealt{ChhibberKollman1998} and \citealt{SingerStephenson2009}, quasi-experimental(e.g., \citealt{Blaisetal2011} and \citealt{Fujiwara2011}), and incentivized experimental studies (for a review, see \citealt{Rietz2008}). 
+Thirdly, in addition to the confidence intervals including effects that are inconsistent with the Clark and Golder's hypothesis, the confidence intervals now include \textit{even larger} effects, which suggests the effect might be even larger than Clark and Golder suggest.
 Finally, the biweight $M$-estimator suggests several potential shortcomings in terms of concepts, theory, measurement that might currently undermine the evidence for these theories.
 
 \subsubsection*{Questions about Measuring ``Established Democracies''}
@@ -814,18 +815,18 @@ Uganda was under British rule until 1962, when it was granted independence from 
 The 1962 elections led to the election of Milton Obote as prime minister. 
 Four years later, facing scandal, Obote suspended the constitution, assumed all government powers, and declared himself president. 
 In 1967, the parliament adopted a new constitution that solidified the expansive powers in the hands of the president. 
-During this time Obote banned all political parties and organizations accept his own (Kasozi 1993, pp. 99). 
-In 1971, Obote was ousted by Major General Idi Amin. During Amin's rule, between 50,000 and 300,000 civilians were killed(Kasozi 1993, pp. 104). 
-With the support of the Tanzanian military, which was working in conjunction with two Ugandan factions one lead by Obote and the other Museveni, ended Amin's bloody rule in 1979(Kasfir 1998, pp. 53, and Kasozi 1993, pp. 124-127).
+During this time Obote banned all political parties and organizations accept his own \citep[p. 99]{Kasozi1993}. 
+In 1971, Obote was ousted by Major General Idi Amin. During Amin's rule, between 50,000 and 300,000 civilians were killed \citep[p. 104]{Kasozi1993}. 
+With the support of the Tanzanian military, which was working in conjunction with two Ugandan factions one lead by Obote and the other Museveni, ended Amin's bloody rule in 1979 (\citealt[p. 53]{Kasfir1998}, and \citealt[pp. 124-127]{Kasozi1993}).
 In the following year, one leader was forcibly removed from office and the following government experience yet another military coup and elections were scheduled in 1980. 
 By May of 1980 a group known as The Military Commission had taken power in order to give it to Obote. 
-Obote wanted the appearance of being a democratic leader, therefore the Military Commission drafted electoral rules and held an election later that year (Kasozi 1993, pp. 135-137).
+Obote wanted the appearance of being a democratic leader, therefore the Military Commission drafted electoral rules and held an election later that year \citep[pp. 135-137]{Kasozi1993}.
 In an election that were with corruption and irregularity, Obote's party won a majority of the seats. 
 Amin's bloody rule continued into Obote's second tenure with a death toll between 100,000 and 500,000 over the next five years--a second conflict with civilian casualties on the scale of the recent tragedies in Darfur. 
 Although elections were again held in 1996, 2001, 2006, and 2011, these election featured irregularities, harassment, and did not lead to a change in power.
 
 The context of the election raises question about whether Uganda was an ``established democracy'' in 1980, or even a democracy. 
-One common measure offered by Cherub, Gandhi, and Vreeland (2010), does indeed code Uganda as a democracy in 1980.\footnote{Another common measure of democracy, Polity IV, codes Uganda as a four in 1980, which falls outside range of six to ten that scholars typically consider democratic.} 
+One common measure offered by \cite{CheibubGandhiVreeland2010}, does indeed code Uganda as a democracy in 1980.\footnote{Another common measure of democracy, Polity IV, codes Uganda as a four in 1980, which falls outside range of six to ten that scholars typically consider democratic.} 
 They code countries as a democracy if and only if it meets all following four conditions:
 \begin{enumerate}
 \item The chief executive must be chosen by popular election or by a body that was itself popularly elected.
@@ -840,17 +841,15 @@ Because these author indeed code Uganda in 1980 as a democracy, they consider th
 However, this was a single election, nested between two military dictatorships, and during the winner's administration, he seized powers and dragged the country into civil war. 
 It remains unclear to us how this meets the condition of democracy more broadly or the alternation condition more specifically.
 
-Indeed it is becoming common for authoritarian leaders to hold meaningless elections in to present the illusion of democracy. Levitsky and Way (2002) argue that:
+Indeed it is becoming common for authoritarian leaders to hold meaningless elections in to present the illusion of democracy. \cite{LevitskyWay2002} argue that:
 \begin{quote}
 It is essential, however, to distinguish regimes in which democratic institutions offer an important channel through which the opposition may seek power from those regimes in which democratic rules simply serve as to legitimate an existing autocratic leadership.
 \end{quote}
 
-
-
 Secondly, even if Uganda was a democracy in 1980, was it ``established''? 
 Surely not, as this was the first election in 18 years following 10 years of brutal dictatorship. 
 However, according to Clark and Golder's define ``established democracies'' as countries that transitioned to democracy after 1989 (see note b in their Tables 1 and 2). 
-Yet why is it important to focus on \textit{established} democracies? Clark and Golder (2006, p. 706) summarize Duverger's argument: 
+Yet why is it important to focus on \textit{established} democracies? \citet[p. 706]{ClarkGolder2006} summarize Duverger's argument: 
 
 \begin{quote}
 Another intriguing finding is that Duverger's theory receives much weaker support when we include elections from countries that transitioned to democracy after 1989. 
@@ -874,7 +873,7 @@ A theory about the dynamics to reaching an equilibrium is crucial to measuring w
 Perhaps new democracies begin with many parties and the number shrinks until equilibrium. 
 Perhaps they begin with many and the number grows until equilibrium. 
 Perhaps it depends on the context of the election. 
-Some work has been done in this area (e.g.,  Moser 1999, Crisp, Olivella, and Potter 2012, and Ferrara 2011), but expanded the theoretical and empirical research in this area is both crucial in its on right but also for studying the number of parties in equilibrium. 
+Some work has been done in this area (e.g.,  \citealt{Moser1999}, \citealt{CrispOlivelloPotter2012}, and \citealt{Ferrara2011}, but expanded the theoretical and empirical research in this area is both crucial in its on right but also for studying the number of parties in equilibrium. 
 
 The fact that the 1980 election in Uganda featured essentially two political parties is quite interested. Indeed, given the social heterogeneity, we would expect many more political parties-- more than eight according to the biweight estimate and more than four according to the least squares estimate. 
 Indeed, this case is so different from the majority rest of the data that it receives zero weight in the biweight estimator. 
@@ -889,7 +888,7 @@ The point is not to answer this question but to highlight that a careful conside
 
 \section*{Conclusion}
 
-\ctk{I might add a little more to the introduction here.}
+\ctk{I might add a little more to the conclusion here.}
 
 The convention among substantive scholar in political science is to take least squares estimates at face value without thinking carefully about the distribution of the errors. 
 Indeed,  the Gauss-Markov theorem encourages a lack of attention to residuals by claiming that least squares is the \textit{best} linear unbiased estimator. 
@@ -899,8 +898,8 @@ Most importantly, though, paying close attention to residuals can raise importan
 
 \singlespace
 \bibliographystyle{apsr_fs}
-%\bibliography{/Users/carlislerainey/Dropbox/papers/bibliography/bibliography.bib}
-\bibliography{/Users/rcrainey/Dropbox/papers/bibliography/bibliography.bib}
+\bibliography{/Users/carlislerainey/Dropbox/papers/bibliography/bibliography.bib}
+%\bibliography{/Users/rcrainey/Dropbox/papers/bibliography/bibliography.bib}
 
 \newpage
 \doublespace
