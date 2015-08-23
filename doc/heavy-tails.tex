@@ -131,21 +131,17 @@ urlcolor=darkred % color of external links
 
 \begin{center}
 {\LARGE \textbf{When BLUE Is Not Best}}\\\vspace{2mm}
-{ \textbf{Non-Normal Errors and the Linear Model}\symbolfootnote[1]{We thank Bill Clark and Matt Golder for making their data available to us. The analyses presented here were conducted with \texttt{R} 3.1.0. All data and computer code necessary for replication are available at \href{https://github.com/carlislerainey/heavy-tails}{
+{ \textbf{Non-Normal Errors and the Linear Model}\symbolfootnote[1]{We thank Bill Clark and Matt Golder for making their data available to us. The analyses presented here were conducted with \texttt{R} 3.2.2. All data and computer code necessary for replication are available at \href{https://github.com/carlislerainey/heavy-tails}{
 github.com/carlislerainey/heavy-tails}.}}\\\vspace{2mm}
 
 
 \vspace{10mm}
 
-Dan Baissa\symbolfootnote[2]{Dan Baissa is an M.A. student in the Department of Political Science, University at Buffalo, SUNY, 520 Park Hall, Buffalo, NY 14260 (\href{mailto:dkbaissa@buffalo.edu}{
-dkbaissa@buffalo.edu}
-).}
+Dan Baissa\symbolfootnote[2]{Dan Baissa is a Ph.D. student in the Department of Government, Harvard University, 1737 Cambridge St., Cambridge , MA, 02138 (\href{mailto:dbaissa@g.harvard.edu}{dbaissa@g.harvard.edu}).}
 
 \vspace{3mm}
 
-Carlisle Rainey\symbolfootnote[3]{Carlisle Rainey is Assistant Professor of Political Science, University at Buffalo, SUNY, 520 Park Hall, Buffalo, NY 14260 (\href{mailto:rcrainey@buffalo.edu}{
-rcrainey@buffalo.edu}
-).}
+Carlisle Rainey\symbolfootnote[3]{Carlisle Rainey is Assistant Professor of Political Science, Texas A\&M University, 2010 Allen Building, College Station, TX, 77843 (\href{mailto:crainey@tamu.edu}{crainey@tamu.edu}).}
 \end{center}
 
 \vspace{10mm}
@@ -185,8 +181,7 @@ In this manuscript, our goals are to (1) highlight powerful, robust alternatives
 
 The linear model can be written as $y = X\beta + \epsilon$.\footnote{As usual, $y$ is an outcome variable of interest (usually roughly continuous), $X$ is a $n \times (k + 1)$ matrix containing a single column of ones and $k$ columns holding $k$ explanatory variables, $\beta$ is a $(k + 1) \times 1$ matrix of model coefficients, and $\epsilon$ is an $n \times 1$ matrix of errors. As usual, the statistical properties of these estimators depend on this model being correct and a full rank $X$.} 
 Researchers in political science commonly estimate this model with least squares by minimizing the sum of the squared residuals, such that$\hat{\beta}^{LS} = \argmin_b S(b)$, where $S(b) = \sum_{i = 1}^n(y_i - X_ib)^2$. 
-%That is, OLS estimators choose the estimate $\hat{\beta}^{LS}$ that minimizes the sum of the squared residuals. 
-If we assume that the errors $\epsilon$ follow independent and identical normal distributions with mean zero and unknown variance, which we refer to as a ``normal-linear model,'' then the least squares estimator is the uniform minimum variance unbiased estimator (UMVUE) (\citealt[pp. 334-342]{CasellaBerger2002}, and \citealt[807-815]{Wooldridge2013}).
+If we assume that the errors $\epsilon$ follow independent and identical normal distributions with mean zero and unknown variance, which we refer to as a ``normal-linear model,'' then the least squares estimator is the uniform minimum variance unbiased estimator (UMVUE) (\citealt[pp. 334-342]{CasellaBerger2002}, and \citealt[807-815]{Wooldridge2013}), sometimes called the best unbiased estimator (BUE).
 This is a powerful result. 
 Under the assumption of normally distributed errors, least squares is the most efficient unbiased estimator.
 
@@ -194,19 +189,18 @@ If we relax the assumption of normality, and simply require that the errors have
 While this result is often emphasized, it should provide little comfort to researchers because there is little statistical or substantive reason to restrict themselves to \textit{linear} estimators.
 
 At first glance, one might take the linearity restriction in the Gauss-Markov theorem to refer to the structure of the model (i.e., ``linear in the parameters''). 
-%such that $E(y | X) = X\beta$ falls into the class of ``linear'' regression models, but  $E(y | X) = e^{X\beta}$ does not. 
 Indeed, this is the sense in which we use ``linear'' in the phrase ``linear model.'' 
-However, the ``linear'' restriction in the Gauss-Markov Theorem refers something else. 
-It requires that the estimates be a linear function of the outcome variable, so that $\hat{\beta}_j = \lambda_1 y_1 + \lambda_2 y_2 + ... + \lambda_n y_n$, where the weights $\lambda_i$ are allowed to depend on $X$, but not on $y$.%\footnote{In matrix form, linearity requires that $\hat{\beta} = My$, where $M$ depends on the matrix $X$. For the case of least-squares, $M = (X'X)^{-1}X'$.} 
+However, the ``linear'' restriction in the Gauss-Markov Theorem refers something else--a linear \textit{estimator}, which is a technical condition that has little connection to the substance of the problem.
+Linearity of the \textit{estimator} simply requires that the estimates be a linear function of the outcome variable, so that $\hat{\beta}_j = \lambda_1 y_1 + \lambda_2 y_2 + ... + \lambda_n y_n$, where the weights $\lambda_i$ are allowed to depend on $X$, but not on $y$. 
 In other words, the Gauss-Markov theorem assumes a linear \textit{model} of the form $E(y | X) = X\beta$, but it is restricted to linear \textit{estimators} of the form $\hat{\beta}_j = \lambda_1 y_1 + \lambda_2 y_2 + ... \lambda_n y_n$. 
 
-We can see that the least-squares criterion produces a linear \textit{estimator} with some simple algebra. 
+We can see that the least-squares criterion produces a linear estimator with some simple algebra. 
 First, recall that we wish to minimize $S(b) = \sum_{i = 1}^n(y_i - X_ib)^2$ with respect to $b$. 
 To do this, we can simply set $\dfrac{\partial S(\hat{\beta}^{LS})}{\partial \hat{\beta}^{LS}} = 0$ and solve for the vector $\hat{\beta}^{LS}$. 
 Noting that $\dfrac{\partial S(\hat{\beta}^{LS})}{\partial \hat{\beta}^{LS}} = \sum_{i = 1}^n 2(y_i - X_i\hat{\beta}^{LS})(-X_i) = 0$ implies that $\sum_{i = 1}^n X_i(y_i - X_i\hat{\beta}^{LS}) = 0$. 
 This is simply a system of $k+1$ \textit{linear} equations $\sum_{i = 1}^n X_{ij}(y_i - X_i\hat{\beta}^{LS})$ for $k = \{0, 1, 2,..., k\}$. 
 Of course, the matrix form $X'(y - X\hat{\beta}^{LS}) = 0 \Rightarrow (X'X)\hat{\beta}^{LS} = X'y \Rightarrow \hat{\beta}^{LS} = (X'X)^{-1}X'y$ is much more common. 
-In matrix form, linearity requires that $\hat{\beta} = My$, where $M$ depends on the matrix $X$. 
+In matrix form, linearity of the estimator requires that $\hat{\beta} = My$, where $M$ depends on the matrix $X$. 
 We can clearly see that the least squares estimator $\hat{\beta}^{LS} = (X'X)^{-1}X'y$ has the form $My$.
 
 However, restricting ourselves to linear estimators is neither necessary nor productive. 
@@ -218,8 +212,12 @@ y_i &= \beta_0 + \beta_1x_i + \beta_2z_i + \beta_3x_iz_i + \epsilon_i\textit{.}
 \end{align*}
 These are all linear models and illustrate that the linear model can represent a wide range of theoretically-relevant relationships, especially when it includes explanatory variables non-linearly. 
 But there is no statistical reason to restrict ourselves to linear \textit{estimators} for these linear models, except for mathematical convenience and computational ease.
+The only substantive reason to restrict ourselves to linear estimators is if we are willing to assume that we have normally distributed errors. 
+Under this assumption, linearity is a reasonable restriction--indeed, the linear estimator is the MVUE when the errors are normal.
+Restriction to linearity does not get us away from the assumption of normality because BLUE estimators are BUE estimators only under the assumption of normal errors.
+If the errors are not normally distributed, then the one can easily better the BLUE estimator.
 
-Further, there is a substantive argument \textit{against} linear estimators (i.e., weighting all observations equally). 
+But we might also make a substantive argument \textit{against} linear estimators (i.e., weighting all observations equally). 
 We suggest two potentially desirable properties of estimators. 
 First, we might prefer estimators that provide an excellent fit to \textit{most} of the data rather rather than a mediocre fit to \textit{all} the data. 
 Secondly, we might prefer an estimate that treats unusual data equally--as inconsistent the the model.
