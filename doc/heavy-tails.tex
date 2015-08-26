@@ -149,12 +149,11 @@ Carlisle Rainey\symbolfootnote[3]{Carlisle Rainey is Assistant Professor of Poli
 % Abstract
 {\centerline{\textbf{Abstract}}}
 \begin{quote}\noindent
-Researchers studying the consequences of comparative electoral institutions, as well as other areas of political and social science, often estimate linear models of continuous outcomes of interest using least squares. 
-%These outcomes include measures of the number of political parties, proportionality of the electoral system, vote share, and others. 
-While it is well known that least-squares estimates are often sensitive to single, influential data points, this knowledge has not led to appropriate practices when using least-squares estimators. 
-We highlight the importance of using more robust estimators in conjunction with least squares and discuss several approaches to detect, summarize, and communicate the influence of particular data points. 
+Researchers in political science often estimate linear models of continuous outcomes using least squares. 
+While it is well-known that least-squares estimates are often sensitive to single, unusual data points, this knowledge has not led to careful practices when using least-squares estimators. 
+We highlight the importance of using more robust estimators along with variable transformation and discuss several approaches to detect, summarize, and communicate the influence of particular data points. 
 We conclude with a reanalysis of \cite{ClarkGolder2006} an show that the residuals are highly non-normal under their model specification. 
-Applying an empirically-chosen transformation and/or using a robust estimator weakens their key conclusions about the conditional relationship between social heterogeneity and electoral rules in influencing the number of political parties.
+We show that applying an empirically-chosen transformation and/or using a robust estimator allows us to improve and extend their analysis in important ways.
  \end{quote}
 
 % Add quote to first page
@@ -173,11 +172,19 @@ Applying an empirically-chosen transformation and/or using a robust estimator we
 
 \section*{Introduction}
 
-In this manuscript, our goals are to (1) highlight powerful, robust alternatives to least-squares estimators, (2) provide concrete, practical advice to substantive researchers using linear models, and (3) provide a compelling example that illustrates the importance of robust estimators.
+Linear models of the form $y_i = X_i\beta + \epsilon_i$ estimated with least squares remain one of the most common statistical tools in political science research \citep{KruegerLewisBeck2008}. 
+Yet there seems to remain some confusion about the conditions under which least squares serves as a good estimator of the linear model. 
+Researchers commonly justify their choice to use least squares on the grounds that this estimator is the best linear unbiased estimator (i.e., BLUE) as long as the errors are (1) centered at zero, (2) have finite, constant variance, and (3) independent. 
+BLUE does not require the residuals to follow a normal distribution. 
+However, the only reasonable defense of a restriction to linear \textit{estimators}, outside of easy computation, is that the errors follow a normal distribution. 
 
-\ctk{[Add more introduction later.]}
+If the errors do not follow a normal distribution, then least squares is not the most efficient unbiased estimator. 
+Indeed, we present a robust $M$-estimator that outperforms least squares for a wide range of error distributions. 
+Further, we argue that this $M$-estimator has substantively desirable properties.
 
-\section*{Is a BLUE Estimator the ``Best'' Estimator?}
+In this paper, we (1) clarify the crucial distinction between a linear \textit{model} and a linear \textit{estimator}, (2) explain that the BLUE estimator is not the best estimator unless the errors are normally distributed, (3) highlight powerful, robust alternatives to least-squares estimators that are unbiased and more efficient for a wide range of substantively plausible error distributions, (4) provide concrete, practical advice to substantive researchers using linear models, and (5) provide a compelling example that illustrates the importance of robust estimators.
+
+\section*{Is a BLUE Estimator the Best Estimator?}
 
 The linear model can be written as $y = X\beta + \epsilon$.\footnote{As usual, $y$ is an outcome variable of interest (usually roughly continuous), $X$ is a $n \times (k + 1)$ matrix containing a single column of ones and $k$ columns holding $k$ explanatory variables, $\beta$ is a $(k + 1) \times 1$ matrix of model coefficients, and $\epsilon$ is an $n \times 1$ matrix of errors. As usual, the statistical properties of these estimators depend on this model being correct and a full rank $X$.} 
 Researchers in political science commonly estimate this model with least squares by minimizing the sum of the squared residuals, such that$\hat{\beta}^{LS} = \argmin_b S(b)$, where $S(b) = \sum_{i = 1}^n(y_i - X_ib)^2$. 
@@ -277,7 +284,7 @@ Notice that despite least squares being the best linear unbiased estimator for t
 
 But we also consider a least trimmed squares (LTS) estimator in which we minimize the smallest 90\% of the residuals. 
 This method literally throws away data. 
-Though it lacks the elegant theory of the least squares estimator, the right panel of Figure \ref{fig:lts-illustration} shows that it is essentially unbiased and, compared to the least squares estimator, more efficient. 
+Though it lacks the elegant theory of the least squares estimator, the right panel of Figure \ref{fig:lts-illustration} shows that it is unbiased and more efficient that the least-squares estimator. 
 The standard deviation of the estimates from the LTS estimator is about about 18\% smaller than the BLUE estimator, and the mean squared error is about 32\% smaller. 
 By any reasonable standard, the LTS estimator is a better estimator than the least squares estimator in this example, yet the least squares estimator is BLUE. 
 We make this gain by expanding our focus to non-linear estimators, such as the LTS estimator. 
@@ -342,11 +349,11 @@ While we agree with the spirit of the suggestion to log-transform non-negative o
        \dfrac{y^\lambda - 1}{\lambda} & \text{for } \lambda \neq 0\\
        \log y & \text{for } \lambda \neq 0
      \end{array}
-   \right.
-\end{displaymath},
+   \right.,
+\end{displaymath}
 \noindent where the transformation parameter $\lambda$ is estimated with maximum likelihood. 
 In this case, the model becomes $y^{(\lambda)} = X\beta + \epsilon$. 
-This is particularly convenient because if $\hat{\lambda} \approx 1$ suggests no transformation is needed and $\hat{\lambda} \approx zero$ suggests that only an intuitive log-transformation is needed.
+This is particularly convenient because if $\hat{\lambda} \approx 1$ suggests no transformation is needed and $\hat{\lambda} \approx 0$ suggests that only an intuitive log-transformation is needed.
 
 Researchers can easily assess the skewness in the residuals using a simple histogram of the residuals or a QQ plot of the residuals compared to their normal quantiles. 
 For a formal test of skewness, researchers might use a direct test for symmetry on residuals $\hat{e}$, such as the Mira test \citep{Mira1999} or simply test whether $\lambda \neq 1$ under the Box-Cox framework. 
@@ -487,7 +494,7 @@ Efficiency, however, varies considerably across the estimators.
 
 
 \begin{table}[h!]
-{\small
+{\scriptsize
 \input{tabs/mc-sims-100.tex}
 }
 \caption{Summarizes of the Monte Carlo simulations for four different error distributions with a sample size of 100. 
@@ -495,7 +502,7 @@ Notice that the BW has the best or nearly best performance in each condition, wh
 \end{table}
 
 \begin{table}[h!]
-{\small
+{\scriptsize
 \input{tabs/mc-sims-1000.tex}
 }
 \caption{Summaries of the Monte Carlo simulations identical to those in Table \ref{tab:mc-sims-100}, except with a sample size of 1,000 rather than 100. 
