@@ -3,74 +3,51 @@
 rm(list = ls())
 
 #load packages
-library(quantreg)
-library(VGAM)
-library(xtable)
 library(compactr)
+library(dplyr)
+library(magrittr)
+library(tidyr)
 
-# simulation parameters
+sim_results <- readr::read_csv("doc/figs/sim-results-data.csv")
+
+# function to compute mse
+mse <- function(x) {
+	mean((x - 1)^2)
+}
+
+tsr <- sim_results %>%
+	group_by(n, df, method) %>%
+	summarize(mse = sum((est - 1)^2)) %>%
+	spread(method, mse) %>%
+	transmute(lad = lad/ls, 
+				 biweight = biweight/ls,
+				 lts = lts/ls) 
+
+tsr_tall <- tsr %>%
+	gather(method, rel_mse, lad:lts)
+
+
+
 pdf("doc/figs/mc-sims.pdf", height = 2, width = 8)
 par(mfrow = c(1, 4), mar = c(1/2, 1/2, 1/2, 1/2), oma = c(3, 3, 1, 1))
-
-nv <- c(25, 100, 500, 2000)
-for (n in nv) {
-  n.sims <- 10000
-  df <- c(2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30)
-  
-  # simulation data
-  x1 <- rnorm(n)
-  x2 <- rnorm(n)
-  x3 <- rnorm(n)
-  f <- y ~ x1 + x2 + x3
-  
-  # function to compute mse
-  mse <- function(x) {
-    sum((x - 1)^2)
-  }
-  
-  # simulation
-  res <- list()
-  n.models <- 3
-  model.names <- c("Least Squares",
-                   "LAD",
-                   "Biweight")
-  res$mse <- res$mad <- res$mean <- matrix(NA, nrow = length(df), ncol = n.models)
-  pb <- txtProgressBar(min = 0, max = length(df), style = 3)
-  for (i in 1:length(df)) {
-    temp.res <- matrix(NA, nrow = n.sims, ncol = n.models)
-    for (j in 1:n.sims) {
-      y <- x1 + x2 + x3 + rt(n, df = df[i])
-      m1 <- lm(f)
-      m2 <- rq(f)
-      m3 <- rlm(f, method = "M", psi = psi.bisquare, maxit = 1000, init = "lts")
-      temp.res[j, ] <- c(coef(m1)[2], 
-                         coef(m2)[2], 
-                         coef(m3)[2])
-    }
-    res$mse[i, ] <- apply(temp.res, 2, mse)
-    res$mad[i, ] <- apply(temp.res, 2, sd)
-    res$mean[i, ] <- apply(temp.res, 2, mean)
-    setTxtProgressBar(pb, i)
-  }
-  
-  # plot all
-  eplot(xlim = mm(df), ylim = c(0.0, 1.75),
-        xlab = expression(paste("df for ", italic(t), " Distributed Errors")),
-        ylab = "Relative MSE",
-        main = paste("N = ", n, sep = ""))
-#   for (i in 1:n.models) {
-#     lines(df, res$mad[, i], col = i, lwd = 2)
-#   }
-abline(h = 1)
-lines(df, res$mse[, 3]/res$mse[, 1], col = 1, lwd = 3)
-lines(df, res$mse[, 2]/res$mse[, 1], col = 2, lwd = 3, lty = 3)
-
-
+n_vals <- sort(unique(sim_results$n))
+for (n0 in n_vals) {
+	tsr0 <- dplyr::filter(tsr, n == n0)
+	# plot all
+	eplot(xlim = mm(tsr_tall$df), ylim = mm(tsr_tall$rel_mse),
+				xlab = expression(paste("df for ", italic(t), " Distributed Errors")),
+				ylab = "Relative MSE",
+				main = paste("N = ", n0, sep = ""))
+	abline(h = 1)
+	lines(tsr0$df, tsr0$biweight, col = 1, lwd = 1.5)
+	lines(tsr0$df, tsr0$lad, col = 2, lwd = 1.5, lty = 3)
+	lines(tsr0$df, tsr0$lts, col = 3, lwd = 1.5, lty = 5)
+	legend(par("usr")[2], par("usr")[3], xjust = 1, yjust = 0,
+				 col = 1:3, lty = c(1, 3, 5), lwd = 1.5,
+				 legend = c("BW/LS", "LAD/LS", "LTS/LS"),
+				 bty = "n", seg.len = 3)
 }
-legend(par("usr")[2], par("usr")[3], xjust = 1, yjust = 0,
-       col = 1:2, lty = c(1, 3), lwd = 3,
-       legend = c("BW/LS", "LAD/LS"),
-       bty = "n")
+
 dev.off()
 
 

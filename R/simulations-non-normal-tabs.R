@@ -2,14 +2,17 @@
 # clear workspace
 rm(list = ls())
 
+set.seed(8749310)
+
 #load packages
 library(MASS)
 library(VGAM)
 library(quantreg)
+library(galts)
 
 # function to compute mse
 mse <- function(x) {
-  sum((x - 1)^2)
+  mean((x - 1)^2)
 }
 
 mc.sims <- function(n.sims = 10000, n = 100, rdist) {
@@ -20,15 +23,17 @@ mc.sims <- function(n.sims = 10000, n = 100, rdist) {
   f <- y ~ x1 + x2 + x3
   ## simulation
   pb <- txtProgressBar(min = 0, max = n.sims, style = 3)
-  temp.res <- matrix(NA, nrow = n.sims, ncol = 3)
+  temp.res <- matrix(NA, nrow = n.sims, ncol = 4)
   for (j in 1:n.sims) {
     y <- x1 + x2 + x3 + rdist(n)
     m1 <- lm(f)
-    m2 <- rq(f)
-    m3 <- rlm(f, method = "M", psi = psi.bisquare, maxit = 1000, init = "lts")
+    m2 <- rlm(f, method = "M", psi = psi.bisquare, maxit = 1000, init = c(0, 1, 1, 1))
+    m3 <- rq(f)
+    m4 <- ga.lts(f, h = floor(.9*length(y)), lower = -2, upper = 2)
     temp.res[j, ] <- c(coef(m1)[2], 
                        coef(m2)[2], 
-                       coef(m3)[2])
+                       coef(m3)[2], 
+    									 coef(m4)[2])
     setTxtProgressBar(pb, j)
   }
   ### resulsts
@@ -42,66 +47,27 @@ mc.sims <- function(n.sims = 10000, n = 100, rdist) {
 mc.lap <- mc.sims(rdist = function(n) rlaplace(n))
 mc.t2 <- mc.sims(rdist = function(n) rt(n, df = 2))
 mc.t10 <- mc.sims(rdist = function(n) rt(n, df = 10))
+mc.logistic <- mc.sims(rdist = function(n) rlogis(n))
+mc.unif <- mc.sims(rdist = function(n) runif(n, -1, 1))
 mc.n <- mc.sims(rdist = function(n) rnorm(n))
 
 
-ta1 <- cbind(mc.lap$c1, mc.t2$c1, mc.t10$c1, mc.n$c1)
-ta2 <- cbind(mc.lap$c2, mc.t2$c2, mc.t10$c2, mc.n$c2)
-ta3 <- cbind(mc.lap$c3, mc.t2$c3, mc.t10$c3, mc.n$c3)
+ta3 <- cbind(mc.lap$c3, mc.t2$c3, mc.t10$c3, mc.logistic$c3, mc.unif$c3, mc.n$c3)
 
-ta <- cbind(ta1, 
-            #ta2, 
-            ta3)
-ta <- rbind(ta, ta[2, ]/ta[1, ])
-ta <- rbind(ta, ta[3, ]/ta[1, ])
+
+ta <- rbind(ta3, ta3[2, ]/ta3[1, ], ta3[3, ]/ta3[1, ], ta3[4, ]/ta3[1, ])
 
 # ta <- format(round(ta, 2), nsmall = 2)
-rownames(ta) <- c("Least Squares", "Least Absolute Deviation", "Tukey's Biweight", 
-                 "LAD/LS", "BW/LS")
-colnames(ta) <- rep(c("Lapl.", "$t_2$", "$t_{10}$", "Norm."), 2)
+rownames(ta) <- c("Least Squares", "Tukey's Biweight", "Least Absolute Deviation", 
+									"Least Trimmed Squares",
+									"BW/LS", "LAD/LS", "LTS/LS")
+colnames(ta) <- c("Laplace", "$t_2$", "$t_{10}$", "Logistic", "Uniform", "Normal")
 
-quantreg::latex.table(ta, dec = 3,
+quantreg::latex.table(ta, dec = 2,
                       rowlabel = "",
                       file = "doc/tabs/mc-sims-100",
                       table.env = FALSE,
-                      cgroup = c("Mean", 
-                                 #"Standard Deviation", 
-                                 "Mean Squared Error"),
                       rgroup = c("Absolute Performance",
                                  "Relative Performance"),
-                      n.rgroup = c(3, 2),
+                      n.rgroup = c(4, 3),
                       label = "tab:mc-sims-100")
-
-### table 2
-mc.lap <- mc.sims(n = 1000, rdist = function(n) rlaplace(n))
-mc.t2 <- mc.sims(n = 1000, rdist = function(n) rt(n, df = 2))
-mc.t10 <- mc.sims(n = 1000, rdist = function(n) rt(n, df = 10))
-mc.n <- mc.sims(n = 1000, rdist = function(n) rnorm(n))
-
-
-ta1 <- cbind(mc.lap$c1, mc.t2$c1, mc.t10$c1, mc.n$c1)
-ta2 <- cbind(mc.lap$c2, mc.t2$c2, mc.t10$c2, mc.n$c2)
-ta3 <- cbind(mc.lap$c3, mc.t2$c3, mc.t10$c3, mc.n$c3)
-
-ta <- cbind(ta1, 
-            #ta2, 
-            ta3)
-ta <- rbind(ta, ta[2, ]/ta[1, ])
-ta <- rbind(ta, ta[3, ]/ta[1, ])
-
-# ta <- format(round(ta, 2), nsmall = 2)
-rownames(ta) <- c("Least Squares", "Least Absolute Deviation", "Tukey's Biweight", 
-                  "LAD/LS", "BW/LS")
-colnames(ta) <- rep(c("Lapl.", "$t_2$", "$t_{10}$", "Norm."), 2)
-
-quantreg::latex.table(ta, dec = 3,
-                      rowlabel = "",
-                      file = "doc/tabs/mc-sims-1000",
-                      table.env = FALSE,
-                      cgroup = c("Mean", 
-                                 #"Standard Deviation", 
-                                 "Mean Squared Error"),
-                      rgroup = c("Absolute Performance",
-                                 "Relative Performance"),
-                      n.rgroup = c(3, 2),
-                      label = "tab:mc-sims-1000")

@@ -186,7 +186,7 @@ plot(h2, add = TRUE,
      border = "black",
      col = "grey70")
 text(2.5, 120, expression(paste("Shapiro-Wilk p-value: ", 1.6%*%10^-6)), cex = 0.8)
-aplot(expression(paste("Box-Cox Tranformation with ", lambda == -1/3, sep = "")))
+aplot(expression(paste("Box-Cox Transformation with ", lambda == -1/3, sep = "")))
 plot(h3, add = TRUE,
      border = "black",
      col = "grey70")
@@ -203,7 +203,7 @@ eplot(xlim = c(-4, 4), ylim = c(-1, 1.2),
       ylabpos = 2.3)
 plot.qq(residuals(m2))
 #label.it(p = 1:3, residuals(m1), pos = c(2, 4, 2))
-aplot(expression(paste("Box-Cox Tranformation with ", lambda == -1/3, sep = "")))
+aplot(expression(paste("Box-Cox Transformation with ", lambda == -1/3, sep = "")))
 plot.qq(residuals(m3))
 #aplot(expression(paste("Simulation from a ", t[7], sep = "")))
 #plot.qq(rt(length(residuals(m3)), df = 7)/5)

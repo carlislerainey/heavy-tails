@@ -121,6 +121,8 @@ eplot(xlim = c(-5, 7), ylim = c(n.coef + 0.5, 0.5),
       main = "1990s\nWhole Sample")
 plot.coefs(ls.90s, d = -0.1)
 plot.coefs(m.90s, d = 0.1, col = "red")
+text(4, 0.82, "least squares", pos = 2, cex = 0.7)
+text(3.5, 1.17, "biweight", pos = 2, col = "red", cex = 0.7)
 abline(h = c(6.5, 7.5), col = "grey80")
 aplot("1990s\nEstablished Democracies")
 plot.coefs(ls.90s.old, d = -0.1)

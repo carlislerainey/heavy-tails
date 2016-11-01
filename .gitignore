@@ -1,3 +1,4 @@
+!.gitignore
 *~
 .*
 *.DS_Store
@@ -12,6 +13,7 @@
 *.bib.bak
 *.docx
 output
-*_old/
-lit
-!.gitignore
+.old/
+lit/
+present/
+memo/

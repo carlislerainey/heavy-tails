@@ -1,16 +1,17 @@
-% quantreg::latex.table(x = ta, file = "doc/tabs/mc-sims-100",      rowlabel = "", cgroup = c("Mean", "Mean Squared Error"),      rgroup = c("Absolute Performance", "Relative Performance"),      n.rgroup = c(3, 2), dec = 3, table.env = FALSE, label = "tab:mc-sims-100") 
+% quantreg::latex.table(x = ta, file = "doc/tabs/mc-sims-100",      rowlabel = "", rgroup = c("Absolute Performance", "Relative Performance"),      n.rgroup = c(4, 3), dec = 2, table.env = FALSE, label = "tab:mc-sims-100") 
 %
 \begin{center}
-\begin{tabular}{|l||c|c|c|c||c|c|c|c|} \hline
-\multicolumn{1}{|l||}{\bf }&\multicolumn{4}{c||}{\bf Mean}&\multicolumn{4}{c|}{\bf Mean Squared Error}\\ \cline{2-9}
-\multicolumn{1}{|l||}{}&\multicolumn{1}{c|}{Lapl.}&\multicolumn{1}{c|}{$t_2$}&\multicolumn{1}{c|}{$t_{10}$}&\multicolumn{1}{c||}{Norm.}&\multicolumn{1}{c|}{Lapl.}&\multicolumn{1}{c|}{$t_2$}&\multicolumn{1}{c|}{$t_{10}$}&\multicolumn{1}{c|}{Norm.}\\ \hline
-{\bf Absolute Performance}&&&&&&&&\\
-~~Least Squares&~~~1.000&~~~0.999&~~~1.001&~~~1.000&~231.072&1571.227&~149.507&~~87.103\\ 
-~~Least Absolute Deviation&~~~1.001&~~~0.999&~~~1.000&~~~1.000&~164.875&~305.173&~196.751&~133.454\\ 
-~~Tukey's Biweight&~~~1.000&~~~0.998&~~~1.001&~~~1.000&~171.136&~272.269&~145.291&~~92.514\\ \hline
-{\bf Relative Performance}&&&&&&&&\\
-~~LAD/LS&~~~1.001&~~~1.000&~~~0.999&~~~1.000&~~~0.714&~~~0.194&~~~1.316&~~~1.532\\ 
-~~BW/LS&~~~1.000&~~~0.999&~~~1.000&~~~1.000&~~~0.741&~~~0.173&~~~0.972&~~~1.062\\ 
+\begin{tabular}{|l||c|c|c|c|c|c|} \hline
+\multicolumn{1}{|l||}{}&\multicolumn{1}{c|}{Laplace}&\multicolumn{1}{c|}{$t_2$}&\multicolumn{1}{c|}{$t_{10}$}&\multicolumn{1}{c|}{Logistic}&\multicolumn{1}{c|}{Uniform}&\multicolumn{1}{c|}{Normal}\\ \hline
+{\bf Absolute Performance}&&&&&&\\
+~~Least Squares&0.02&0.16&0.01&0.03&0.00&0.01\\ 
+~~Tukey's Biweight&0.01&0.03&0.01&0.03&0.00&0.01\\ 
+~~Least Absolute Deviation&0.01&0.03&0.02&0.04&0.01&0.02\\ 
+~~Least Trimmed Squares&0.02&0.03&0.02&0.04&0.01&0.02\\ \hline
+{\bf Relative Performance}&&&&&&\\
+~~BW/LS&0.75&0.15&0.98&0.95&1.16&1.07\\ 
+~~LAD/LS&0.70&0.17&1.33&1.24&2.71&1.58\\ 
+~~LTS/LS&0.93&0.18&1.44&1.31&3.88&1.71\\ 
 \hline
 \end{tabular}
 \end{center}
