@@ -91,14 +91,14 @@ m.old <- rlm(f, data = cg.old, method = "M", psi = psi.bisquare)
 
 ## plot coefficients
 ### a function to plot the points and lines
-plot.coefs <- function(m, d = 0, col = "black") {
+plot.coefs <- function(m, d = 0, col = "black", pch = 19) {
   abline(v = 0, col = "grey70", lty = 3)
   d <- d*1.5
   for (i in 1:n.coef) {
     est <- coef(m)[i]
     se <- sqrt(diag(vcov(m)))[i]
     lines(c(est + se, est - se), c(i + d, i + d), lwd = 1, col = col)
-    points(est, i + d, pch = 19, cex = 0.8, col = col)
+    points(est, i + d, pch = pch, cex = 0.8, col = col, bg = "white")
   }
 }
 
@@ -120,20 +120,20 @@ eplot(xlim = c(-5, 7), ylim = c(n.coef + 0.5, 0.5),
       xlab = "Coefficient",
       main = "1990s\nWhole Sample")
 plot.coefs(ls.90s, d = -0.1)
-plot.coefs(m.90s, d = 0.1, col = "red")
+plot.coefs(m.90s, d = 0.1, col = "red", pch = 21)
 text(4, 0.82, "least squares", pos = 2, cex = 0.7)
-text(3.5, 1.17, "biweight", pos = 2, col = "red", cex = 0.7)
+text(3.5, 1.17, "biweight", pos = 2, col = "red", pch = 21, cex = 0.7)
 abline(h = c(6.5, 7.5), col = "grey80")
 aplot("1990s\nEstablished Democracies")
 plot.coefs(ls.90s.old, d = -0.1)
-plot.coefs(m.90s.old, d = 0.1, col = "red")
+plot.coefs(m.90s.old, d = 0.1, col = "red", pch = 21)
 abline(h = c(6.5, 7.5), col = "grey80")
 aplot("1946-2000\nWhole Sample")
 plot.coefs(ls.whole, d = -0.1)
-plot.coefs(m.whole, d = 0.1, col = "red")
+plot.coefs(m.whole, d = 0.1, col = "red", pch = 21)
 abline(h = c(6.5, 7.5), col = "grey80")
 aplot("1946-2000\nEstablished Democracies")
 plot.coefs(ls.old, d = -0.1)
-plot.coefs(m.old, d = 0.1, col = "red")
+plot.coefs(m.old, d = 0.1, col = "red", pch = 21)
 abline(h = c(6.5, 7.5), col = "grey80")
 dev.off()

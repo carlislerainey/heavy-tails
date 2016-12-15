@@ -52,9 +52,9 @@
 
 
 % Set up fonts the way I like
-\usepackage{tgpagella}
-\usepackage[T1]{fontenc}
-\usepackage[bitstream-charter]{mathdesign}
+%\usepackage{tgpagella}
+%\usepackage[T1]{fontenc}
+%\usepackage[bitstream-charter]{mathdesign}
 
 %% Baskervald
 %\usepackage[lf]{Baskervaldx} % lining figures
@@ -192,7 +192,6 @@ For example, \cite{BerryFeldman1985} write:
 [The assumption of normally distributed errors] is necessary \textit{only} for tests of significance; its violation will have no effect on the estimation of the parameters of the regression model. It is quite fortunate that normality is not required for estimation, because it is often very difficult to defend this assumption in practice.\footnote{Similarly, \citet[p. 101]{Wooldridge2013} writes that the Gauss-Markov theorem ``justifies the use of the OLS method rather than using a variety of competing estimators.''}
 \end{quote}
 
-
 However, notice that a tradeoff occurs when relaxing the assumption of normal errors. 
 To relax the assumption of normal errors (and keep desirable small sample properties), we must restrict ourselves to linear estimators. 
 This raises a critical, but often overlooked question: Under what conditions can a researcher safely restrict herself to linear estimators? 
@@ -234,11 +233,11 @@ We can clearly see that the least squares estimator $\hat{\beta}^{ls} = (X'X)^{-
 
 However, restricting ourselves to linear estimators is neither necessary nor productive. 
 We are not arguing against linear models (i.e., linear in the parameters), such as 
-\begin{align*}
+\begin{align}
 y_i &= \beta_0 + \beta_1\log(x_i) + \epsilon_i\text{,}\\
 y_i &= \beta_0 + \beta_1x_i + \beta_2x_i^2 + \epsilon_i\text{, or}\\ 
 y_i &= \beta_0 + \beta_1x_i + \beta_2z_i + \beta_3x_iz_i + \epsilon_i\textit{.}
-\end{align*}
+\end{align}
 Indeed, we encourage the use of these models. This collection of linear models illustrates that the linear model can represent a wide range of theoretically-relevant relationships, especially when it includes explanatory variables non-linearly. 
 Crucially, though, \textit{there is no statistical reason to restrict ourselves to linear \textit{estimators} for these linear models}, except for mathematical convenience and computational ease.
 The only substantive reason to restrict ourselves to linear estimators is if we are willing to assume that we have normally distributed errors. 
@@ -305,8 +304,8 @@ The left panel of Figure~\ref{fig:lts-illustration} shows the distribution of th
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[scale = .7]{figs/lts-illustration.pdf}
-\caption{These two histograms show the sampling distribution for the least squares estimator and the least trimmed squares estimator under the true model $y = x + \epsilon$, where $\epsilon \sim t_3$. 
-Notice that despite least squares being the best linear unbiased estimator for the problem, the least trimmed squares estimator is a better estimator.}\label{fig:lts-illustration}
+\caption{Histograms of the sampling distribution for the least squares estimator and the least trimmed squares estimator under the true model $y = x + \epsilon$, where $\epsilon \sim t_3$. 
+Note: despite least squares being the best linear unbiased estimator for the problem, the least trimmed squares estimator is a better estimator.}\label{fig:lts-illustration}
 \end{center}
 \end{figure}
 
@@ -328,7 +327,7 @@ On the other hand, there has been scant attention paid by substantive political 
 This is particularly problematic, since it makes little sense to find a good standard error for a poor estimate (\citealt{Freedman2006} and \citealt{KingRoberts2014}). 
 Two papers in political science have addressed the issue of robust estimation. 
 \cite{Western1995} introduces political scientists to robust estimators, but this work has been essentially ignored. 
-Although it is more broadly applicable than \cite{BeckKatz1995} and was published in the same year, it has received only 99 citations, or  about 2\% of the citations that Beck and Katz have received. 
+Although published in the same year \cite{BeckKatz1995}, \cite{Western1995} has received only 99 citations, or  about 2\% of the citations that Beck and Katz have received. 
 Similarly, \cite{HardenDesmarais2011} have received only one citation, and it comes from the authors themselves.
 Anderson's (\citeyear{Anderson2008}) broad and accessible introduction to robust estimation methods has received only about 150 citations, most from outside political science.
 
@@ -375,14 +374,13 @@ Transforming the outcome variable is \textit{one} effective method for making th
 
 While we agree with the spirit of the suggestion to log-transform a non-negative outcome variable $y$, statisticians have created more precise empirical methods for choosing \textit{whether} and \textit{how} to do the transformation. 
 \cite{BoxCox1964} propose the Box-Cox transformation 
-\begin{displaymath}
-   y^{(\lambda)} = BC(y, \lambda) = \left\{
-     \begin{array}{lr}
-       \dfrac{y^\lambda - 1}{\lambda} & \text{for } \lambda \neq 0\\
-       \log y & \text{for } \lambda = 0
-     \end{array}
-   \right.,
-\end{displaymath}
+\begin{equation}
+   y^{(\lambda)} = BC(y, \lambda) =  \begin{cases}
+    \dfrac{y^\lambda - 1}{\lambda} & \text{for } \lambda \neq 0\\
+    \log y & \text{for } \lambda = 0
+  \end{cases},
+\end{equation}
+
 \noindent where the transformation parameter $\lambda$ is estimated with maximum likelihood. 
 In this case, the model becomes $y^{(\lambda)} = X\beta + \epsilon$. 
 This is particularly convenient because $\hat{\lambda} \approx 1$ suggests no transformation is needed and $\hat{\lambda} \approx 0$ suggests that only an intuitive log-transformation is needed.
@@ -442,14 +440,15 @@ The function $\rho(\cdot)$ is typically chosen to be non-negative, symmetric abo
 For example, \cite{HardenDesmarais2011} recommend the least absolute deviation (LAD) estimator \citep{Dodge1987} that such $\rho(\cdot) = \text{abs}(\cdot)$. 
 However, other estimators offer better performance, particularly when the normal-linear model is approximately correct. 
 In particular, we recommend Tukey's biweight function \citep{BeatonTukey1974}, so that
-\begin{displaymath}
-   \rho_{bw}(r_i) = \left\{
-     \begin{array}{lr}
-       \dfrac{k^2}{6}\left\{ 1 - \left[ 1 - \left( \dfrac{r_i}{k} \right)^2 \right]^3\right\} & \text{for } |r_i| \leq k\\
+
+\begin{equation}
+   \rho_{bw}(r_i) = \begin{cases}
+     \dfrac{k^2}{6}\left\{ 1 - \left[ 1 - \left( \dfrac{r_i}{k} \right)^2 \right]^3\right\} & \text{for } |r_i| \leq k\\
         \dfrac{k^2}{6} & \text{for } |r_i| > k 
-\end{array}
-   \right.,
-\end{displaymath}
+  \end{cases},
+\end{equation}
+
+
 \noindent where $r_i = y_i - X_ib$ and $k$ is a tuning parameter usually set to 4.685 to ensure good performance under the normal-linear model. 
 We refer to the $M$-estimator using the biweight objective function as the ``biweight (BW) estimator.'' 
 The BW estimator is a compelling alternative to the LAD estimator suggested by \cite{HardenDesmarais2011} for two reasons. 
@@ -522,6 +521,7 @@ When the errors follow a normal distribution, the LS estimator has the smallest 
 
 For the six different error distributions, we simulated 10,000 data sets with 100 observations each and estimated $\beta_1$ using the LS estimator, the BW estimator, the LAD estimator, and the LTS estimator. 
 For each condition, we calculated the mean squared error (MSE) of the estimate of $\beta_1$. 
+To simplify the presentation, we divided the MSE of the BW, LAD, and LTS estimators by the MSE of the LS estimator. 
 Table~\ref{tab:mc-sims-100} provides the results. 
 These results show that the MSE varies considerably across the estimators for each error distribution.
 
@@ -529,8 +529,8 @@ These results show that the MSE varies considerably across the estimators for ea
 {\scriptsize
 \input{tabs/mc-sims-100.tex}
 }
-\caption{This table summarizes the Monte Carlo simulations for six different error distributions with a sample size of 100. 
-Notice that the BW has the best or nearly best performance in each condition, while the LAD and LTS estimators performs quite poorly for the $t_{10}$ and normal distributions and the LS estimator performs quite poorly for the Laplace and $t_2$ distributions.}\label{tab:mc-sims-100}
+\caption{The MSE of the BW, LAD, and LTS estimators compared to the LS estimator for six different error distributions with a sample size of 100. \\
+Note: the BW has the best or nearly best performance in each condition, while the LAD and LTS estimators performs quite poorly for the $t_{10}$ and normal distributions and the LS estimator performs quite poorly for the Laplace and $t_2$ distributions.}\label{tab:mc-sims-100}
 \end{table}
 
 The LAD estimator is the MLE when the errors follow a Laplace distribution, so, as we might expect, the LAD performs well for Laplace errors, with a MSE about 30\% lower than the LS estimate. 
@@ -565,8 +565,8 @@ To better understand how the heaviness of the tails of the error distribution af
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width = \textwidth]{figs/mc-sims.pdf}
-\caption{This figure shows the relative MSE for the BW, LAD, and LTS estimators compared to the LS estimator for $t$ distributed errors as the degrees of freedom varies. 
-Notice that for very heavy-tailed distributions (e.g., two to five degrees of freedom), the BW, LAD, and LTS estimators significantly outperform the LS estimator. 
+\caption{The relative MSE for the BW, LAD, and LTS estimators compared to the LS estimator for $t$ distributed errors as the degrees of freedom varies. \\
+Note: for very heavy-tailed distributions (e.g., two to five degrees of freedom), the BW, LAD, and LTS estimators significantly outperform the LS estimator. 
 And while the performance of the LAD and LTS estimators significantly worsens as the distribution becomes more normal, the BW estimator remains comparable to the LS estimator.}\label{fig:mc-sims}
 \end{center}
 \end{figure}
@@ -630,18 +630,21 @@ The hypothesis predicts that the large points should lie in the upper-right sect
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[scale = 0.8]{figs/cg-scatter.pdf}
-\caption{This figure shows the distribution of district magnitude (on the log scale) and ethnic heterogeneity, where the point sizes indicate the number of political parties. 
+\caption{The distribution of district magnitude (on the log scale) and ethnic heterogeneity.\\
+Note: the point sizes indicate the number of political parties. 
 According to Clark and Golder's hypothesis, large points should lie in the upper-right portion of the plot and small points should lie along the axes.}\label{fig:cg-scatter}
 \end{center}
 \end{figure}
 
 To test this hypothesis, Clark and Golder fit the following linear model using least squares:
-\begin{align*}
+\begin{align}
+\begin{split}
 \text{ENEP}_i = \beta_0 &+ \beta_1 \text{ENEG}_i + \beta_2 \log(\text{Magnitude}_i) + \beta_3 \text{Upper-Tier Seats}_i\\
                                                      &+\beta_4 \text{Presidential Candidates}_i + \beta_5 \text{Proximity}_i\\
                                                      &+ \beta_6 \text{Ethnic}_i \times \log (\text{Magnitude}_i) + \beta_7 \text{Ethnic}_i \times \text{Upper-Tier Seats}_i\\
                                                      &+ \beta_8 \text{Presidential Candidates}_i \times \text{Proximity}_i + \epsilon_i\text{ ,}
-\end{align*}
+\end{split}                                                     
+\end{align}
 
 The first key coefficient in this analysis is $\beta_1$, which captures the effect of social heterogeneity when district magnitude is one (i.e., the log of district magnitude is zero) and there are no upper-tier seats. 
 According to the hypothesis, $\beta_1$ should be about zero. 
@@ -661,7 +664,8 @@ Figure~\ref{fig:cg-coef-plots} presents these estimates and confidence intervals
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[scale = .8]{figs/cg-coef-plots.pdf}
-\caption{This figure shows the coefficient estimates of Clark and Golder's (2006) linear model using a least-squares and biweight estimator with explanatory variables standardized to have mean zero and standard deviation one-half. 
+\caption{Coefficient estimates of Clark and Golder's (2006) linear model using a least-squares and biweight estimator.\\
+Note: the explanatory variables are standardized to have mean zero and standard deviation one-half. 
 The black lines and points show the least squares estimates and 90\% confidence intervals and the red lines and points show the biweight estimates and confidence intervals. 
 Notice that the coefficient for the product of the effective number of ethnic groups and the district magnitude changes drastically with the choice of estimator.}\label{fig:cg-coef-plots}
 \end{center}
@@ -681,19 +685,18 @@ The model for the transformed outcome can capture potentially interesting substa
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[scale = 0.6]{figs/cg-residuals-hist.pdf}
-\caption{This histogram shows the distribution of the residuals from Clark and Golder's (2006) main model. 
-Notice that these residuals do not seem approximately normal. They have a strong skew to the right. 
+\caption{A histogram of the residuals from Clark and Golder's (2006) main model.\\
+Note: the residuals are not approximately normal, but have a strong skew to the right. 
 For example, one would rarely expect to observe residuals more that three standard deviations from zero if the assumption of normality holds. 
-In these data, we have several residuals more that three standard deviations away and one nearly six standard deviations away. 
-This suggests that some transformation of the outcome variable might be useful.}\label{fig:cg-residuals-hist}	
+In these data, we have several residuals more that three standard deviations away and one nearly six standard deviations away, suggesting that some transformation of the outcome variable might be useful.}\label{fig:cg-residuals-hist}	
 \end{center}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
 	\includegraphics[scale = 0.6]{figs/cg-qq-plot.pdf}
-\caption{This QQ plot shows the deviation of the residuals from normality in Clark and Golder's (2006) main model. 
-If the residuals were approximately normal, then the points in the QQ plot would approximately follow the line. 
+\caption{QQ plot of the residuals in Clark and Golder's (2006) main model.\\
+Note: if the residuals were approximately normal, then the points in the QQ plot would approximately follow the plotted line. 
 However, notice that the positive residuals deviate sharply from the theoretical expectations. 
 This also suggests that some transformation of the outcome variable might be useful.}\label{fig:cg-qq-plot}
 \end{center}
@@ -708,8 +711,8 @@ Notice that log-transforming the effective number of electoral parties does not 
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width = \textwidth]{figs/cg-trans-residuals-hist.pdf}
-\caption{These histograms shows the distribution the residuals after transforming the outcome variable. 
-The left panel shows that the log transformation does not quite remove all of the skew, but the right panel shows that the Box-Cox transformation with $\lambda = -\frac{1}{3}$ creates an approximately symmetric error distribution.}\label{fig:cg-trans-residuals-hist}
+\caption{Histograms of the residuals after transforming the outcome variable. \\
+Note: the left panel shows that the log transformation does not quite remove all of the skew, but the right panel shows that the Box-Cox transformation with $\lambda = -\frac{1}{3}$ creates an approximately symmetric error distribution.}\label{fig:cg-trans-residuals-hist}
 \end{center}
 \end{figure}
 
@@ -720,8 +723,8 @@ The right panel of Figure~\ref{fig:cg-trans-qq-plot} confirms that the Box-Cox t
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width = \textwidth]{figs/cg-trans-qq-plot.pdf}
-\caption{These QQ plots show residuals after transforming the outcome variable.
-The left panel shows that the log transformation does not quite remove all of the skew, but the right panel shows that the Box-Cox transformation with $\lambda = -\frac{1}{3}$ creates an approximately symmetric error distribution, though it has heavier tails than a normal distribution.}\label{fig:cg-trans-qq-plot}
+\caption{QQ plots of the residuals after transforming the outcome variable.\\
+Note: the left panel shows that the log transformation does not quite remove all of the skew, but the right panel shows that the Box-Cox transformation with $\lambda = -\frac{1}{3}$ creates an approximately symmetric error distribution, though it has heavier tails than a normal distribution.}\label{fig:cg-trans-qq-plot}
 \end{center}
 \end{figure}
 
@@ -755,8 +758,8 @@ To be more specific, Figure 1a [our upper-left panel of Figure~\ref{fig:cg-fd-pl
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width = \textwidth]{figs/cg-fd-plots.pdf}
-\caption{This figures shows the estimated effects and 90\% confidence intervals of increasing social heterogeneity from ENEP = 1.06 (10th percentile) to ENEP = 2.48 (90th percentile) on the effective number of electoral parties as the district magnitude varies. 
-Notice that only the model that does not use robust estimators or transform the outcome variable provides evidence in support of the hypothesis.}\label{fig:cg-fd-plots}
+\caption{The estimated effects and 90\% confidence intervals of increasing social heterogeneity from ENEP = 1.06 (10th percentile) to ENEP = 2.48 (90th percentile) on the effective number of electoral parties as the district magnitude varies. \\
+Note: only the model that does not use robust estimators or transform the outcome variable provides evidence in support of the hypothesis.}\label{fig:cg-fd-plots}
 \end{center}
 \end{figure}
 
@@ -781,8 +784,8 @@ Further, this increase of 0.98 [0.06; 2.65] is large and statistically significa
 {\scriptsize
 \input{tabs/cg-qi.tex}
 }
-\caption{This table shows the quantities of interest from least squares and biweight estimates, with and without the Box-Cox transformation of the outcome variable. 
-Notice that the least squares estimates without transforming the outcome variable are consistent with Clark and Golder's hypothesis. 
+\caption{The quantities of interest from least squares and biweight estimates, with and without the Box-Cox transformation of the outcome variable. \\
+Note: the least squares estimates without transforming the outcome variable are consistent with Clark and Golder's hypothesis. 
 However, transforming the outcome variable, using the robust biweight estimator,  or both substantially reduces the amount of evidence that these data offer in favor of the hypothesis.}\label{tab:cg-qi}
 \end{table}
 
@@ -801,8 +804,8 @@ Notice that the residuals tend to agree, except for the 1980 election in Uganda,
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[scale = 0.6]{figs/cg-residuals-compare.pdf}
-\caption{This figure shows the relationship between the least squares and biweight estimates after the Box-Cox transformation. 
-Notice that the biweight estimate allows the unusual case of Uganda to stand out from the others.}\label{fig:cg-residuals-compare}
+\caption{The relationship between the least squares and biweight estimates after the Box-Cox transformation. \\
+Note: the biweight estimate allows the unusual case of Uganda to stand out from the others.}\label{fig:cg-residuals-compare}
 \end{center}
 \end{figure}
 
@@ -815,110 +818,110 @@ Unfortunately for the hypothesis, though, this case is inconsistent with most of
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[scale = 0.7]{figs/cg-weights.pdf}
-\caption{This figure shows the final weights implied by the biweight estimator. 
-Because the 1980 election in Uganda is quite different from the remainder of the data, the biweight estimator downweights this case all the way to zero.}\label{fig:cg-weights}
+\caption{The final weights implied by the biweight estimator. \\
+Note: because the 1980 election in Uganda is quite different from the remainder of the data, the biweight estimator downweights this case all the way to zero.}\label{fig:cg-weights}
 \end{center}
 \end{figure}
 
-\subsection*{Some Implications the Results}
-
-We offer a different approach than most applied research in political science adopts in practice. 
-Rather than relying on the artificial Gauss-Markov theorem and BLUE estimators, we suggest that a careful consideration of the residuals is important. 
-We show that there can be tremendous gains in efficiency from using robust estimators in the face of heavy-tailed error distributions, and we have shown that our approach leads to somewhat different conclusions than \cite{ClarkGolder2006}. 
-But the approach we advocate is not powerful because it gives different results---it is powerful because it is substantively informative. 
-Below we discuss several \textit{substantive} points that one can take from our brief analysis of Clark and Golder's data.
-
-\subsubsection*{Questions about the Validity of the Theory}
-
-At first glance, these results might make it seem that Duverger's logic lacks the empirical support suggested by the literature. Indeed, the evidence offered by the normal-linear model seems to hinge on the improper assumption of normal errors. 
-Once we relax this assumption using a transformation and robust estimators, the evidence shrinks. However, rejection of Duverger's theory or Clark and Golder's (2006) analysis is premature for four reasons. 
-First, the theoretical logic for Duverger's hypotheses is clear and compelling (e.g., \citealt{Duverger1963}, \citealt{Riker1982}, \citealt{Cox1997}, \citealt{AmorimNetoCox1997}, and \citealt{Cox1999}). 
-Second, many empirical studies beyond \cite{ClarkGolder2006} find substantial empirical support for the hypotheses, including observational (e.g., \citealt{ChhibberKollman1998} and \citealt{SingerStephenson2009}, quasi-experimental (e.g., \citealt{Blaisetal2011} and \citealt{Fujiwara2011}), and incentivized experimental studies (for a review, see \citealt{Rietz2008}). 
-Thirdly, in addition to the confidence intervals including effects that are inconsistent with the Clark and Golder's hypothesis, the confidence intervals now include \textit{even larger} effects, which suggests the effect might be even larger than Clark and Golder suggest.
-Finally, the biweight $M$-estimator suggests several potential shortcomings in terms of concepts, theory, measurement that might undermine the current evidence for these theories.
-
-\subsubsection*{Questions about Measuring ``Established Democracies''}
-
-These results suggest we have room for improvement in our measurement of ``established democracies.'' 
-Figure~\ref{fig:cg-weights} suggests that the 1980 election in Uganda is quite different from the remaining cases, so we might look more closely at the context of the election.
-Uganda was under British rule until 1962, when it was granted independence from Britain. 
-The 1962 elections led to the election of Milton Obote as prime minister. 
-Four years later, facing scandal, Obote suspended the constitution, assumed all government powers, and declared himself president. 
-In 1967, the parliament adopted a new constitution that solidified the expansive powers in the hands of the president. 
-During this time, Obote banned all political parties and organizations accept his own \citep[p. 99]{Kasozi1993}. 
-In 1971, Obote was ousted by Major General Idi Amin. During Amin's rule, between 50,000 and 300,000 civilians were killed \citep[p. 104]{Kasozi1993}. 
-With the support of the Tanzanian military, which was working in conjunction with two Ugandan factions, one lead by Obote and the other Museveni, ended Amin's bloody rule in 1979 (\citealt[p. 53]{Kasfir1998}, and \citealt[pp. 124--127]{Kasozi1993}).
-In the following year, one leader was forcibly removed from office and the following government experienced yet another military coup.
-Elections were scheduled for 1980. 
-By May of 1980, a group known as The Military Commission had taken power to give it to Obote. 
-Obote wanted the appearance of being a democratic leader, therefore the Military Commission drafted electoral rules and held an election later that year \citep[pp. 135--137]{Kasozi1993}.
-In an election that was fraught with corruption and irregularities, Obote's party won a majority of the seats---this 1980 Ugandan election is the unusual case in the data set.
-Amin's bloody rule continued into Obote's second tenure with a death toll between 100,000 and 500,000 over the next five years---a second conflict with civilian casualties on the scale of the recent tragedies in Darfur. 
-Although elections were again held in 1996, 2001, 2006, and 2011, these elections featured irregularities, harassment, and did not lead to a change in power.
-
-The context of the election raises question about whether Uganda was an ``established democracy'' in 1980, or even a democracy at all. 
-One common measure offered by \cite{CheibubGandhiVreeland2010}, does indeed code Uganda as a democracy in 1980.\footnote{Another common measure of democracy, Polity IV, codes Uganda as a four in 1980, which falls outside range of six to ten that scholars typically consider democratic.} 
-They code a country as a democracy if and only if it meets all of the following four conditions:
-\begin{enumerate}
-\item The chief executive must be chosen by popular election or by a body that was itself popularly elected.
-\item The legislature must be popularly elected.
-\item There must be more than one party competing in the elections.
-\item An alternation in power under electoral rules identical to the ones that brought the incumbent to office must have taken place.
-\end{enumerate}
-
-Although the election showed signs of irregularities and harassment of voters and candidates, it is plausible that Uganda in 1980 meets the first three criteria. 
-But what about the forth? 
-Because these authors code Uganda in 1980 as a democracy, they consider this condition met. 
-However, this was a single election, nested between two military dictatorships, and during the winner's administration, he seized powers and dragged the country into civil war. 
-It remains unclear to us how this meets the condition of democracy more broadly or the alternation condition more specifically.
-
-Indeed it is becoming common for authoritarian leaders to hold meaningless elections to present the illusion of democracy. \cite{LevitskyWay2002} argue that:
-\begin{quote}
-It is essential, however, to distinguish regimes in which democratic institutions offer an important channel through which the opposition may seek power from those regimes in which democratic rules serve to legitimate an existing autocratic leadership.
-\end{quote}
-
-Secondly, even if Uganda was a democracy in 1980, was it ``established''? 
-Surely not, as this was the first election in 18 years following 10 years of brutal dictatorship. 
-However, Clark and Golder define ``established democracies'' as countries that transitioned to democracy before 1989 (see note b in their Tables 1 and 2). 
-Yet why is it important to focus on \textit{established} democracies? \citet[p. 706]{ClarkGolder2006} summarize Duverger's argument: 
-
-\begin{quote}
-Another intriguing finding is that Duverger's theory receives much weaker support when we include elections from countries that transitioned to democracy after 1989. 
-This finding is perhaps understandable if we think that party systems in newly democratic countries take a while to reach their equilibrium. 
-It is interesting that Duverger himself took this view in regard to the fledgling democracies of Central Europe, Latin America, and Africa earlier in the 20th century. 
-By warning about the danger of confusing multipartism with the absence of (fully institutionalized) parties, Duverger was indicating that he did not expect his theory to work particularly well in new democracies. 
-\end{quote}
-
-This suggests some rethinking of the concept of ``\textit{established} democracy'' might be in order, at least for Duverger's theory. 
-For example, it surely must not be the case that countries transitioning to democracy before 1989 (e.g., Uganda in 1980) are ``established'' immediately after the transition. 
-As Clark and Golder explain, the hypothesis assumes that the party system has reached an equilibrium. 
-If systems that have not yet reached an equilibrium are included in the analysis, then we can expect the data to offer little support for the hypothesis. 
-Perhaps with some rethinking of how this equilibrium is reached, we can find a better measure that indicates when systems have reached an equilibrium.
-
-%\subsubsection*{Questions About Measuring ``Social Heterogeneity''} (see Stoll 2009, Sellway 2011, Posner 2004)
-%\textit{Room for improvement exists in the measurement of ``social heterogeneity.''}
-
-\subsubsection*{Questions about Dynamics Prior to Equilibrium}
-
-To judge when systems are likely to be in an equilibrium, we need a stronger theory about the dynamics leading to an equilibrium number of parties. 
-Duverger's logic offers a compelling explanation for the number of political parties \textit{in equilibrium}, but this tells us little about the number of political parties prior to reaching an equilibrium or the dynamics that lead to an equilibrium. 
-A theory about the dynamics is crucial to measuring whether a party system has stabilized, which, in turn, is crucial to testing Duverger's theory. 
-Perhaps new democracies begin with many parties and the number shrinks until equilibrium. 
-Perhaps they begin with few parties and the number grows until equilibrium. 
-Perhaps it depends on the context. 
-Some work has been done in this area (e.g.,  \citealt{Moser1999}; \citealt{CrispOlivelloPotter2012}; and \citealt{Ferrara2011}), but expanding the theoretical and empirical research in this area is crucial for studying the number of parties in equilibrium. 
-
-The fact that the 1980 election in Uganda featured essentially two political parties is quite interesting. 
-Indeed, given the social heterogeneity, we would expect many more political parties--- more than eight according to the biweight estimate and more than four according to the least squares estimate. 
-Indeed, this case is so different from the rest of the data that it receives zero weight in the biweight estimator. 
-But why? 
-One potential explanation might rely on the fact that Milton Obote, elected 18 years before, had returned. 
-The people were quite familiar with Obote. 
-Perhaps this enabled groups to coordinate in support of or in opposition to Obote. 
-It is difficult to know without a thorough analysis, but our analysis hints that the dynamics toward an equilibrium number of parties might depend on the nature of the prior regime. 
-When parties representing the prior authoritarian regime participate in the election, perhaps this helps solve the coordination problem. 
-On the other hand, when the prior regime does not participate in the elections, perhaps this makes coordination difficult. 
-Our point is not to answer this question but to highlight that a careful consideration of the residuals along with an estimation approach that allows unusual cases to stand out encourages the researcher to raise these types of questions.
+%\subsection*{Some Implications the Results}
+%
+%We offer a different approach than most applied research in political science adopts in practice. 
+%Rather than relying on the artificial Gauss-Markov theorem and BLUE estimators, we suggest that a careful consideration of the residuals is important. 
+%We show that there can be tremendous gains in efficiency from using robust estimators in the face of heavy-tailed error distributions, and we have shown that our approach leads to somewhat different conclusions than \cite{ClarkGolder2006}. 
+%But the approach we advocate is not powerful because it gives different results---it is powerful because it is substantively informative. 
+%Below we discuss several \textit{substantive} points that one can take from our brief analysis of Clark and Golder's data.
+%
+%\subsubsection*{Questions about the Validity of the Theory}
+%
+%At first glance, these results might make it seem that Duverger's logic lacks the empirical support suggested by the literature. Indeed, the evidence offered by the normal-linear model seems to hinge on the improper assumption of normal errors. 
+%Once we relax this assumption using a transformation and robust estimators, the evidence shrinks. However, rejection of Duverger's theory or Clark and Golder's (2006) analysis is premature for four reasons. 
+%First, the theoretical logic for Duverger's hypotheses is clear and compelling (e.g., \citealt{Duverger1963}, \citealt{Riker1982}, \citealt{Cox1997}, \citealt{AmorimNetoCox1997}, and \citealt{Cox1999}). 
+%Second, many empirical studies beyond \cite{ClarkGolder2006} find substantial empirical support for the hypotheses, including observational (e.g., \citealt{ChhibberKollman1998} and \citealt{SingerStephenson2009}, quasi-experimental (e.g., \citealt{Blaisetal2011} and \citealt{Fujiwara2011}), and incentivized experimental studies (for a review, see \citealt{Rietz2008}). 
+%Thirdly, in addition to the confidence intervals including effects that are inconsistent with the Clark and Golder's hypothesis, the confidence intervals now include \textit{even larger} effects, which suggests the effect might be even larger than Clark and Golder suggest.
+%Finally, the biweight $M$-estimator suggests several potential shortcomings in terms of concepts, theory, measurement that might undermine the current evidence for these theories.
+%
+%\subsubsection*{Questions about Measuring ``Established Democracies''}
+%
+%These results suggest we have room for improvement in our measurement of ``established democracies.'' 
+%Figure~\ref{fig:cg-weights} suggests that the 1980 election in Uganda is quite different from the remaining cases, so we might look more closely at the context of the election.
+%Uganda was under British rule until 1962, when it was granted independence from Britain. 
+%The 1962 elections led to the election of Milton Obote as prime minister. 
+%Four years later, facing scandal, Obote suspended the constitution, assumed all government powers, and declared himself president. 
+%In 1967, the parliament adopted a new constitution that solidified the expansive powers in the hands of the president. 
+%During this time, Obote banned all political parties and organizations accept his own \citep[p. 99]{Kasozi1993}. 
+%In 1971, Obote was ousted by Major General Idi Amin. During Amin's rule, between 50,000 and 300,000 civilians were killed \citep[p. 104]{Kasozi1993}. 
+%With the support of the Tanzanian military, which was working in conjunction with two Ugandan factions, one lead by Obote and the other Museveni, ended Amin's bloody rule in 1979 (\citealt[p. 53]{Kasfir1998}, and \citealt[pp. 124--127]{Kasozi1993}).
+%In the following year, one leader was forcibly removed from office and the following government experienced yet another military coup.
+%Elections were scheduled for 1980. 
+%By May of 1980, a group known as The Military Commission had taken power to give it to Obote. 
+%Obote wanted the appearance of being a democratic leader, therefore the Military Commission drafted electoral rules and held an election later that year \citep[pp. 135--137]{Kasozi1993}.
+%In an election that was fraught with corruption and irregularities, Obote's party won a majority of the seats---this 1980 Ugandan election is the unusual case in the data set.
+%Amin's bloody rule continued into Obote's second tenure with a death toll between 100,000 and 500,000 over the next five years---a second conflict with civilian casualties on the scale of the recent tragedies in Darfur. 
+%Although elections were again held in 1996, 2001, 2006, and 2011, these elections featured irregularities, harassment, and did not lead to a change in power.
+%
+%The context of the election raises question about whether Uganda was an ``established democracy'' in 1980, or even a democracy at all. 
+%One common measure offered by \cite{CheibubGandhiVreeland2010}, does indeed code Uganda as a democracy in 1980.\footnote{Another common measure of democracy, Polity IV, codes Uganda as a four in 1980, which falls outside range of six to ten that scholars typically consider democratic.} 
+%They code a country as a democracy if and only if it meets all of the following four conditions:
+%\begin{enumerate}
+%\item The chief executive must be chosen by popular election or by a body that was itself popularly elected.
+%\item The legislature must be popularly elected.
+%\item There must be more than one party competing in the elections.
+%\item An alternation in power under electoral rules identical to the ones that brought the incumbent to office must have taken place.
+%\end{enumerate}
+%
+%Although the election showed signs of irregularities and harassment of voters and candidates, it is plausible that Uganda in 1980 meets the first three criteria. 
+%But what about the forth? 
+%Because these authors code Uganda in 1980 as a democracy, they consider this condition met. 
+%However, this was a single election, nested between two military dictatorships, and during the winner's administration, he seized powers and dragged the country into civil war. 
+%It remains unclear to us how this meets the condition of democracy more broadly or the alternation condition more specifically.
+%
+%Indeed it is becoming common for authoritarian leaders to hold meaningless elections to present the illusion of democracy. \cite{LevitskyWay2002} argue that:
+%\begin{quote}
+%It is essential, however, to distinguish regimes in which democratic institutions offer an important channel through which the opposition may seek power from those regimes in which democratic rules serve to legitimate an existing autocratic leadership.
+%\end{quote}
+%
+%Secondly, even if Uganda was a democracy in 1980, was it ``established''? 
+%Surely not, as this was the first election in 18 years following 10 years of brutal dictatorship. 
+%However, Clark and Golder define ``established democracies'' as countries that transitioned to democracy before 1989 (see note b in their Tables 1 and 2). 
+%Yet why is it important to focus on \textit{established} democracies? \citet[p. 706]{ClarkGolder2006} summarize Duverger's argument: 
+%
+%\begin{quote}
+%Another intriguing finding is that Duverger's theory receives much weaker support when we include elections from countries that transitioned to democracy after 1989. 
+%This finding is perhaps understandable if we think that party systems in newly democratic countries take a while to reach their equilibrium. 
+%It is interesting that Duverger himself took this view in regard to the fledgling democracies of Central Europe, Latin America, and Africa earlier in the 20th century. 
+%By warning about the danger of confusing multipartism with the absence of (fully institutionalized) parties, Duverger was indicating that he did not expect his theory to work particularly well in new democracies. 
+%\end{quote}
+%
+%This suggests some rethinking of the concept of ``\textit{established} democracy'' might be in order, at least for Duverger's theory. 
+%For example, it surely must not be the case that countries transitioning to democracy before 1989 (e.g., Uganda in 1980) are ``established'' immediately after the transition. 
+%As Clark and Golder explain, the hypothesis assumes that the party system has reached an equilibrium. 
+%If systems that have not yet reached an equilibrium are included in the analysis, then we can expect the data to offer little support for the hypothesis. 
+%Perhaps with some rethinking of how this equilibrium is reached, we can find a better measure that indicates when systems have reached an equilibrium.
+%
+%%\subsubsection*{Questions About Measuring ``Social Heterogeneity''} (see Stoll 2009, Sellway 2011, Posner 2004)
+%%\textit{Room for improvement exists in the measurement of ``social heterogeneity.''}
+%
+%\subsubsection*{Questions about Dynamics Prior to Equilibrium}
+%
+%To judge when systems are likely to be in an equilibrium, we need a stronger theory about the dynamics leading to an equilibrium number of parties. 
+%Duverger's logic offers a compelling explanation for the number of political parties \textit{in equilibrium}, but this tells us little about the number of political parties prior to reaching an equilibrium or the dynamics that lead to an equilibrium. 
+%A theory about the dynamics is crucial to measuring whether a party system has stabilized, which, in turn, is crucial to testing Duverger's theory. 
+%Perhaps new democracies begin with many parties and the number shrinks until equilibrium. 
+%Perhaps they begin with few parties and the number grows until equilibrium. 
+%Perhaps it depends on the context. 
+%Some work has been done in this area (e.g.,  \citealt{Moser1999}; \citealt{CrispOlivelloPotter2012}; and \citealt{Ferrara2011}), but expanding the theoretical and empirical research in this area is crucial for studying the number of parties in equilibrium. 
+%
+%The fact that the 1980 election in Uganda featured essentially two political parties is quite interesting. 
+%Indeed, given the social heterogeneity, we would expect many more political parties--- more than eight according to the biweight estimate and more than four according to the least squares estimate. 
+%Indeed, this case is so different from the rest of the data that it receives zero weight in the biweight estimator. 
+%But why? 
+%One potential explanation might rely on the fact that Milton Obote, elected 18 years before, had returned. 
+%The people were quite familiar with Obote. 
+%Perhaps this enabled groups to coordinate in support of or in opposition to Obote. 
+%It is difficult to know without a thorough analysis, but our analysis hints that the dynamics toward an equilibrium number of parties might depend on the nature of the prior regime. 
+%When parties representing the prior authoritarian regime participate in the election, perhaps this helps solve the coordination problem. 
+%On the other hand, when the prior regime does not participate in the elections, perhaps this makes coordination difficult. 
+%Our point is not to answer this question but to highlight that a careful consideration of the residuals along with an estimation approach that allows unusual cases to stand out encourages the researcher to raise these types of questions.
 
 \section*{Conclusion}
 

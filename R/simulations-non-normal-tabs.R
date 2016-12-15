@@ -55,19 +55,20 @@ mc.n <- mc.sims(rdist = function(n) rnorm(n))
 ta3 <- cbind(mc.lap$c3, mc.t2$c3, mc.t10$c3, mc.logistic$c3, mc.unif$c3, mc.n$c3)
 
 
-ta <- rbind(ta3, ta3[2, ]/ta3[1, ], ta3[3, ]/ta3[1, ], ta3[4, ]/ta3[1, ])
+ta <- rbind(#ta3, 
+            ta3[2, ]/ta3[1, ], ta3[3, ]/ta3[1, ], ta3[4, ]/ta3[1, ])
 
 # ta <- format(round(ta, 2), nsmall = 2)
-rownames(ta) <- c("Least Squares", "Tukey's Biweight", "Least Absolute Deviation", 
-									"Least Trimmed Squares",
+rownames(ta) <- c(#"Least Squares", "Tukey's Biweight", "Least Absolute Deviation", 
+									#"Least Trimmed Squares",
 									"BW/LS", "LAD/LS", "LTS/LS")
 colnames(ta) <- c("Laplace", "$t_2$", "$t_{10}$", "Logistic", "Uniform", "Normal")
 
-quantreg::latex.table(ta, dec = 2,
+quantreg::latex.table(ta, dec = 1,
                       rowlabel = "",
                       file = "doc/tabs/mc-sims-100",
                       table.env = FALSE,
-                      rgroup = c("Absolute Performance",
-                                 "Relative Performance"),
-                      n.rgroup = c(4, 3),
+                      #rgroup = c("Absolute Performance",
+                      #           "Relative Performance"),
+                      #n.rgroup = c(4, 3),
                       label = "tab:mc-sims-100")
