@@ -64,7 +64,7 @@ rownames(ta) <- c(#"Least Squares", "Tukey's Biweight", "Least Absolute Deviatio
 									"BW/LS", "LAD/LS", "LTS/LS")
 colnames(ta) <- c("Laplace", "$t_2$", "$t_{10}$", "Logistic", "Uniform", "Normal")
 
-quantreg::latex.table(ta, dec = 1,
+quantreg::latex.table(ta, dec = 2,
                       rowlabel = "",
                       file = "doc/tabs/mc-sims-100",
                       table.env = FALSE,
